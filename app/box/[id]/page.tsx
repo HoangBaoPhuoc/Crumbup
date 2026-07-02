@@ -48,6 +48,10 @@ export default async function BoxDetailPage({ params }: { params: Promise<{ id: 
   const nowHHMM = `${String(nowVN.getUTCHours()).padStart(2, "0")}:${String(nowVN.getUTCMinutes()).padStart(2, "0")}`;
   const isExpired = box.pickupEnd < nowHHMM;
 
+  const recentOrdersCount = await prisma.orderItem.count({
+    where: { boxId: box.id, order: { createdAt: { gte: new Date(Date.now() - 2 * 60 * 60_000) } } },
+  });
+
   const { store } = box;
   const reviews = store.reviews;
   const avgRating = reviews.length > 0
@@ -100,36 +104,38 @@ export default async function BoxDetailPage({ params }: { params: Promise<{ id: 
               )}
             </div>
 
-            {/* Store info */}
-            <div style={{ background: "white", borderRadius: 20, border: "1px solid var(--border)", padding: 28 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
-                {store.logo ? (
-                  <img src={store.logo} alt={store.name}
-                    style={{ width: 64, height: 64, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
-                ) : (
-                  <div style={{ width: 64, height: 64, borderRadius: "50%", background: "var(--accent-soft)", display: "grid", placeItems: "center", fontSize: 28, flexShrink: 0 }}>🏪</div>
+            {/* Title block — badges, name, store, social proof, intro */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                <span className="badge badge-primary">−{disc}%</span>
+                {avgRating && (
+                  <span style={{ fontSize: 13, fontWeight: 700, color: "var(--text)" }}>⭐ {avgRating} · {reviews.length} đánh giá</span>
                 )}
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <h2 style={{ fontSize: 20, marginBottom: 4 }}>{store.name}</h2>
-                  {avgRating && (
-                    <div style={{ fontSize: 12, color: "var(--text-muted)" }}>
-                      ⭐ {avgRating} ({reviews.length} đánh giá)
-                    </div>
-                  )}
-                  <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 2 }}>📍 {store.address}</div>
-                  {store.phone    && <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 2 }}>📞 {store.phone}</div>}
-                  {store.openHours && <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 2 }}>🕒 {store.openHours}</div>}
-                </div>
+                {store.verified && (
+                  <span style={{ fontSize: 13, fontWeight: 700, color: "#2d6a31" }}>✓ Đối tác xác thực</span>
+                )}
               </div>
 
+              <h1 style={{ fontSize: 26, margin: 0, lineHeight: 1.2 }}>{box.name}</h1>
+
+              <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap", fontSize: 13, color: "var(--text-muted)" }}>
+                <span>{store.name} · {store.address}</span>
+                {store.phone && <span>📞 {store.phone}</span>}
+              </div>
+
+              {recentOrdersCount > 0 && (
+                <div style={{ display: "inline-flex", alignSelf: "flex-start", alignItems: "center", gap: 8, background: "var(--accent-soft)", color: "#2d6a31", fontSize: 12, fontWeight: 700, padding: "8px 14px", borderRadius: 999 }}>
+                  🔥 {recentOrdersCount} người đã đặt trong 2 giờ qua
+                </div>
+              )}
+
               {(box.description || store.description) && (
-                <>
-                  <div style={{ borderTop: "1px solid var(--border)", margin: "20px 0" }} />
-                  <h3 style={{ fontSize: 16, marginBottom: 10, fontWeight: 700 }}>Giới thiệu Box</h3>
-                  <p style={{ fontSize: 14, lineHeight: 1.7, color: "var(--text)" }}>
+                <div style={{ background: "white", borderRadius: 18, border: "1px solid var(--border)", padding: 24 }}>
+                  <h3 style={{ fontSize: 15, marginBottom: 10, fontWeight: 700 }}>Giới thiệu Box</h3>
+                  <p style={{ fontSize: 13, lineHeight: 1.7, color: "var(--text-muted)", margin: 0 }}>
                     {box.description ?? store.description}
                   </p>
-                </>
+                </div>
               )}
             </div>
 
@@ -172,7 +178,15 @@ export default async function BoxDetailPage({ params }: { params: Promise<{ id: 
           {/* ── RIGHT — purchase panel ── */}
           <aside style={{ position: "sticky", top: 24, display: "flex", flexDirection: "column", gap: 16 }}>
             <div style={{ background: "white", borderRadius: 24, border: "1px solid var(--border)", padding: 28, boxShadow: "var(--shadow-md)" }}>
-              <h1 style={{ fontSize: 24, marginBottom: 10, lineHeight: 1.2 }}>{box.name}</h1>
+              {box.quantityLeft <= 2 && !isExpired && (
+                <div style={{
+                  background: "var(--danger)", color: "white", borderRadius: 10,
+                  padding: "8px 14px", fontSize: 13, fontWeight: 700, marginBottom: 14,
+                  textAlign: "center",
+                }}>
+                  ⚡ Chỉ còn {box.quantityLeft} box — đặt ngay kẻo hết!
+                </div>
+              )}
 
               <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 6 }}>
                 <span style={{ fontSize: 14, color: "var(--text-muted)", textDecoration: "line-through" }}>

@@ -190,7 +190,7 @@ export default function HomePage() {
       </section>
 
       {/* ABOUT FOOD WASTE */}
-      <section style={{ padding: "96px 0", background: "var(--ivory)" }}>
+      <section id="how" style={{ padding: "96px 0", background: "var(--ivory)" }}>
         <div className="container">
 
           {/* Header row */}
@@ -289,7 +289,7 @@ export default function HomePage() {
                 emoji: "🌾",
                 label: "Định nghĩa",
                 q: "Lãng phí thực phẩm là gì?",
-                p: "Theo FAO, food waste là sự suy giảm chất lượng hoặc số lượng thực phẩm ở cấp độ bán lẻ và tiêu dùng. Với CrumbUp, đó là những chiếc bánh ngon vẫn hoàn hảo trong ngày nhưng chưa gặp đúng người vào đúng lúc.",
+                p: "Là sự suy giảm chất lượng hay số lượng thực phẩm ở khâu bán lẻ và tiêu dùng — những chiếc bánh vẫn ngon nhưng chưa gặp đúng người vào đúng lúc.",
                 bg: "var(--cream)",
                 border: "var(--border)",
                 labelColor: "var(--primary)",
@@ -299,7 +299,7 @@ export default function HomePage() {
                 emoji: "🧁",
                 label: "Surplus food",
                 q: "Thực phẩm dư thừa là gì?",
-                p: '"Bánh dư cuối ngày" là những sản phẩm vẫn còn tốt nhưng chưa kịp bán hết trước giờ đóng cửa. Các cửa hàng đối tác đóng gói chúng thành Surprise Box — gửi đến bạn với giá ưu đãi nhất trong ngày.',
+                p: "Là những sản phẩm vẫn còn tốt nhưng chưa kịp bán hết trước giờ đóng cửa — đóng gói thành Surprise Box, gửi đến bạn với giá tốt nhất trong ngày.",
                 bg: "var(--accent-soft)",
                 border: "#e8d4b8",
                 labelColor: "#784d2e",
@@ -309,7 +309,7 @@ export default function HomePage() {
                 emoji: "🌍",
                 label: "Số liệu toàn cầu",
                 q: "Lãng phí thực phẩm có đáng lo?",
-                p: "Theo UNEP 2024, thế giới lãng phí hơn 1,05 tỷ tấn thực phẩm mỗi năm — 19% tổng lượng sẵn có. Giữ lại một chiếc bánh cuối ngày là hành động nhỏ, nhưng nhân lên hàng ngàn lần mỗi ngày, tác động trở nên rất thực.",
+                p: "Theo UNEP 2024, thế giới lãng phí hơn 1,05 tỷ tấn thực phẩm mỗi năm — 19% tổng lượng sẵn có. Một chiếc bánh cuối ngày là hành động nhỏ, nhân lên hàng ngàn lần mỗi ngày thì tác động rất thực.",
                 bg: "#eef6ef",
                 border: "#c8e0ca",
                 labelColor: "#2d6a31",
@@ -319,7 +319,7 @@ export default function HomePage() {
                 emoji: "♻️",
                 label: "Sứ mệnh",
                 q: "Từ Food Waste → Food Rescue",
-                p: "Thông qua Surprise Box, cửa hàng đóng gói sản phẩm cuối ngày thành những box ưu đãi, còn khách hàng có lựa chọn ngon hơn, tiết kiệm hơn và ý nghĩa hơn. Mỗi chiếc bánh được tiếp tục hành trình của mình.",
+                p: "Cửa hàng đóng gói sản phẩm cuối ngày thành box ưu đãi, khách hàng có lựa chọn ngon hơn và rẻ hơn. Mỗi chiếc bánh được tiếp tục hành trình của mình.",
                 bg: "linear-gradient(135deg, #fdf5e6 0%, #fde6d4 100%)",
                 border: "#e8cdb0",
                 labelColor: "var(--primary)",

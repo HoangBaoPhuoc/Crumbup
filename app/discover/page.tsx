@@ -10,6 +10,7 @@ import PickupCountdown from "./PickupCountdown";
 import FilterSidebar from "./FilterSidebar";
 import SortButtons from "./SortButtons";
 import ClearSearchButton from "./ClearSearchButton";
+import DiscoverTabs from "./DiscoverTabs";
 
 const EMOJIS = ["🥐", "☕", "🥖", "🧁", "🥪", "🎁"];
 
@@ -147,6 +148,7 @@ async function BoxList({ sort, prices, pickups, q }: { sort: string; prices: str
               filter: isExpired ? "grayscale(0.85)" : "none",
             }}>
             <div className="box-card-img" style={{
+              position: "relative",
               width: 140, height: 140, borderRadius: 14, fontSize: 56, flexShrink: 0,
               background: tone === "warm"
                 ? "linear-gradient(135deg, #fde6d4, #f5d4b3)"
@@ -156,36 +158,37 @@ async function BoxList({ sort, prices, pickups, q }: { sort: string; prices: str
               {box.image
                 ? <img src={box.image} alt={box.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                 : emoji}
+              {!isExpired && (
+                <span style={{
+                  position: "absolute", top: 8, left: 8,
+                  background: isLow ? "var(--danger)" : "rgba(61,47,31,0.72)", color: "white",
+                  fontSize: 11, fontWeight: 800, padding: "4px 9px", borderRadius: 999,
+                }}>
+                  Còn {box.quantityLeft}
+                </span>
+              )}
             </div>
 
             <div>
               <div style={{ display: "flex", gap: 6, marginBottom: 8 }}>
-                {isExpired
-                  ? <span className="badge" style={{ background: "#e5e7eb", color: "#6b7280" }}>Đã hết giờ</span>
-                  : <span className="badge badge-primary">−{disc}%</span>
-                }
-                {!isExpired && isLow && <span className="badge badge-warm">Sắp hết</span>}
+                {isExpired && <span className="badge" style={{ background: "#e5e7eb", color: "#6b7280" }}>Đã hết giờ</span>}
               </div>
               <div style={{ fontSize: 11, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600 }}>
                 {box.store.name}
               </div>
               <h3 style={{ fontSize: 18, margin: "4px 0 10px" }}>{box.name}</h3>
-              <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 10 }}>
-                <span style={{ fontSize: 12, color: "var(--text-muted)", textDecoration: "line-through" }}>
-                  {formatPrice(box.priceOriginal)}
-                </span>
-                <span style={{ fontSize: 22, fontWeight: 800, color: isExpired ? "var(--text-muted)" : "var(--primary)" }}>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 10 }}>
+                <span style={{ fontSize: 28, fontWeight: 900, color: isExpired ? "var(--text-muted)" : "var(--primary)" }}>
                   {formatPrice(box.priceSale)}
                 </span>
+                <span style={{ fontSize: 13, color: "var(--text-muted)", textDecoration: "line-through" }}>
+                  {formatPrice(box.priceOriginal)}
+                </span>
+                {!isExpired && <span className="badge badge-primary">−{disc}%</span>}
               </div>
               <div style={{ display: "flex", gap: 16, fontSize: 11, color: "var(--text-muted)", flexWrap: "wrap" }}>
                 <span>{box.pickupStart} – {box.pickupEnd}</span>
                 <span>{box.store.address.split(",")[0]}</span>
-                {!isExpired && (
-                  <span style={{ color: isLow ? "var(--danger)" : "var(--accent)", fontWeight: 600 }}>
-                    Còn {box.quantityLeft} box
-                  </span>
-                )}
               </div>
               <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 4 }}>
                 {formatVNDate(box.date)}
@@ -198,7 +201,7 @@ async function BoxList({ sort, prices, pickups, q }: { sort: string; prices: str
               ) : (
                 <>
                   <PickupCountdown pickupStart={box.pickupStart} pickupEnd={box.pickupEnd} />
-                  <span className="btn btn-primary">Xem Box</span>
+                  <span className="btn btn-primary" style={{ padding: "12px 24px", fontSize: 14, boxShadow: "0 8px 20px -6px rgba(184,124,82,.6)" }}>Đặt ngay →</span>
                 </>
               )}
             </div>
@@ -245,11 +248,7 @@ export default async function DiscoverPage({
           zIndex: 90,
         }}
       >
-        <div className="discover-tabs-inner" style={{ display: "flex", gap: 32 }}>
-          <div style={{ padding: "14px 0", fontSize: 14, fontWeight: 700, color: "var(--primary)", borderBottom: "3px solid var(--primary)", whiteSpace: "nowrap" }}>
-            Khám phá Box
-          </div>
-        </div>
+        <DiscoverTabs />
       </div>
 
       <main className="discover-main">
@@ -292,46 +291,22 @@ export default async function DiscoverPage({
                 </div>
               </div>
 
-              {/* Impact card */}
+              {/* Conversion banner — replaces the old empty "— box / — kg" impact placeholder */}
               <div className="rise rise-5" style={{
-                background: "white",
+                background: "linear-gradient(135deg, var(--badge) 0%, #f7d27a 100%)",
                 borderRadius: 20,
-                border: "1px solid var(--border)",
-                padding: 20,
+                padding: 22,
                 display: "flex",
                 flexDirection: "column",
-                gap: 0,
+                gap: 10,
               }}>
-                <div style={{ fontSize: 15, fontWeight: 800, marginBottom: 16 }}>Tác động của bạn</div>
-
-                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                  <div style={{ background: "var(--accent-soft)", borderRadius: 14, padding: "14px 16px" }}>
-                    <div style={{ fontSize: 11, color: "var(--accent)", fontWeight: 600, marginBottom: 2 }}>Bạn đã cứu</div>
-                    <div style={{ fontSize: 22, fontWeight: 900, color: "var(--accent)", lineHeight: 1 }}>— box</div>
-                    <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>trong tháng này</div>
-                  </div>
-
-                  <div style={{ background: "var(--cream)", borderRadius: 14, padding: "14px 16px" }}>
-                    <div style={{ fontSize: 11, color: "var(--primary)", fontWeight: 600, marginBottom: 2 }}>CO₂ giảm phát thải</div>
-                    <div style={{ fontSize: 22, fontWeight: 900, color: "var(--primary)", lineHeight: 1 }}>— kg</div>
-                    <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>tương đương tháng này</div>
-                  </div>
+                <div style={{ fontSize: 15, fontWeight: 800, color: "var(--text)" }}>Đăng ký để nhận thông báo box mới</div>
+                <div style={{ fontSize: 13, color: "var(--text)", lineHeight: 1.6, opacity: 0.85 }}>
+                  Box ngon hết nhanh trong vài phút — đăng ký để không bỏ lỡ ưu đãi gần bạn.
                 </div>
-
-                <button style={{
-                  marginTop: 14,
-                  width: "100%",
-                  padding: "10px 0",
-                  borderRadius: 999,
-                  border: "1px solid var(--border)",
-                  fontSize: 12,
-                  fontWeight: 600,
-                  color: "var(--text-muted)",
-                  background: "transparent",
-                  cursor: "pointer",
-                }}>
-                  Xem tác động của cộng đồng →
-                </button>
+                <Link href="/register" className="btn btn-dark" style={{ marginTop: 6, justifyContent: "center" }}>
+                  Đăng ký miễn phí
+                </Link>
               </div>
 
             </aside>
