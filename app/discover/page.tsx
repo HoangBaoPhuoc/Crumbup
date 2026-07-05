@@ -3,7 +3,8 @@ import Link from "next/link";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import { prisma } from "@/lib/prisma";
-import { formatPrice, discountPercent, getVietnamToday, formatVNDate } from "@/lib/utils";
+import { FoodCategory } from "@/app/generated/prisma/enums";
+import { formatPrice, discountPercent, getVietnamToday, formatVNDate, categoryEmoji, categoryLabel, FOOD_CATEGORIES } from "@/lib/utils";
 import MapView from "@/components/MapView";
 import type { StorePin } from "@/components/MapView";
 import PickupCountdown from "./PickupCountdown";
@@ -12,7 +13,7 @@ import SortButtons from "./SortButtons";
 import ClearSearchButton from "./ClearSearchButton";
 import DiscoverTabs from "./DiscoverTabs";
 
-const EMOJIS = ["🥐", "☕", "🥖", "🧁", "🥪", "🎁"];
+const CATEGORY_VALUES = new Set(FOOD_CATEGORIES.map((c) => c.value));
 
 async function getStorePins(): Promise<StorePin[]> {
   const { from, to } = getVietnamToday();
@@ -43,12 +44,14 @@ const PRICE_RANGES: Record<string, { gte?: number; lt?: number; lte?: number }> 
   high: { gte: 100_000, lte: 150_000 },
 };
 
-async function getBoxes(sort: string, prices: string[], pickups: string[], q: string) {
+async function getBoxes(sort: string, prices: string[], pickups: string[], categories: string[], q: string) {
   const { from, to } = getVietnamToday();
 
   const priceOR = prices
     .filter((p) => PRICE_RANGES[p])
     .map((p) => ({ priceSale: PRICE_RANGES[p] }));
+
+  const categoryValues = categories.filter((c): c is FoodCategory => CATEGORY_VALUES.has(c as FoodCategory));
 
   const hasSoon      = pickups.includes("soon");
   const nowHHMM      = vnTimeHHMM(0);
@@ -68,6 +71,7 @@ async function getBoxes(sort: string, prices: string[], pickups: string[], q: st
       date: { gte: from, lt: to },
       ...textFilter,
       ...(priceOR.length > 0 && { AND: [{ OR: priceOR }] }),
+      ...(categoryValues.length > 0 && { category: { in: categoryValues } }),
       ...(hasSoon && {
         pickupEnd:   { gte: nowHHMM },
         pickupStart: { lte: twoHoursHHMM },
@@ -110,8 +114,8 @@ function BoxSkeleton() {
   );
 }
 
-async function BoxList({ sort, prices, pickups, q }: { sort: string; prices: string[]; pickups: string[]; q: string }) {
-  const boxes = await getBoxes(sort, prices, pickups, q);
+async function BoxList({ sort, prices, pickups, categories, q }: { sort: string; prices: string[]; pickups: string[]; categories: string[]; q: string }) {
+  const boxes = await getBoxes(sort, prices, pickups, categories, q);
   const nowHHMM = vnTimeHHMM(0);
 
   if (boxes.length === 0) {
@@ -127,7 +131,7 @@ async function BoxList({ sort, prices, pickups, q }: { sort: string; prices: str
     <>
       {boxes.map((box, i) => {
         const disc      = discountPercent(box.priceOriginal, box.priceSale);
-        const emoji     = EMOJIS[i % EMOJIS.length];
+        const emoji     = categoryEmoji(box.category);
         const isLow     = box.quantityLeft <= 2;
         const isExpired = box.pickupEnd < nowHHMM;
         const tone      = i % 2 === 0 ? "warm" : "cream";
@@ -173,8 +177,13 @@ async function BoxList({ sort, prices, pickups, q }: { sort: string; prices: str
               <div style={{ display: "flex", gap: 6, marginBottom: 8 }}>
                 {isExpired && <span className="badge" style={{ background: "#e5e7eb", color: "#6b7280" }}>Đã hết giờ</span>}
               </div>
-              <div style={{ fontSize: 11, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600 }}>
-                {box.store.name}
+              <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                <div style={{ fontSize: 11, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600 }}>
+                  {box.store.name}
+                </div>
+                <span className="badge" style={{ background: "var(--cream)", color: "var(--text-muted)", fontWeight: 600 }}>
+                  {categoryEmoji(box.category)} {categoryLabel(box.category)}
+                </span>
               </div>
               <h3 style={{ fontSize: 18, margin: "4px 0 10px" }}>{box.name}</h3>
               <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 10 }}>
@@ -221,13 +230,14 @@ async function BoxList({ sort, prices, pickups, q }: { sort: string; prices: str
 export default async function DiscoverPage({
   searchParams,
 }: {
-  searchParams: Promise<{ sort?: string; price?: string | string[]; pickup?: string | string[]; q?: string }>;
+  searchParams: Promise<{ sort?: string; price?: string | string[]; pickup?: string | string[]; category?: string | string[]; q?: string }>;
 }) {
-  const sp      = await searchParams;
-  const sort    = sp.sort ?? "default";
-  const prices  = sp.price  ? (Array.isArray(sp.price)  ? sp.price  : [sp.price])  : [];
-  const pickups = sp.pickup ? (Array.isArray(sp.pickup) ? sp.pickup : [sp.pickup]) : [];
-  const q       = sp.q ?? "";
+  const sp         = await searchParams;
+  const sort       = sp.sort ?? "default";
+  const prices     = sp.price    ? (Array.isArray(sp.price)    ? sp.price    : [sp.price])    : [];
+  const pickups    = sp.pickup   ? (Array.isArray(sp.pickup)   ? sp.pickup   : [sp.pickup])   : [];
+  const categories = sp.category ? (Array.isArray(sp.category) ? sp.category : [sp.category]) : [];
+  const q          = sp.q ?? "";
   const storePins = await getStorePins();
 
   return (
@@ -270,7 +280,7 @@ export default async function DiscoverPage({
               </Suspense>
             </div>
             <Suspense fallback={<BoxSkeleton />}>
-              <BoxList sort={sort} prices={prices} pickups={pickups} q={q} />
+              <BoxList sort={sort} prices={prices} pickups={pickups} categories={categories} q={q} />
             </Suspense>
           </div>
 

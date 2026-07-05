@@ -3,11 +3,13 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { FOOD_CATEGORIES } from "@/lib/utils";
 
 const BUCKET = "box-images";
 
 type PrefillBox = {
   name: string; description: string | null; image: string | null;
+  category: string;
   priceOriginal: number; priceSale: number;
   quantityTotal: number; pickupStart: string; pickupEnd: string;
 };
@@ -47,6 +49,7 @@ export default function RepostBoxModal({ box, storeAddress, onClose }: {
     name:          box.name,
     description:   box.description ?? "",
     image:         box.image ?? "",
+    category:      box.category,
     priceOriginal: String(box.priceOriginal),
     priceSale:     String(box.priceSale),
     quantityTotal: String(box.quantityTotal),
@@ -135,6 +138,14 @@ export default function RepostBoxModal({ box, storeAddress, onClose }: {
           <Field label="Mô tả">
             <textarea value={form.description} onChange={(e) => set("description", e.target.value)}
               rows={2} style={{ ...inp, resize: "vertical" }} />
+          </Field>
+
+          <Field label="Loại đồ ăn" required>
+            <select value={form.category} onChange={(e) => set("category", e.target.value)} style={inp}>
+              {FOOD_CATEGORIES.map((c) => (
+                <option key={c.value} value={c.value}>{c.emoji} {c.label}</option>
+              ))}
+            </select>
           </Field>
 
           <Field label="Ảnh bìa" required>

@@ -5,6 +5,7 @@ import RepostBoxModal from "./RepostBoxModal";
 
 type Box = {
   id: string; name: string; description: string | null; image: string | null;
+  category: string;
   priceOriginal: number; priceSale: number;
   quantityTotal: number; quantityLeft: number;
   pickupStart: string; pickupEnd: string; active: boolean;

@@ -2,6 +2,25 @@ export function formatPrice(n: number): string {
   return n.toLocaleString("vi-VN") + "đ";
 }
 
+export const FOOD_CATEGORIES = [
+  { value: "BANH_NGOT",   label: "Bánh ngọt",   emoji: "🥐" },
+  { value: "BANH_MI",     label: "Bánh mì",     emoji: "🥖" },
+  { value: "DO_UONG",     label: "Đồ uống",     emoji: "☕" },
+  { value: "MON_MAN",     label: "Món mặn",     emoji: "🥪" },
+  { value: "TRANG_MIENG", label: "Tráng miệng", emoji: "🧁" },
+  { value: "KHAC",        label: "Khác",        emoji: "🎁" },
+] as const;
+
+export type FoodCategoryValue = (typeof FOOD_CATEGORIES)[number]["value"];
+
+export function categoryEmoji(category: string): string {
+  return FOOD_CATEGORIES.find((c) => c.value === category)?.emoji ?? "🎁";
+}
+
+export function categoryLabel(category: string): string {
+  return FOOD_CATEGORIES.find((c) => c.value === category)?.label ?? "Khác";
+}
+
 export function discountPercent(original: number, sale: number): number {
   return Math.round(((original - sale) / original) * 100);
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { FOOD_CATEGORIES } from "@/lib/utils";
 
 const PRICE_OPTIONS = [
   { label: "Dưới 50.000đ",  value: "low"  },
@@ -12,14 +13,17 @@ const PICKUP_OPTIONS = [
   { label: "Trong 2 giờ tới", value: "soon" },
 ];
 
+const CATEGORY_OPTIONS = FOOD_CATEGORIES.map((c) => ({ label: `${c.emoji} ${c.label}`, value: c.value }));
+
 export default function FilterSidebar() {
   const router   = useRouter();
   const pathname = usePathname();
   const params   = useSearchParams();
 
-  const prices  = params.getAll("price");
-  const pickups = params.getAll("pickup");
-  const sort    = params.get("sort") ?? "default";
+  const prices     = params.getAll("price");
+  const pickups    = params.getAll("pickup");
+  const categories = params.getAll("category");
+  const sort       = params.get("sort") ?? "default";
 
   function toggle(key: string, value: string) {
     const next     = new URLSearchParams(params.toString());
@@ -37,7 +41,7 @@ export default function FilterSidebar() {
     router.push(`${pathname}?sort=${sort}`);
   }
 
-  const hasFilters = prices.length > 0 || pickups.length > 0;
+  const hasFilters = prices.length > 0 || pickups.length > 0 || categories.length > 0;
 
   return (
     <aside className="rise rise-3" style={{
@@ -56,6 +60,14 @@ export default function FilterSidebar() {
           </button>
         )}
       </div>
+
+      {/* Loại đồ ăn */}
+      <FilterGroup
+        title="Loại đồ ăn"
+        options={CATEGORY_OPTIONS}
+        selected={categories}
+        onToggle={(v) => toggle("category", v)}
+      />
 
       {/* Khoảng giá */}
       <FilterGroup

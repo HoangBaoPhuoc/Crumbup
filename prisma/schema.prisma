@@ -12,6 +12,15 @@ enum AccountRole {
   BUSINESS
 }
 
+enum FoodCategory {
+  BANH_NGOT
+  BANH_MI
+  DO_UONG
+  MON_MAN
+  TRANG_MIENG
+  KHAC
+}
+
 model User {
   id        String      @id @default(uuid())
   email     String?     @unique
@@ -62,6 +71,7 @@ model Box {
   pickupEnd       String
   date            DateTime
   image           String?
+  category        FoodCategory @default(KHAC)
   active          Boolean  @default(true)
   createdAt       DateTime @default(now())
 

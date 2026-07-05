@@ -60,22 +60,23 @@ async function main() {
 
   // Tạo box mẫu cho hôm nay
   const boxData = [
-    { id: "box-1", storeId: stores[0].id, name: "Box Bánh Ngọt Cuối Ngày", priceOriginal: 120000, priceSale: 59000, quantityTotal: 5, quantityLeft: 3, pickupStart: "18:00", pickupEnd: "20:00", emoji: "🥐" },
-    { id: "box-2", storeId: stores[1].id, name: "Box Đồ Uống & Bánh", priceOriginal: 100000, priceSale: 60000, quantityTotal: 4, quantityLeft: 2, pickupStart: "17:00", pickupEnd: "20:00", emoji: "☕" },
-    { id: "box-3", storeId: stores[2].id, name: "Box Bánh Mặn", priceOriginal: 150000, priceSale: 60000, quantityTotal: 8, quantityLeft: 5, pickupStart: "19:00", pickupEnd: "20:30", emoji: "🥖" },
-    { id: "box-4", storeId: stores[3].id, name: "Box Pastry Mix", priceOriginal: 160000, priceSale: 58000, quantityTotal: 3, quantityLeft: 1, pickupStart: "18:00", pickupEnd: "21:00", emoji: "🧁" },
-    { id: "box-5", storeId: stores[0].id, name: "Box Bánh Mì Đặc Biệt", priceOriginal: 80000, priceSale: 35000, quantityTotal: 6, quantityLeft: 4, pickupStart: "16:00", pickupEnd: "19:00", emoji: "🥪" },
-    { id: "box-6", storeId: stores[1].id, name: "Box Croissant & Latte", priceOriginal: 130000, priceSale: 65000, quantityTotal: 4, quantityLeft: 3, pickupStart: "15:00", pickupEnd: "18:00", emoji: "🥐" },
+    { id: "box-1", storeId: stores[0].id, name: "Box Bánh Ngọt Cuối Ngày", category: "BANH_NGOT" as const, priceOriginal: 120000, priceSale: 59000, quantityTotal: 5, quantityLeft: 3, pickupStart: "18:00", pickupEnd: "20:00" },
+    { id: "box-2", storeId: stores[1].id, name: "Box Đồ Uống & Bánh", category: "DO_UONG" as const, priceOriginal: 100000, priceSale: 60000, quantityTotal: 4, quantityLeft: 2, pickupStart: "17:00", pickupEnd: "20:00" },
+    { id: "box-3", storeId: stores[2].id, name: "Box Bánh Mặn", category: "MON_MAN" as const, priceOriginal: 150000, priceSale: 60000, quantityTotal: 8, quantityLeft: 5, pickupStart: "19:00", pickupEnd: "20:30" },
+    { id: "box-4", storeId: stores[3].id, name: "Box Pastry Mix", category: "TRANG_MIENG" as const, priceOriginal: 160000, priceSale: 58000, quantityTotal: 3, quantityLeft: 1, pickupStart: "18:00", pickupEnd: "21:00" },
+    { id: "box-5", storeId: stores[0].id, name: "Box Bánh Mì Đặc Biệt", category: "BANH_MI" as const, priceOriginal: 80000, priceSale: 35000, quantityTotal: 6, quantityLeft: 4, pickupStart: "16:00", pickupEnd: "19:00" },
+    { id: "box-6", storeId: stores[1].id, name: "Box Croissant & Latte", category: "BANH_NGOT" as const, priceOriginal: 130000, priceSale: 65000, quantityTotal: 4, quantityLeft: 3, pickupStart: "15:00", pickupEnd: "18:00" },
   ];
 
   for (const b of boxData) {
     await prisma.box.upsert({
       where: { id: b.id },
-      update: { quantityLeft: b.quantityLeft, date: today },
+      update: { quantityLeft: b.quantityLeft, date: today, category: b.category },
       create: {
         id: b.id,
         storeId: b.storeId,
         name: b.name,
+        category: b.category,
         priceOriginal: b.priceOriginal,
         priceSale: b.priceSale,
         quantityTotal: b.quantityTotal,

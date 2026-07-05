@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { FOOD_CATEGORIES } from "@/lib/utils";
 
 const BUCKET = "box-images";
 
@@ -24,6 +25,7 @@ export default function CreateBoxModal({ storeAddress }: { storeAddress: string 
   const [error, setError]       = useState("");
   const [form, setForm]         = useState({
     name: "", description: "", image: "",
+    category: FOOD_CATEGORIES[0].value as string,
     priceOriginal: "", priceSale: "",
     quantityTotal: "5",
     pickupStart: "17:00", pickupEnd: "20:00",
@@ -83,7 +85,7 @@ export default function CreateBoxModal({ storeAddress }: { storeAddress: string 
     setLoading(false);
     if (!res.ok) { setError(data.error ?? "Lỗi tạo box"); return; }
     setOpen(false);
-    setForm({ name: "", description: "", image: "", priceOriginal: "", priceSale: "", quantityTotal: "5", pickupStart: "17:00", pickupEnd: "20:00", date: vnToday() });
+    setForm({ name: "", description: "", image: "", category: FOOD_CATEGORIES[0].value, priceOriginal: "", priceSale: "", quantityTotal: "5", pickupStart: "17:00", pickupEnd: "20:00", date: vnToday() });
     if (fileRef.current) fileRef.current.value = "";
     router.refresh();
   }
@@ -125,6 +127,14 @@ export default function CreateBoxModal({ storeAddress }: { storeAddress: string 
               <Field label="Mô tả">
                 <textarea value={form.description} onChange={(e) => set("description", e.target.value)}
                   placeholder="Nội dung bên trong box..." rows={2} style={{ ...inp, resize: "vertical" }} />
+              </Field>
+
+              <Field label="Loại đồ ăn" required>
+                <select value={form.category} onChange={(e) => set("category", e.target.value)} style={inp}>
+                  {FOOD_CATEGORIES.map((c) => (
+                    <option key={c.value} value={c.value}>{c.emoji} {c.label}</option>
+                  ))}
+                </select>
               </Field>
 
               <Field label="Ảnh bìa" required>
