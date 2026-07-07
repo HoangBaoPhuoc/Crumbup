@@ -1,12 +1,12 @@
 "use client";
 
-export default function ScrollArrow() {
+export default function ScrollArrow({ targetId = "how" }: { targetId?: string }) {
   return (
     <a
-      href="#how"
+      href={`#${targetId}`}
       onClick={(e) => {
         e.preventDefault();
-        document.getElementById("how")?.scrollIntoView({ behavior: "smooth" });
+        document.getElementById(targetId)?.scrollIntoView({ behavior: "smooth" });
       }}
       style={{
         position: "absolute",

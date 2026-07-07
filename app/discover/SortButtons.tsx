@@ -1,6 +1,8 @@
 "use client";
 
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useSearchParams, usePathname } from "next/navigation";
+import { useDiscoverNav } from "./DiscoverNavContext";
 
 const SORTS = [
   { label: "Mặc định",      value: "default"    },
@@ -9,28 +11,45 @@ const SORTS = [
 ];
 
 export default function SortButtons({ current }: { current: string }) {
-  const router   = useRouter();
   const pathname = usePathname();
   const params   = useSearchParams();
+  const { navigate, isPending } = useDiscoverNav();
+
+  // Local optimistic state so the active button switches instantly on click.
+  const [active, setActive] = useState(current);
+
+  const searchKey = params.toString();
+  useEffect(() => {
+    setActive(params.get("sort") ?? "default");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchKey]);
 
   function setSort(value: string) {
+    setActive(value);
     const next = new URLSearchParams(params.toString());
     next.set("sort", value);
-    router.push(`${pathname}?${next.toString()}`);
+    navigate(`${pathname}?${next.toString()}`);
   }
 
   return (
-    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+    <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
       {SORTS.map((s) => (
         <button
           key={s.value}
           onClick={() => setSort(s.value)}
-          className={current === s.value ? "btn btn-primary" : "btn btn-ghost"}
+          className={active === s.value ? "btn btn-primary" : "btn btn-ghost"}
           style={{ fontSize: 12, padding: "8px 14px" }}
         >
           {s.label}
         </button>
       ))}
+      {isPending && (
+        <span style={{
+          width: 13, height: 13, border: "2px solid var(--border)",
+          borderTopColor: "var(--primary)", borderRadius: "50%",
+          display: "inline-block", animation: "spin 0.7s linear infinite",
+        }} />
+      )}
     </div>
   );
 }

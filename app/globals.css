@@ -689,9 +689,6 @@ h4 {
 .discover-main {
   padding: 32px 64px 48px;
   background-color: var(--ivory);
-  background-image: url("/low-opacity-cumpled-paper.png");
-  background-size: cover;
-  background-position: center;
 }
 
 /* ============ MOBILE HAMBURGER MENU ============ */

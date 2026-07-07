@@ -4,6 +4,13 @@ import SiteFooter from "@/components/SiteFooter";
 import PartnerCTAButton from "@/components/PartnerCTAButton";
 import ScrollArrow from "@/components/ScrollArrow";
 
+const facts = [
+  { n: "01", q: "Lãng phí thực phẩm là gì?", p: "Những chiếc bánh vẫn ngon nhưng chưa gặp đúng người vào đúng lúc." },
+  { n: "02", q: "Thực phẩm dư thừa là gì?", p: "Sản phẩm còn tốt, chưa kịp bán hết — đóng gói thành Surprise Box giá tốt." },
+  { n: "03", q: "Lãng phí có đáng lo?", p: "UNEP 2024: hơn 1,05 tỷ tấn thực phẩm lãng phí mỗi năm — 19% tổng lượng sẵn có.", featured: true },
+  { n: "04", q: "Food Waste → Food Rescue", p: "Cửa hàng đóng gói cuối ngày thành box ưu đãi, khách có lựa chọn ngon hơn, rẻ hơn." },
+];
+
 export default function HomePage() {
   return (
     <>
@@ -191,216 +198,66 @@ export default function HomePage() {
 
       {/* ABOUT FOOD WASTE */}
       <section id="how" style={{ padding: "96px 0", background: "var(--ivory)" }}>
-        <div className="container">
+  <div className="container">
+    <div style={{
+      fontSize: 12, fontWeight: 700, color: "var(--text-muted)",
+      letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 8,
+    }}>Food waste fact</div>
 
-          {/* Header row */}
-          <div
-            data-reveal
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: 48,
-              alignItems: "center",
-              marginBottom: 56,
-            }}
-          >
-            <div>
-              <div
-                style={{
-                  fontSize: 12,
-                  fontWeight: 700,
-                  color: "var(--primary)",
-                  letterSpacing: "0.15em",
-                  textTransform: "uppercase",
-                  marginBottom: 12,
-                }}
-              >
-                Food waste fact
-              </div>
-              <h2 style={{ fontSize: 44, marginBottom: 20 }}>
-                Về lãng phí<br />thực phẩm
-              </h2>
-              <p style={{ fontSize: 15, lineHeight: 1.8, color: "var(--text-muted)" }}>
-                Một chiếc bánh chưa kịp bán hết khi cửa hàng đóng cửa không chỉ là một món ăn bị bỏ phí — đằng sau là công sức người thợ, nguyên liệu, điện nước mỗi ngày.
-              </p>
-            </div>
+    <div data-reveal style={{
+      display: "grid", gridTemplateColumns: "1.1fr 1fr", gap: 56, alignItems: "end",
+      marginBottom: 56, paddingBottom: 40, borderBottom: "1px solid var(--border)",
+    }}>
+      <div>
+        <h2 style={{ fontSize: 36, marginBottom: 16, lineHeight: 1.2, letterSpacing: "-0.01em" }}>
+          Về lãng phí thực phẩm — vì sao một chiếc bánh cuối ngày lại quan trọng
+        </h2>
+        <p style={{ fontSize: 14, color: "var(--text-muted)", lineHeight: 1.8, maxWidth: 480 }}>
+          Một chiếc bánh chưa kịp bán hết khi cửa hàng đóng cửa không chỉ là một món ăn bị bỏ phí —
+          đằng sau là công sức người thợ, nguyên liệu, điện nước mỗi ngày.
+        </p>
+      </div>
+      <div>
+        <div style={{ fontSize: 64, fontWeight: 800, color: "var(--primary)", letterSpacing: "-0.03em", lineHeight: 1 }}>1,05 tỷ</div>
+        <div style={{ fontSize: 13, color: "var(--text)", fontWeight: 600, marginTop: 8 }}>tấn thực phẩm lãng phí toàn cầu mỗi năm</div>
+        <div style={{ fontSize: 11.5, color: "var(--text-muted)", marginTop: 4 }}>Nguồn: UNEP Food Waste Index 2024</div>
+      </div>
+    </div>
 
-            {/* Pull quote card */}
-            <div
-              style={{
-                background: "linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)",
-                borderRadius: 24,
-                padding: "36px 40px",
-                position: "relative",
-                overflow: "hidden",
-              }}
-            >
-              <div
-                style={{
-                  position: "absolute",
-                  top: -16,
-                  right: -16,
-                  fontSize: 96,
-                  opacity: 0.12,
-                  lineHeight: 1,
-                  userSelect: "none",
-                }}
-              >
-                🥐
-              </div>
-              <div style={{ fontSize: 32, marginBottom: 16, lineHeight: 1 }}>💬</div>
-              <p
-                style={{
-                  fontStyle: "italic",
-                  fontSize: 17,
-                  lineHeight: 1.7,
-                  color: "white",
-                  fontWeight: 500,
-                  position: "relative",
-                }}
-              >
-                "Chúng tôi không giải cứu đồ hỏng. Chúng tôi kết nối lại những giá trị còn tốt."
-              </p>
-              <div
-                style={{
-                  marginTop: 16,
-                  fontSize: 12,
-                  fontWeight: 700,
-                  color: "rgba(255,255,255,0.6)",
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase",
-                }}
-              >
-                — CrumbUp
-              </div>
-            </div>
-          </div>
+    <div style={{ display: "flex", alignItems: "flex-start", gap: 16, marginBottom: 48 }}>
+      <div style={{ width: 32, height: 2, background: "var(--primary)", marginTop: 10, flexShrink: 0 }} />
+      <p style={{ fontStyle: "italic", fontSize: 16, lineHeight: 1.7, color: "var(--text)", maxWidth: 640, margin: 0 }}>
+        "Chúng tôi không giải cứu đồ hỏng. Chúng tôi kết nối lại những giá trị còn tốt."{" "}
+        <span style={{ fontStyle: "normal", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+          — CrumbUp
+        </span>
+      </p>
+    </div>
 
-          {/* FAQ cards — 2×2 grid */}
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: 20,
-            }}
-          >
-            {[
-              {
-                emoji: "🌾",
-                label: "Định nghĩa",
-                q: "Lãng phí thực phẩm là gì?",
-                p: "Là sự suy giảm chất lượng hay số lượng thực phẩm ở khâu bán lẻ và tiêu dùng — những chiếc bánh vẫn ngon nhưng chưa gặp đúng người vào đúng lúc.",
-                bg: "var(--cream)",
-                border: "var(--border)",
-                labelColor: "var(--primary)",
-                labelBg: "var(--primary-soft)",
-              },
-              {
-                emoji: "🧁",
-                label: "Surplus food",
-                q: "Thực phẩm dư thừa là gì?",
-                p: "Là những sản phẩm vẫn còn tốt nhưng chưa kịp bán hết trước giờ đóng cửa — đóng gói thành Surprise Box, gửi đến bạn với giá tốt nhất trong ngày.",
-                bg: "var(--accent-soft)",
-                border: "#e8d4b8",
-                labelColor: "#784d2e",
-                labelBg: "#f0ddc4",
-              },
-              {
-                emoji: "🌍",
-                label: "Số liệu toàn cầu",
-                q: "Lãng phí thực phẩm có đáng lo?",
-                p: "Theo UNEP 2024, thế giới lãng phí hơn 1,05 tỷ tấn thực phẩm mỗi năm — 19% tổng lượng sẵn có. Một chiếc bánh cuối ngày là hành động nhỏ, nhân lên hàng ngàn lần mỗi ngày thì tác động rất thực.",
-                bg: "#eef6ef",
-                border: "#c8e0ca",
-                labelColor: "#2d6a31",
-                labelBg: "#d4edda",
-              },
-              {
-                emoji: "♻️",
-                label: "Sứ mệnh",
-                q: "Từ Food Waste → Food Rescue",
-                p: "Cửa hàng đóng gói sản phẩm cuối ngày thành box ưu đãi, khách hàng có lựa chọn ngon hơn và rẻ hơn. Mỗi chiếc bánh được tiếp tục hành trình của mình.",
-                bg: "linear-gradient(135deg, #fdf5e6 0%, #fde6d4 100%)",
-                border: "#e8cdb0",
-                labelColor: "var(--primary)",
-                labelBg: "var(--badge)",
-              },
-            ].map((item, i) => (
-              <div
-                key={i}
-                className="card-hover"
-                data-reveal
-                data-reveal-delay={String(i + 1)}
-                style={{
-                  background: item.bg,
-                  borderRadius: 24,
-                  border: `1px solid ${item.border}`,
-                  padding: "36px 36px 32px",
-                  position: "relative",
-                  overflow: "hidden",
-                }}
-              >
-                {/* Sticker emoji (decorative background) */}
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: -8,
-                    right: 16,
-                    fontSize: 72,
-                    opacity: 0.13,
-                    lineHeight: 1,
-                    userSelect: "none",
-                    pointerEvents: "none",
-                  }}
-                >
-                  {item.emoji}
-                </div>
-
-                {/* Label badge + foreground emoji */}
-                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
-                  <span style={{ fontSize: 28, lineHeight: 1 }}>{item.emoji}</span>
-                  <span
-                    style={{
-                      fontSize: 11,
-                      fontWeight: 700,
-                      color: item.labelColor,
-                      background: item.labelBg,
-                      padding: "4px 10px",
-                      borderRadius: 999,
-                      letterSpacing: "0.06em",
-                      textTransform: "uppercase",
-                    }}
-                  >
-                    {item.label}
-                  </span>
-                </div>
-
-                <h3
-                  style={{
-                    fontSize: 20,
-                    fontWeight: 700,
-                    marginBottom: 14,
-                    color: "var(--text)",
-                    lineHeight: 1.3,
-                  }}
-                >
-                  {item.q}
-                </h3>
-                <p
-                  style={{
-                    fontSize: 14,
-                    lineHeight: 1.8,
-                    color: "var(--text-muted)",
-                    position: "relative",
-                  }}
-                >
-                  {item.p}
-                </p>
-              </div>
-            ))}
-          </div>
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
+      {facts.map((f) => (
+        <div
+          key={f.n}
+          className="card-hover fact-card"
+          data-reveal
+          style={{
+            background: f.featured ? "var(--primary)" : "var(--cream)",
+            borderRadius: 14,
+            padding: "24px 22px",
+            transition: "transform .2s ease, box-shadow .2s ease",
+          }}
+        >
+          <div style={{
+            fontSize: 12, fontWeight: 800, fontVariantNumeric: "tabular-nums", marginBottom: 14,
+            color: f.featured ? "rgba(255,255,255,0.7)" : "var(--text-muted)",
+          }}>{f.n}</div>
+          <h3 style={{ fontSize: 14.5, marginBottom: 8, fontWeight: 700, color: f.featured ? "white" : "var(--text)" }}>{f.q}</h3>
+          <p style={{ fontSize: 12, lineHeight: 1.65, margin: 0, color: f.featured ? "rgba(255,255,255,0.85)" : "var(--text-muted)" }}>{f.p}</p>
         </div>
-      </section>
+      ))}
+    </div>
+  </div>
+</section>
 
       {/* COMMUNITY IMPACT */}
       <section
@@ -481,7 +338,7 @@ export default function HomePage() {
       </section>
 
       {/* PARTNER CTA */}
-      <section style={{ padding: "80px 0", background: "white" }}>
+      <section style={{ padding: "80px 0", background: "var(--ivory)" }}>
         <div className="container">
           <div
             data-reveal

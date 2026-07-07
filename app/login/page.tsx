@@ -14,12 +14,28 @@ export default function LoginPage() {
   const [showEmailForm, setShowEmailForm] = useState(true);
 
   const [loading, setLoading]       = useState(false);
-  const [oauthLoading, setOauthLoading] = useState<"google" | "facebook" | null>(null);
+  const [oauthLoading, setOauthLoading] = useState<"google" | null>(null);
+  const [oauthError, setOauthError] = useState("");
   const [error, setError]           = useState("");
   const [comingSoon, setComingSoon] = useState(false);
   const [forgotMsg, setForgotMsg]   = useState(false);
 
-  function signInWithOAuth(_provider: "google" | "facebook") {
+  async function signInWithGoogle() {
+    setOauthError("");
+    setOauthLoading("google");
+    const supabase = createClient();
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/api/auth/callback` },
+    });
+    if (error) {
+      setOauthLoading(null);
+      setOauthError("Không thể đăng nhập bằng Google. Vui lòng thử lại.");
+    }
+    // On success Supabase redirects the browser away to Google — nothing left to do here.
+  }
+
+  function facebookComingSoon() {
     setComingSoon(true);
     setTimeout(() => setComingSoon(false), 3500);
   }
@@ -64,15 +80,16 @@ export default function LoginPage() {
               label="Tiếp tục với Google"
               loading={oauthLoading === "google"}
               primary
-              onClick={() => signInWithOAuth("google")}
+              onClick={signInWithGoogle}
             />
             <OAuthBtn
               icon={<FacebookIcon />}
               label="Tiếp tục với Facebook"
-              loading={oauthLoading === "facebook"}
-              onClick={() => signInWithOAuth("facebook")}
+              loading={false}
+              onClick={facebookComingSoon}
             />
           </div>
+          {oauthError && <ErrBox msg={oauthError} />}
           {comingSoon && <ComingSoonBox msg="Tính năng đang được phát triển, vui lòng đăng nhập bằng email." />}
           {forgotMsg && <ComingSoonBox msg="Tính năng đang được phát triển, vui lòng liên hệ admin." />}
 

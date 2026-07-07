@@ -19,11 +19,27 @@ export default function RegisterPage() {
   const [showPw, setShowPw]     = useState(false);
 
   const [loading, setLoading]   = useState(false);
-  const [oauthLoading, setOauthLoading] = useState<"google" | "facebook" | null>(null);
+  const [oauthLoading, setOauthLoading] = useState<"google" | null>(null);
+  const [oauthError, setOauthError] = useState("");
   const [error, setError]       = useState("");
   const [comingSoon, setComingSoon] = useState(false);
 
-  function signInWithOAuth(_provider: "google" | "facebook") {
+  async function signInWithGoogle() {
+    setOauthError("");
+    setOauthLoading("google");
+    const supabase = createClient();
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/api/auth/callback` },
+    });
+    if (error) {
+      setOauthLoading(null);
+      setOauthError("Không thể đăng ký bằng Google. Vui lòng thử lại.");
+    }
+    // On success Supabase redirects the browser away to Google — nothing left to do here.
+  }
+
+  function facebookComingSoon() {
     setComingSoon(true);
     setTimeout(() => setComingSoon(false), 3500);
   }
@@ -94,14 +110,15 @@ export default function RegisterPage() {
                 <OAuthBtn
                   icon={<GoogleIcon />} label="Đăng ký với Google"
                   loading={oauthLoading === "google"} primary
-                  onClick={() => signInWithOAuth("google")}
+                  onClick={signInWithGoogle}
                 />
                 <OAuthBtn
                   icon={<FacebookIcon />} label="Đăng ký với Facebook"
-                  loading={oauthLoading === "facebook"}
-                  onClick={() => signInWithOAuth("facebook")}
+                  loading={false}
+                  onClick={facebookComingSoon}
                 />
               </div>
+              {oauthError && <ErrBox msg={oauthError} />}
               {comingSoon && <ComingSoonBox msg="Tính năng đang được phát triển, vui lòng đăng ký bằng email." />}
 
               <Divider label="hoặc đăng ký bằng email" />
@@ -269,7 +286,7 @@ function Req() { return <span style={{ color: "var(--danger)" }}>*</span>; }
 
 function ComingSoonBox({ msg }: { msg: string }) {
   return (
-    <div style={{ marginBottom: 12, padding: "11px 14px", background: "#fffbeb", border: "1px solid #fcd34d", borderRadius: 10, fontSize: 13, color: "#92400e" }}>
+    <div style={{ marginTop: 12, padding: "11px 14px", background: "#fffbeb", border: "1px solid #fcd34d", borderRadius: 10, fontSize: 13, color: "#92400e" }}>
       {msg}
     </div>
   );

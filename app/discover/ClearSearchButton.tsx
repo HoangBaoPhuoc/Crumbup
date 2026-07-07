@@ -1,12 +1,12 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useDiscoverNav } from "./DiscoverNavContext";
 
 export default function ClearSearchButton({ q }: { q: string }) {
-  const router = useRouter();
+  const { navigate } = useDiscoverNav();
   return (
     <button
-      onClick={() => router.push("/discover")}
+      onClick={() => navigate("/discover")}
       style={{
         display: "inline-flex", alignItems: "center", gap: 6,
         padding: "5px 12px", borderRadius: 999,

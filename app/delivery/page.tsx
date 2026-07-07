@@ -1,5 +1,6 @@
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
+import ScrollArrow from "@/components/ScrollArrow";
 
 const pickupSteps = [
   { n: 1, ic: "📱", title: "Nhận mã đơn hàng", desc: "Sau khi cửa hàng xác nhận chuyển khoản, mã đơn hàng riêng của bạn sẽ được kích hoạt trong tab \"Đơn hàng của tôi\"." },
@@ -21,62 +22,67 @@ export default function DeliveryPage() {
     <>
       <SiteHeader />
 
-      {/* HERO */}
-      <section style={{ backgroundColor: "var(--cream)", backgroundImage: "url('/low-opacity-cumpled-paper.png')", backgroundSize: "cover", backgroundPosition: "center", paddingTop: 145, paddingBottom: 56, textAlign: "center", position: "relative", overflow: "hidden" }}>
-        <div className="container" style={{ position: "relative" }}>
-          <div className="rise rise-1" style={{ fontSize: 12, fontWeight: 700, color: "var(--primary)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 14 }}>
-            Hướng dẫn nhận hàng
+      {/* HERO + Pickup steps fill the first screen together; rest sits below the fold */}
+      <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", position: "relative" }}>
+        {/* HERO */}
+        <section style={{ backgroundColor: "var(--cream)", paddingTop: 145, paddingBottom: 56, textAlign: "center", position: "relative", overflow: "hidden" }}>
+          <div className="container" style={{ position: "relative" }}>
+            <div className="rise rise-1" style={{ fontSize: 12, fontWeight: 700, color: "var(--primary)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 14 }}>
+              Hướng dẫn nhận hàng
+            </div>
+            <h1 className="rise rise-2 delivery-hero-title" style={{ fontSize: 56, marginBottom: 16, lineHeight: 1.1 }}>
+              Đơn giản — chỉ <em style={{ color: "var(--primary)", fontStyle: "italic" }}>4 bước</em><br />
+              để nhận Surprise Box
+            </h1>
+            <p className="rise rise-3" style={{ fontSize: 16, color: "var(--text-muted)", maxWidth: 560, margin: "0 auto" }}>
+              Hiện tại CrumbUp hỗ trợ hình thức <strong style={{ color: "var(--text)" }}>tự đến lấy tại cửa hàng (Pick-up)</strong>.
+              Giao tận nơi đang được phát triển.
+            </p>
           </div>
-          <h1 className="rise rise-2 delivery-hero-title" style={{ fontSize: 56, marginBottom: 16, lineHeight: 1.1 }}>
-            Đơn giản — chỉ <em style={{ color: "var(--primary)", fontStyle: "italic" }}>4 bước</em><br />
-            để nhận Surprise Box
-          </h1>
-          <p className="rise rise-3" style={{ fontSize: 16, color: "var(--text-muted)", maxWidth: 560, margin: "0 auto" }}>
-            Hiện tại CrumbUp hỗ trợ hình thức <strong style={{ color: "var(--text)" }}>tự đến lấy tại cửa hàng (Pick-up)</strong>.
-            Giao tận nơi đang được phát triển.
-          </p>
-        </div>
-      </section>
+        </section>
 
-      {/* PICKUP STEPS */}
-      <section style={{ padding: "72px 0", background: "white" }}>
-        <div className="container">
-          <h2 data-reveal style={{ fontSize: 36, textAlign: "center", marginBottom: 48 }}>Quy trình tự đến lấy</h2>
+        {/* PICKUP STEPS — fills remaining viewport space */}
+        <section style={{ padding: "72px 0", background: "var(--ivory)", flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+          <div className="container">
+            <h2 data-reveal style={{ fontSize: 36, textAlign: "center", marginBottom: 48 }}>Quy trình tự đến lấy</h2>
 
-          <div className="steps-grid" style={{ gap: 20, position: "relative" }}>
-            {/* Connecting dashed line — hidden on mobile via .steps-connector class */}
-            <svg className="steps-connector" style={{ position: "absolute", top: 50, left: "12%", right: "12%", height: 2, width: "76%", zIndex: 0 }}>
-              <line x1="0" y1="1" x2="100%" y2="1" stroke="var(--border-strong)" strokeWidth="2" strokeDasharray="6 6" />
-            </svg>
+            <div className="steps-grid" style={{ gap: 20, position: "relative" }}>
+              {/* Connecting dashed line — hidden on mobile via .steps-connector class */}
+              <svg className="steps-connector" style={{ position: "absolute", top: 50, left: "12%", right: "12%", height: 2, width: "76%", zIndex: 0 }}>
+                <line x1="0" y1="1" x2="100%" y2="1" stroke="var(--border-strong)" strokeWidth="2" strokeDasharray="6 6" />
+              </svg>
 
-            {pickupSteps.map((s) => (
-              <div key={s.n} className="card-hover" data-reveal data-reveal-delay={String(s.n)} style={{ position: "relative", textAlign: "center", zIndex: 1, padding: "36px 16px 28px", borderRadius: 20, border: "1px solid var(--border)", background: "white" }}>
-                <div style={{
-                  position: "absolute",
-                  top: -16,
-                  left: "50%",
-                  transform: "translateX(-50%)",
-                  width: 32,
-                  height: 32,
-                  borderRadius: 999,
-                  background: "var(--primary)",
-                  color: "white",
-                  display: "grid",
-                  placeItems: "center",
-                  fontFamily: "var(--font-display)",
-                  fontWeight: 800,
-                  fontSize: 13,
-                }}>{s.n}</div>
-                <h3 style={{ fontSize: 18, marginBottom: 8 }}>{s.title}</h3>
-                <p style={{ fontSize: 13, color: "var(--text-muted)", lineHeight: 1.6 }}>{s.desc}</p>
-              </div>
-            ))}
+              {pickupSteps.map((s) => (
+                <div key={s.n} className="card-hover" data-reveal data-reveal-delay={String(s.n)} style={{ position: "relative", textAlign: "center", zIndex: 1, padding: "36px 16px 28px", borderRadius: 20, border: "1px solid var(--border)", background: "white" }}>
+                  <div style={{
+                    position: "absolute",
+                    top: -16,
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    width: 32,
+                    height: 32,
+                    borderRadius: 999,
+                    background: "var(--primary)",
+                    color: "white",
+                    display: "grid",
+                    placeItems: "center",
+                    fontFamily: "var(--font-display)",
+                    fontWeight: 800,
+                    fontSize: 13,
+                  }}>{s.n}</div>
+                  <h3 style={{ fontSize: 18, marginBottom: 8 }}>{s.title}</h3>
+                  <p style={{ fontSize: 13, color: "var(--text-muted)", lineHeight: 1.6 }}>{s.desc}</p>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+
+        <ScrollArrow targetId="order-code" />
+      </div>
 
       {/* ORDER CODE */}
-      <section style={{ padding: "72px 0", background: "var(--ivory)" }}>
+      <section id="order-code" style={{ padding: "72px 0", background: "var(--ivory)" }}>
         <div className="container">
           <div data-reveal className="right-auto-grid" style={{
             background: "white",
@@ -134,7 +140,7 @@ export default function DeliveryPage() {
                   width: 220,
                   height: "auto",
                   pointerEvents: "none",
-                  zIndex: 2,
+                  zIndex: 1,
                   userSelect: "none",
                 }}
               />
@@ -147,9 +153,9 @@ export default function DeliveryPage() {
               <div style={{
                 position: "absolute",
                 top: 39,
-                left: 8,
-                width: 204,
-                zIndex: 1,
+                left: 13,
+                width: 195,
+                zIndex: 2,
                 textAlign: "center",
                 fontFamily: "var(--font-body)",
                 background: "var(--ivory)",
@@ -215,7 +221,7 @@ export default function DeliveryPage() {
       </section>
 
       {/* RULES */}
-      <section style={{ padding: "72px 0", background: "white" }}>
+      <section style={{ padding: "72px 0", background: "var(--ivory)" }}>
         <div className="container">
           <div data-reveal style={{ textAlign: "center", marginBottom: 40 }}>
             <div style={{ fontSize: 12, fontWeight: 700, color: "var(--danger)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 12 }}>

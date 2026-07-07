@@ -1,7 +1,9 @@
 "use client";
 
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useSearchParams, usePathname } from "next/navigation";
 import { FOOD_CATEGORIES } from "@/lib/utils";
+import { useDiscoverNav } from "./DiscoverNavContext";
 
 const PRICE_OPTIONS = [
   { label: "Dưới 50.000đ",  value: "low"  },
@@ -15,30 +17,48 @@ const PICKUP_OPTIONS = [
 
 const CATEGORY_OPTIONS = FOOD_CATEGORIES.map((c) => ({ label: `${c.emoji} ${c.label}`, value: c.value }));
 
+type FilterKey = "price" | "pickup" | "category";
+
 export default function FilterSidebar() {
-  const router   = useRouter();
   const pathname = usePathname();
   const params   = useSearchParams();
+  const { navigate, isPending } = useDiscoverNav();
 
-  const prices     = params.getAll("price");
-  const pickups    = params.getAll("pickup");
-  const categories = params.getAll("category");
-  const sort       = params.get("sort") ?? "default";
+  const sort = params.get("sort") ?? "default";
 
-  function toggle(key: string, value: string) {
-    const next     = new URLSearchParams(params.toString());
-    const existing = next.getAll(key);
-    next.delete(key);
-    if (existing.includes(value)) {
-      existing.filter((v) => v !== value).forEach((v) => next.append(key, v));
-    } else {
-      [...existing, value].forEach((v) => next.append(key, v));
-    }
-    router.push(`${pathname}?${next.toString()}`);
+  // Local optimistic state — ticks instantly on click, then re-syncs once the
+  // real navigation lands (useSearchParams only updates after the RSC round-trip).
+  const [prices, setPrices]         = useState(() => params.getAll("price"));
+  const [pickups, setPickups]       = useState(() => params.getAll("pickup"));
+  const [categories, setCategories] = useState(() => params.getAll("category"));
+
+  const searchKey = params.toString();
+  useEffect(() => {
+    setPrices(params.getAll("price"));
+    setPickups(params.getAll("pickup"));
+    setCategories(params.getAll("category"));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchKey]);
+
+  function toggle(key: FilterKey, value: string) {
+    const current = key === "price" ? prices : key === "pickup" ? pickups : categories;
+    const next = current.includes(value) ? current.filter((v) => v !== value) : [...current, value];
+
+    if (key === "price") setPrices(next);
+    else if (key === "pickup") setPickups(next);
+    else setCategories(next);
+
+    const nextParams = new URLSearchParams(params.toString());
+    nextParams.delete(key);
+    next.forEach((v) => nextParams.append(key, v));
+    navigate(`${pathname}?${nextParams.toString()}`);
   }
 
   function reset() {
-    router.push(`${pathname}?sort=${sort}`);
+    setPrices([]);
+    setPickups([]);
+    setCategories([]);
+    navigate(`${pathname}?sort=${sort}`);
   }
 
   const hasFilters = prices.length > 0 || pickups.length > 0 || categories.length > 0;
@@ -50,7 +70,16 @@ export default function FilterSidebar() {
       display: "flex", flexDirection: "column", gap: 16,
     }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <h3 style={{ fontSize: 16, margin: 0 }}>Bộ lọc</h3>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <h3 style={{ fontSize: 16, margin: 0 }}>Bộ lọc</h3>
+          {isPending && (
+            <span style={{
+              width: 12, height: 12, border: "2px solid var(--border)",
+              borderTopColor: "var(--primary)", borderRadius: "50%",
+              display: "inline-block", animation: "spin 0.7s linear infinite",
+            }} />
+          )}
+        </div>
         {hasFilters && (
           <button onClick={reset} style={{
             fontSize: 11, fontWeight: 600, color: "var(--primary)",
