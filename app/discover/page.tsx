@@ -3,6 +3,7 @@ import Link from "next/link";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import { prisma } from "@/lib/prisma";
+import { createClient } from "@/lib/supabase/server";
 import { FoodCategory } from "@/app/generated/prisma/enums";
 import { formatPrice, discountPercent, getVietnamToday, formatVNDate, categoryEmoji, categoryLabel, FOOD_CATEGORIES } from "@/lib/utils";
 import MapView from "@/components/MapView";
@@ -46,8 +47,12 @@ const PRICE_RANGES: Record<string, { gte?: number; lt?: number; lte?: number }> 
   high: { gte: 100_000, lte: 150_000 },
 };
 
+// How many days of past (expired) boxes to still show, dimmed and unclickable, below today's boxes.
+const PAST_DAYS_SHOWN = 7;
+
 async function getBoxes(sort: string, prices: string[], pickups: string[], categories: string[], q: string) {
   const { from, to } = getVietnamToday();
+  const windowStart = new Date(from.getTime() - PAST_DAYS_SHOWN * 24 * 60 * 60 * 1000);
 
   const priceOR = prices
     .filter((p) => PRICE_RANGES[p])
@@ -59,32 +64,58 @@ async function getBoxes(sort: string, prices: string[], pickups: string[], categ
   const nowHHMM      = vnTimeHHMM(0);
   const twoHoursHHMM = hasSoon ? vnTimeHHMM(120) : "";
 
-  const textFilter = q.trim().length >= 1 ? {
-    OR: [
-      { name:  { contains: q.trim(), mode: "insensitive" as const } },
-      { store: { name: { contains: q.trim(), mode: "insensitive" as const } } },
-    ],
-  } : {};
-
   return prisma.box.findMany({
     where: {
       active: true,
-      quantityLeft: { gt: 0 },
-      date: { gte: from, lt: to },
-      ...textFilter,
-      ...(priceOR.length > 0 && { AND: [{ OR: priceOR }] }),
+      date: { gte: windowStart, lt: to },
       ...(categoryValues.length > 0 && { category: { in: categoryValues } }),
-      ...(hasSoon && {
-        pickupEnd:   { gte: nowHHMM },
-        pickupStart: { lte: twoHoursHHMM },
-      }),
+      AND: [
+        // Today's boxes must still have stock; past days show regardless (they're expired either way).
+        { OR: [{ date: { gte: from }, quantityLeft: { gt: 0 } }, { date: { lt: from } }] },
+        ...(q.trim().length >= 1 ? [{
+          OR: [
+            { name:  { contains: q.trim(), mode: "insensitive" as const } },
+            { store: { name: { contains: q.trim(), mode: "insensitive" as const } } },
+          ],
+        }] : []),
+        ...(priceOR.length > 0 ? [{ OR: priceOR }] : []),
+        ...(hasSoon ? [{ pickupEnd: { gte: nowHHMM }, pickupStart: { lte: twoHoursHHMM } }] : []),
+      ],
     },
     include: { store: true },
-    orderBy:
+    orderBy: [
+      { date: "desc" },
       sort === "price_asc"  ? { priceSale: "asc" } :
       sort === "price_desc" ? { priceSale: "desc" } :
       { quantityLeft: "asc" },
+    ],
   });
+}
+
+// Rough estimate — no per-box weight data yet, so we use an average CO2e figure per rescued box.
+const CO2_KG_PER_BOX = 0.5;
+
+async function getUserImpact(userId: string) {
+  const orders = await prisma.order.findMany({
+    where: { userId, status: { not: "CANCELLED" } },
+    include: { items: { include: { box: true } } },
+  });
+
+  let boxCount = 0;
+  let moneySaved = 0;
+  for (const order of orders) {
+    for (const item of order.items) {
+      boxCount += item.quantity;
+      moneySaved += (item.box.priceOriginal - item.priceAtTime) * item.quantity;
+    }
+  }
+
+  return {
+    orderCount: orders.length,
+    boxCount,
+    moneySaved,
+    carbonSavedKg: boxCount * CO2_KG_PER_BOX,
+  };
 }
 
 function BoxSkeleton() {
@@ -118,6 +149,7 @@ function BoxSkeleton() {
 async function BoxList({ sort, prices, pickups, categories, q }: { sort: string; prices: string[]; pickups: string[]; categories: string[]; q: string }) {
   const boxes = await getBoxes(sort, prices, pickups, categories, q);
   const nowHHMM = vnTimeHHMM(0);
+  const { from: todayStart } = getVietnamToday();
 
   if (boxes.length === 0) {
     return (
@@ -128,18 +160,27 @@ async function BoxList({ sort, prices, pickups, categories, q }: { sort: string;
     );
   }
 
+  const hasLiveBox = boxes.some((b) => b.date.getTime() >= todayStart.getTime() && b.pickupEnd >= nowHHMM);
+
   return (
     <>
+      {!hasLiveBox && (
+        <div style={{ textAlign: "center", padding: "32px 0", color: "var(--text-muted)", borderBottom: "1px solid var(--border)", marginBottom: 8 }}>
+          <p style={{ fontSize: 15, fontWeight: 600 }}>Hôm nay chưa có box nào</p>
+          <p style={{ fontSize: 13, marginTop: 4 }}>Quay lại sau nhé! Dưới đây là các box đã hết hạn gần đây.</p>
+        </div>
+      )}
       {boxes.map((box, i) => {
         const disc      = discountPercent(box.priceOriginal, box.priceSale);
         const emoji     = categoryEmoji(box.category);
         const isLow     = box.quantityLeft <= 2;
-        const isExpired = box.pickupEnd < nowHHMM;
+        const isPastDay = box.date.getTime() < todayStart.getTime();
+        const isExpired = isPastDay || box.pickupEnd < nowHHMM;
         const tone      = i % 2 === 0 ? "warm" : "cream";
 
         const card = (
           <div
-            className="card-hover"
+            className={isExpired ? undefined : "card-hover"}
             style={{
               display: "grid",
               gridTemplateColumns: "128px 1fr auto",
@@ -174,7 +215,7 @@ async function BoxList({ sort, prices, pickups, categories, q }: { sort: string;
               </h3>
               <div style={{ fontSize: 13, color: "var(--text-muted)" }}>
                 {isExpired
-                  ? <span style={{ color: "#9ca3af" }}>Đã hết giờ nhận</span>
+                  ? <span style={{ color: "#9ca3af" }}>{isPastDay ? `Đã hết hạn · ${formatVNDate(box.date)}` : "Đã hết giờ nhận"}</span>
                   : <>Nhận {box.pickupStart} – {box.pickupEnd} · còn {box.quantityLeft} box</>
                 }
               </div>
@@ -183,7 +224,7 @@ async function BoxList({ sort, prices, pickups, categories, q }: { sort: string;
             {/* Price & action */}
             <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6, paddingLeft: 24 }}>
               {isExpired ? (
-                <span style={{ fontSize: 12, fontWeight: 700, color: "#9ca3af" }}>Đã hết giờ</span>
+                <span style={{ fontSize: 12, fontWeight: 700, color: "#9ca3af" }}>{isPastDay ? "Đã hết hạn" : "Đã hết giờ"}</span>
               ) : (
                 <>
                   <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
@@ -202,6 +243,14 @@ async function BoxList({ sort, prices, pickups, categories, q }: { sort: string;
             </div>
           </div>
         );
+
+        if (isExpired) {
+          return (
+            <div key={box.id} style={{ textDecoration: "none", color: "inherit", cursor: "not-allowed" }}>
+              {card}
+            </div>
+          );
+        }
 
         return (
           <Link key={box.id} href={`/box/${box.id}`} className="box-card-row" style={{ textDecoration: "none", color: "inherit" }}>
@@ -225,7 +274,10 @@ export default async function DiscoverPage({
   const categories = sp.category ? (Array.isArray(sp.category) ? sp.category : [sp.category]) : [];
   const q          = sp.q ?? "";
 
-  const [storePins, totalBoxes] = await Promise.all([
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  const [storePins, totalBoxes, impact] = await Promise.all([
     getStorePins(),
     prisma.box.count({
       where: {
@@ -235,6 +287,7 @@ export default async function DiscoverPage({
         pickupEnd: { gte: vnTimeHHMM(0) },
       },
     }),
+    user ? getUserImpact(user.id) : Promise.resolve(null),
   ]);
 
   return (
@@ -321,24 +374,8 @@ export default async function DiscoverPage({
                 </div>
               </div>
 
-              {/* Signup CTA */}
-              <div className="rise rise-5" style={{
-                border: "1px solid var(--border)", borderRadius: 10,
-                background: "white", padding: 22,
-                display: "flex", flexDirection: "column", gap: 10,
-              }}>
-                <div style={{ fontSize: 15, fontWeight: 700, color: "var(--text)", lineHeight: 1.4 }}>
-                  Nhận thông báo box mới gần bạn
-                </div>
-                <p style={{ fontSize: 13, color: "var(--text-muted)", lineHeight: 1.6, margin: 0 }}>
-                  Box ngon thường hết trong vài phút. Đăng ký để không bỏ lỡ.
-                </p>
-                <Link href="/register" className="btn btn-primary" style={{
-                  marginTop: 4, justifyContent: "center", borderRadius: 8,
-                }}>
-                  Đăng ký miễn phí
-                </Link>
-              </div>
+              {/* Impact card (logged in) / Signup CTA (logged out) */}
+              {impact ? <ImpactCard impact={impact} /> : <SignupCTA />}
             </aside>
           </div>
         </div>
@@ -347,5 +384,62 @@ export default async function DiscoverPage({
 
       <SiteFooter />
     </>
+  );
+}
+
+function SignupCTA() {
+  return (
+    <div className="rise rise-5" style={{
+      border: "1px solid var(--border)", borderRadius: 10,
+      background: "white", padding: 22,
+      display: "flex", flexDirection: "column", gap: 10,
+    }}>
+      <div style={{ fontSize: 15, fontWeight: 700, color: "var(--text)", lineHeight: 1.4 }}>
+        Nhận thông báo box mới gần bạn
+      </div>
+      <p style={{ fontSize: 13, color: "var(--text-muted)", lineHeight: 1.6, margin: 0 }}>
+        Box ngon thường hết trong vài phút. Đăng ký để không bỏ lỡ.
+      </p>
+      <Link href="/register" className="btn btn-primary" style={{
+        marginTop: 4, justifyContent: "center", borderRadius: 8,
+      }}>
+        Đăng ký miễn phí
+      </Link>
+    </div>
+  );
+}
+
+function ImpactCard({ impact }: { impact: { orderCount: number; boxCount: number; moneySaved: number; carbonSavedKg: number } }) {
+  return (
+    <div className="rise rise-5" style={{
+      border: "1px solid var(--border)", borderRadius: 10,
+      background: "white", padding: 22,
+      display: "flex", flexDirection: "column", gap: 16,
+    }}>
+      <div style={{ fontSize: 15, fontWeight: 700, color: "var(--text)", lineHeight: 1.4 }}>
+        Tác động của bạn
+      </div>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <ImpactRow label="Đơn hàng đã giải cứu" value={String(impact.orderCount)} color="var(--text)" />
+        <ImpactRow label="Tiết kiệm được" value={formatPrice(impact.moneySaved)} color="var(--primary)" />
+        <ImpactRow label="CO₂ giảm ước tính" value={`${impact.carbonSavedKg.toFixed(1)} kg`} color="#2d6a31" />
+      </div>
+
+      <Link href="/orders" className="btn btn-ghost" style={{
+        justifyContent: "center", borderRadius: 8, fontSize: 13,
+      }}>
+        Xem đơn hàng của tôi
+      </Link>
+    </div>
+  );
+}
+
+function ImpactRow({ label, value, color }: { label: string; value: string; color: string }) {
+  return (
+    <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12 }}>
+      <span style={{ fontSize: 12, color: "var(--text-muted)" }}>{label}</span>
+      <span style={{ fontSize: 16, fontWeight: 800, color, whiteSpace: "nowrap" }}>{value}</span>
+    </div>
   );
 }
