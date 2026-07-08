@@ -14,12 +14,17 @@ export async function GET(request: Request) {
     if (!error && data.user) {
       // Registering with an email that's already tied to an account: stop here,
       // don't silently log the user in — send them back with an error instead.
-      if (intent === "register" && data.user.email) {
-        const existing = await prisma.user.findUnique({
-          where: { email: data.user.email },
+      // Note: Supabase auto-links Google sign-in to an existing auth user with the
+      // same verified email, so data.user.id is often the SAME id as the existing
+      // account — can't rely on an id mismatch to detect this, must check existence.
+      if (intent === "register") {
+        const existing = await prisma.user.findFirst({
+          where: data.user.email
+            ? { OR: [{ id: data.user.id }, { email: data.user.email }] }
+            : { id: data.user.id },
           select: { id: true },
         });
-        if (existing && existing.id !== data.user.id) {
+        if (existing) {
           await supabase.auth.signOut();
           return NextResponse.redirect(`${origin}/register?error=email-exists`);
         }
@@ -27,7 +32,7 @@ export async function GET(request: Request) {
 
       const meta = data.user.user_metadata ?? {};
       const roleFromMeta = meta.role === "BUSINESS" ? "BUSINESS" : "CUSTOMER";
-      await prisma.user.upsert({
+      const dbUser = await prisma.user.upsert({
         where: { id: data.user.id },
         update: {},
         create: {
@@ -37,8 +42,14 @@ export async function GET(request: Request) {
           phone: meta.phone ?? null,
           role:  roleFromMeta as "CUSTOMER" | "BUSINESS",
         },
+        select: { phone: true },
       });
 
+      // OAuth sign-in (Google, etc.) doesn't collect a phone number — require it
+      // before letting the user into the app.
+      if (!dbUser.phone) {
+        return NextResponse.redirect(`${origin}/register/phone`);
+      }
       return NextResponse.redirect(`${origin}/discover`);
     }
   }

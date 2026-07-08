@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import SettingsModal from "./SettingsModal";
 
 interface Props {
   email: string;
@@ -11,6 +12,7 @@ interface Props {
 export default function UserMenu({ email, name }: Props) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -76,15 +78,20 @@ export default function UserMenu({ email, name }: Props) {
 
           {/* Menu items */}
           <div style={{ padding: "8px 0" }}>
-            <button disabled style={{
-              width: "100%", padding: "10px 18px",
-              display: "flex", alignItems: "center", gap: 10,
-              fontSize: 13, fontWeight: 600,
-              color: "var(--text-muted)",
-              background: "none", border: "none",
-              cursor: "not-allowed", textAlign: "left", opacity: 0.5,
-            }}>
-              <span>⚙️</span> Cài đặt <span style={{ marginLeft: "auto", fontSize: 10, background: "var(--cream)", padding: "2px 7px", borderRadius: 999, fontWeight: 700 }}>Sắp có</span>
+            <button
+              onClick={() => { setOpen(false); setSettingsOpen(true); }}
+              style={{
+                width: "100%", padding: "10px 18px",
+                display: "flex", alignItems: "center", gap: 10,
+                fontSize: 13, fontWeight: 600,
+                color: "var(--text)",
+                background: "none", border: "none",
+                cursor: "pointer", textAlign: "left",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = "var(--cream)")}
+              onMouseLeave={(e) => (e.currentTarget.style.background = "none")}
+            >
+              <span>⚙️</span> Cài đặt
             </button>
           </div>
 
@@ -105,6 +112,8 @@ export default function UserMenu({ email, name }: Props) {
           </div>
         </div>
       )}
+
+      {settingsOpen && <SettingsModal onClose={() => setSettingsOpen(false)} />}
     </div>
   );
 }

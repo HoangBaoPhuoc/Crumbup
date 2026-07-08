@@ -159,6 +159,61 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true });
   }
 
+  // ── SET PHONE (post-OAuth profile completion) ─────────────────────────────
+  if (action === "set-phone") {
+    const { phone } = body;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return NextResponse.json({ error: "Chưa đăng nhập" }, { status: 401 });
+
+    const digits = String(phone || "").replace(/\D/g, "");
+    if (digits.length < 9) return NextResponse.json({ error: "Số điện thoại không hợp lệ" }, { status: 400 });
+    const normalizedPhone = toE164(digits);
+
+    const existingPhone = await prisma.user.findUnique({ where: { phone: normalizedPhone }, select: { id: true } });
+    if (existingPhone && existingPhone.id !== user.id) {
+      return NextResponse.json({ error: "Số điện thoại này đã được sử dụng bởi tài khoản khác." }, { status: 409 });
+    }
+
+    await prisma.user.update({ where: { id: user.id }, data: { phone: normalizedPhone } });
+    return NextResponse.json({ ok: true });
+  }
+
+  // ── SEND OTP TO VERIFY A PHONE CHANGE (always to the account's own email) ──
+  if (action === "send-phone-change-otp") {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return NextResponse.json({ error: "Chưa đăng nhập" }, { status: 401 });
+    if (!user.email) return NextResponse.json({ error: "Tài khoản chưa có email" }, { status: 400 });
+
+    const { error } = await supabase.auth.signInWithOtp({
+      email: user.email,
+      options: { shouldCreateUser: false },
+    });
+    if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+    return NextResponse.json({ ok: true });
+  }
+
+  // ── VERIFY OTP + APPLY PHONE CHANGE ─────────────────────────────────────────
+  if (action === "verify-phone-change") {
+    const { otp, phone } = body;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user || !user.email) return NextResponse.json({ error: "Chưa đăng nhập" }, { status: 401 });
+
+    const digits = String(phone || "").replace(/\D/g, "");
+    if (digits.length < 9) return NextResponse.json({ error: "Số điện thoại không hợp lệ" }, { status: 400 });
+    const normalizedPhone = toE164(digits);
+
+    const existingPhone = await prisma.user.findUnique({ where: { phone: normalizedPhone }, select: { id: true } });
+    if (existingPhone && existingPhone.id !== user.id) {
+      return NextResponse.json({ error: "Số điện thoại này đã được sử dụng bởi tài khoản khác." }, { status: 409 });
+    }
+
+    const { error } = await supabase.auth.verifyOtp({ email: user.email, token: otp, type: "email" });
+    if (error) return NextResponse.json({ error: "Mã xác thực không đúng hoặc đã hết hạn." }, { status: 400 });
+
+    await prisma.user.update({ where: { id: user.id }, data: { phone: normalizedPhone } });
+    return NextResponse.json({ ok: true, phone: normalizedPhone });
+  }
+
   if (action === "logout") {
     await supabase.auth.signOut();
     return NextResponse.json({ ok: true });
