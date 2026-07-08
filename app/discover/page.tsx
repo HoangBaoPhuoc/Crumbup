@@ -97,7 +97,7 @@ const CO2_KG_PER_BOX = 0.5;
 
 async function getUserImpact(userId: string) {
   const orders = await prisma.order.findMany({
-    where: { userId, status: { not: "CANCELLED" } },
+    where: { userId, status: "PICKED_UP" },
     include: { items: { include: { box: true } } },
   });
 
@@ -180,13 +180,15 @@ async function BoxList({ sort, prices, pickups, categories, q }: { sort: string;
 
         const card = (
           <div
-            className={isExpired ? undefined : "card-hover"}
+            className={isExpired ? undefined : "box-row-hover"}
             style={{
               display: "grid",
               gridTemplateColumns: "128px 1fr auto",
               gap: 24,
               alignItems: "center",
-              padding: "22px 0",
+              padding: "22px 16px",
+              margin: "0 -16px",
+              borderRadius: 12,
               borderBottom: "1px solid var(--border)",
               opacity: isExpired ? 0.55 : 1,
               filter: isExpired ? "grayscale(0.85)" : "none",
@@ -326,7 +328,7 @@ export default async function DiscoverPage({
             {/* List header with hairline */}
             <div style={{
               display: "flex", alignItems: "baseline", gap: 12,
-              borderBottom: "2px solid var(--text)", paddingBottom: 14, marginBottom: 0,
+              borderBottom: "2px solid var(--text)", paddingBottom: 14, marginBottom: 12,
             }}>
               <h2 style={{ fontSize: 26, margin: 0, color: "var(--text)", letterSpacing: "-0.02em" }}>
                 Box hôm nay

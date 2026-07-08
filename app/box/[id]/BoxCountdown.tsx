@@ -64,10 +64,10 @@ export default function BoxCountdown({ pickupStart, pickupEnd }: { pickupStart: 
             Đang mở · Kết thúc sau
           </span>
         </div>
-        <div style={{ fontSize: 38, fontWeight: 900, color: "var(--accent)", fontVariantNumeric: "tabular-nums", letterSpacing: "0.04em", lineHeight: 1 }}>
+        <div style={{ fontSize: 38, fontWeight: 900, color: "var(--text)", fontVariantNumeric: "tabular-nums", letterSpacing: "0.04em", lineHeight: 1 }}>
           {fmt(diff)}
         </div>
-        <div style={{ fontSize: 11, color: "var(--accent)", marginTop: 6, fontWeight: 600 }}>
+        <div style={{ fontSize: 11, color: "var(--accent)", marginTop: 6, fontWeight: 700 }}>
           Kết thúc lúc {pickupEnd}
         </div>
       </div>

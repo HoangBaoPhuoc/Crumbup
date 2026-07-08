@@ -176,7 +176,7 @@ export default async function BoxDetailPage({ params }: { params: Promise<{ id: 
           </div>
 
           {/* ── RIGHT — purchase panel ── */}
-          <aside style={{ position: "sticky", top: 24, display: "flex", flexDirection: "column", gap: 16 }}>
+          <aside style={{ position: "sticky", top: 97, display: "flex", flexDirection: "column", gap: 16 }}>
             <div style={{ background: "white", borderRadius: 24, border: "1px solid var(--border)", padding: 28, boxShadow: "var(--shadow-md)" }}>
               {box.quantityLeft <= 2 && !isExpired && (
                 <div style={{
@@ -238,10 +238,22 @@ export default async function BoxDetailPage({ params }: { params: Promise<{ id: 
                 <div style={{ height: 200 }}>
                   <StoreMapClient lat={store.lat} lng={store.lng} name={store.name} />
                 </div>
-                <div style={{ padding: "10px 16px", fontSize: 12, color: "var(--text-muted)", borderTop: "1px solid var(--border)", display: "flex", alignItems: "center", gap: 6 }}>
+                <a
+                  href={`https://www.google.com/maps?q=${store.lat},${store.lng}(${encodeURIComponent(store.name)})`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="store-address-link"
+                  style={{
+                    padding: "10px 16px", fontSize: 12, color: "var(--primary)",
+                    borderTop: "1px solid var(--border)", display: "flex", alignItems: "center", gap: 6,
+                    textDecoration: "underline", textUnderlineOffset: 2,
+                  }}
+                  title="Xem trên Google Maps"
+                >
                   <span>📍</span>
-                  <span>{store.address}</span>
-                </div>
+                  <span style={{ flex: 1 }}>{store.address}</span>
+                  <span style={{ color: "var(--primary)", fontWeight: 700 }}>↗</span>
+                </a>
               </div>
             )}
           </aside>

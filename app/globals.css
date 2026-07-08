@@ -357,6 +357,26 @@ h4 {
   filter: brightness(1.04) saturate(1.08);
 }
 
+/* Full-bleed editorial list rows (e.g. discover box list) — no horizontal
+   scale here, the row spans the whole column so scale(1.03) would overflow
+   past the container edge. Lift + contained shadow only. */
+.box-row-hover {
+  transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+.box-row-hover:hover {
+  background: white;
+  box-shadow: 0 12px 32px -12px rgba(34, 28, 22, 0.16);
+  transform: translateY(-2px);
+}
+
+.store-address-link {
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.store-address-link:hover {
+  background: var(--primary-soft);
+  color: var(--primary-dark);
+}
+
 /* ============ GLASS EFFECT ============ */
 .glass {
   background: rgba(255, 255, 255, 0.72);
