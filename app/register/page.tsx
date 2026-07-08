@@ -1,14 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 type Step = "form" | "sent" | "location";
 
 export default function RegisterPage() {
+  return (
+    <Suspense fallback={null}>
+      <RegisterForm />
+    </Suspense>
+  );
+}
+
+function RegisterForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [step, setStep] = useState<Step>("form");
 
@@ -24,13 +33,19 @@ export default function RegisterPage() {
   const [error, setError]       = useState("");
   const [comingSoon, setComingSoon] = useState(false);
 
+  useEffect(() => {
+    if (searchParams.get("error") === "email-exists") {
+      setOauthError("Gmail này đã được đăng ký rồi. Vui lòng đăng ký bằng Gmail khác hoặc đăng nhập.");
+    }
+  }, [searchParams]);
+
   async function signInWithGoogle() {
     setOauthError("");
     setOauthLoading("google");
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: `${window.location.origin}/api/auth/callback` },
+      options: { redirectTo: `${window.location.origin}/api/auth/callback?intent=register` },
     });
     if (error) {
       setOauthLoading(null);
