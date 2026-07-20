@@ -48,7 +48,7 @@ const PRICE_RANGES: Record<string, { gte?: number; lt?: number; lte?: number }> 
 };
 
 // How many days of past (expired) boxes to still show, dimmed and unclickable, below today's boxes.
-const PAST_DAYS_SHOWN = 7;
+const PAST_DAYS_SHOWN = 100;
 
 async function getBoxes(sort: string, prices: string[], pickups: string[], categories: string[], q: string) {
   const { from, to } = getVietnamToday();

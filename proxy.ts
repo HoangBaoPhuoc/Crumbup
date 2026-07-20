@@ -35,6 +35,7 @@ export async function proxy(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
+      cookieOptions: { maxAge: 60 * 60 * 24 },
       cookies: {
         getAll() { return request.cookies.getAll(); },
         setAll(cookiesToSet) {
@@ -57,7 +58,7 @@ export async function proxy(request: NextRequest) {
   }
 
   // ── Protect user-only routes ───────────────────────────────────────────
-  const protectedPaths = ["/profile", "/orders", "/partner"];
+  const protectedPaths = ["/profile", "/orders", "/partner", "/review"];
   if (protectedPaths.some((p) => pathname.startsWith(p)) && !user) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
