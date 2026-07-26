@@ -18,7 +18,7 @@ function vnNowHHMM() {
 type BoxData = {
   id: string;
   name: string; description: string | null; image: string | null;
-  category: string;
+  category: string; productType: string;
   priceOriginal: number; priceSale: number;
   quantityTotal: number; quantityLeft: number;
   pickupStart: string; pickupEnd: string;
@@ -46,6 +46,7 @@ const inp: React.CSSProperties = {
 export default function EditBoxModal({ box, onClose }: { box: BoxData; onClose: () => void }) {
   const router  = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
+  const isVoucher = box.productType === "VOUCHER";
 
   const sold = box.quantityTotal - box.quantityLeft;
   const dateStr = new Date(box.date).toISOString().slice(0, 10);
@@ -129,7 +130,7 @@ export default function EditBoxModal({ box, onClose }: { box: BoxData; onClose: 
         width: "100%", maxWidth: 520, maxHeight: "90vh", overflowY: "auto",
       }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 900, color: "var(--text)" }}>Sửa Box</h2>
+          <h2 style={{ fontSize: 18, fontWeight: 900, color: "var(--text)" }}>{isVoucher ? "Sửa Voucher" : "Sửa Box"}</h2>
           <button onClick={onClose} style={{ fontSize: 18, color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer" }}>✕</button>
         </div>
         {sold > 0 && (
@@ -140,7 +141,7 @@ export default function EditBoxModal({ box, onClose }: { box: BoxData; onClose: 
         {sold === 0 && <div style={{ marginBottom: 20 }} />}
 
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          <Field label="Tên box" required>
+          <Field label={isVoucher ? "Tên ưu đãi" : "Tên box"} required>
             <input value={form.name} onChange={(e) => set("name", e.target.value)} style={inp} />
           </Field>
 
@@ -149,13 +150,15 @@ export default function EditBoxModal({ box, onClose }: { box: BoxData; onClose: 
               rows={2} style={{ ...inp, resize: "vertical" }} />
           </Field>
 
-          <Field label="Loại đồ ăn" required>
-            <select value={form.category} onChange={(e) => set("category", e.target.value)} style={inp}>
-              {FOOD_CATEGORIES.map((c) => (
-                <option key={c.value} value={c.value}>{c.emoji} {c.label}</option>
-              ))}
-            </select>
-          </Field>
+          {!isVoucher && (
+            <Field label="Ngành hàng" required>
+              <select value={form.category} onChange={(e) => set("category", e.target.value)} style={inp}>
+                {FOOD_CATEGORIES.map((c) => (
+                  <option key={c.value} value={c.value}>{c.emoji} {c.label}</option>
+                ))}
+              </select>
+            </Field>
+          )}
 
           <Field label="Ảnh bìa" required>
             <input ref={fileRef} type="file" accept="image/*" onChange={handleFile} style={{ display: "none" }} />
@@ -178,10 +181,10 @@ export default function EditBoxModal({ box, onClose }: { box: BoxData; onClose: 
           </Field>
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-            <Field label="Giá gốc (đ)" required>
+            <Field label={isVoucher ? "Giá trị gốc (đ)" : "Giá gốc (đ)"} required>
               <input type="number" value={form.priceOriginal} onChange={(e) => set("priceOriginal", e.target.value)} min="0" style={inp} />
             </Field>
-            <Field label="Giá bán (đ)" required>
+            <Field label={isVoucher ? "Giá bán voucher (đ)" : "Giá bán (đ)"} required>
               <input type="number" value={form.priceSale} onChange={(e) => set("priceSale", e.target.value)} min="0" style={inp} />
               {discount !== null && discount > 0 && (
                 <p style={{ fontSize: 11, color: "var(--primary)", fontWeight: 700, marginTop: 4 }}>Giảm {discount}%</p>
@@ -193,7 +196,7 @@ export default function EditBoxModal({ box, onClose }: { box: BoxData; onClose: 
             <Field label={`Số lượng${sold > 0 ? ` (min ${sold})` : ""}`} required>
               <input type="number" value={form.quantityTotal} onChange={(e) => set("quantityTotal", e.target.value)} min={sold || 1} max="100" style={inp} />
             </Field>
-            <Field label="Nhận từ">
+            <Field label={isVoucher ? "Khung giờ từ" : "Nhận từ"}>
               <input type="time" value={form.pickupStart} onChange={(e) => set("pickupStart", e.target.value)} style={inp} />
             </Field>
             <Field label="Đến">

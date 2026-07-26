@@ -3,7 +3,6 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { FOOD_CATEGORIES } from "@/lib/utils";
 
 const BUCKET = "box-images";
 
@@ -16,7 +15,7 @@ function vnNowHHMM() {
   return `${String(d.getUTCHours()).padStart(2, "0")}:${String(d.getUTCMinutes()).padStart(2, "0")}`;
 }
 
-export default function CreateBoxModal({ storeAddress }: { storeAddress: string }) {
+export default function CreateVoucherModal({ storeAddress }: { storeAddress: string }) {
   const router    = useRouter();
   const fileRef   = useRef<HTMLInputElement>(null);
   const [open, setOpen]         = useState(false);
@@ -25,18 +24,13 @@ export default function CreateBoxModal({ storeAddress }: { storeAddress: string 
   const [error, setError]       = useState("");
   const [form, setForm]         = useState({
     name: "", description: "", image: "",
-    category: FOOD_CATEGORIES[0].value as string,
     priceOriginal: "", priceSale: "",
-    quantityTotal: "5",
-    pickupStart: "17:00", pickupEnd: "20:00",
+    quantityTotal: "20",
+    pickupStart: "14:00", pickupEnd: "17:00",
     date: vnToday(),
   });
 
   function set(k: string, v: string) { setForm((f) => ({ ...f, [k]: v })); }
-
-  const discount = form.priceOriginal && form.priceSale
-    ? Math.round((1 - Number(form.priceSale) / Number(form.priceOriginal)) * 100)
-    : null;
 
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -60,14 +54,14 @@ export default function CreateBoxModal({ storeAddress }: { storeAddress: string 
 
   async function submit() {
     setError("");
-    if (!form.name.trim()) { setError("Vui lòng nhập tên box"); return; }
+    if (!form.name.trim()) { setError("Vui lòng nhập tên ưu đãi"); return; }
     if (!form.image) { setError("Vui lòng upload ảnh bìa"); return; }
     if (!form.priceOriginal || !form.priceSale) { setError("Vui lòng nhập giá"); return; }
-    if (Number(form.priceSale) >= Number(form.priceOriginal)) { setError("Giá bán phải nhỏ hơn giá gốc"); return; }
+    if (Number(form.priceSale) >= Number(form.priceOriginal)) { setError("Giá bán phải nhỏ hơn giá trị gốc"); return; }
     if (!form.quantityTotal || Number(form.quantityTotal) < 1) { setError("Số lượng phải ít nhất 1"); return; }
     if (form.pickupEnd <= form.pickupStart) { setError("Giờ kết thúc phải sau giờ bắt đầu"); return; }
     if (form.date === vnToday() && form.pickupEnd <= vnNowHHMM()) {
-      setError("Giờ kết thúc nhận hàng đã qua — vui lòng cập nhật giờ"); return;
+      setError("Khung giờ áp dụng đã qua — vui lòng cập nhật giờ"); return;
     }
 
     setLoading(true);
@@ -76,6 +70,7 @@ export default function CreateBoxModal({ storeAddress }: { storeAddress: string 
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ...form,
+        productType: "VOUCHER",
         priceOriginal: Number(form.priceOriginal),
         priceSale:     Number(form.priceSale),
         quantityTotal: Number(form.quantityTotal),
@@ -83,9 +78,9 @@ export default function CreateBoxModal({ storeAddress }: { storeAddress: string 
     });
     const data = await res.json();
     setLoading(false);
-    if (!res.ok) { setError(data.error ?? "Lỗi tạo box"); return; }
+    if (!res.ok) { setError(data.error ?? "Lỗi tạo voucher"); return; }
     setOpen(false);
-    setForm({ name: "", description: "", image: "", category: FOOD_CATEGORIES[0].value, priceOriginal: "", priceSale: "", quantityTotal: "5", pickupStart: "17:00", pickupEnd: "20:00", date: vnToday() });
+    setForm({ name: "", description: "", image: "", priceOriginal: "", priceSale: "", quantityTotal: "20", pickupStart: "14:00", pickupEnd: "17:00", date: vnToday() });
     if (fileRef.current) fileRef.current.value = "";
     router.refresh();
   }
@@ -94,10 +89,10 @@ export default function CreateBoxModal({ storeAddress }: { storeAddress: string 
     <>
       <button onClick={() => setOpen(true)} style={{
         padding: "9px 18px", borderRadius: 10,
-        background: "var(--primary)", color: "white",
-        border: "none", fontSize: 13, fontWeight: 700, cursor: "pointer",
+        background: "white", color: "var(--primary)",
+        border: "1.5px solid var(--primary)", fontSize: 13, fontWeight: 700, cursor: "pointer",
       }}>
-        + Tạo box mới
+        🎟️ Tạo Voucher
       </button>
 
       {open && (
@@ -109,32 +104,26 @@ export default function CreateBoxModal({ storeAddress }: { storeAddress: string 
             background: "white", borderRadius: 20, padding: "32px 32px 28px",
             width: "100%", maxWidth: 520, maxHeight: "90vh", overflowY: "auto",
           }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
-              <h2 style={{ fontSize: 18, fontWeight: 900, color: "var(--text)" }}>Tạo Surprise Box</h2>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+              <h2 style={{ fontSize: 18, fontWeight: 900, color: "var(--text)" }}>Tạo Voucher</h2>
               <button onClick={() => setOpen(false)} style={{ fontSize: 18, color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer" }}>✕</button>
             </div>
+            <p style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 20, lineHeight: 1.6 }}>
+              Khác với Surprise Box, khách sẽ thấy rõ và chọn đúng ưu đãi này — không có yếu tố bất ngờ.
+            </p>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-              {/* Store address (read-only) */}
               <div style={{ padding: "10px 14px", background: "var(--ivory)", borderRadius: 10, border: "1px solid var(--border)", fontSize: 12, color: "var(--text-muted)" }}>
-                <span style={{ fontWeight: 700, color: "var(--text)" }}>Địa chỉ nhận hàng: </span>{storeAddress}
+                <span style={{ fontWeight: 700, color: "var(--text)" }}>Áp dụng tại: </span>{storeAddress}
               </div>
 
-              <Field label="Tên box" required>
-                <input value={form.name} onChange={(e) => set("name", e.target.value)} placeholder="Box Bánh Ngọt Cuối Ngày" style={inp} />
+              <Field label="Tên ưu đãi" required>
+                <input value={form.name} onChange={(e) => set("name", e.target.value)} placeholder="Giảm 25% hóa đơn 14h–17h" style={inp} />
               </Field>
 
-              <Field label="Mô tả">
+              <Field label="Chi tiết ưu đãi">
                 <textarea value={form.description} onChange={(e) => set("description", e.target.value)}
-                  placeholder="Nội dung bên trong box..." rows={2} style={{ ...inp, resize: "vertical" }} />
-              </Field>
-
-              <Field label="Ngành hàng" required>
-                <select value={form.category} onChange={(e) => set("category", e.target.value)} style={inp}>
-                  {FOOD_CATEGORIES.map((c) => (
-                    <option key={c.value} value={c.value}>{c.emoji} {c.label}</option>
-                  ))}
-                </select>
+                  placeholder="Áp dụng cho hóa đơn từ 100.000đ, không dùng cùng khuyến mãi khác..." rows={2} style={{ ...inp, resize: "vertical" }} />
               </Field>
 
               <Field label="Ảnh bìa" required>
@@ -167,22 +156,19 @@ export default function CreateBoxModal({ storeAddress }: { storeAddress: string 
               </Field>
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                <Field label="Giá gốc (đ)" required>
-                  <input type="number" value={form.priceOriginal} onChange={(e) => set("priceOriginal", e.target.value)} placeholder="120000" min="0" style={inp} />
+                <Field label="Giá trị gốc (đ)" required>
+                  <input type="number" value={form.priceOriginal} onChange={(e) => set("priceOriginal", e.target.value)} placeholder="200000" min="0" style={inp} />
                 </Field>
-                <Field label="Giá bán (đ)" required>
-                  <input type="number" value={form.priceSale} onChange={(e) => set("priceSale", e.target.value)} placeholder="59000" min="0" style={inp} />
-                  {discount !== null && discount > 0 && (
-                    <p style={{ fontSize: 11, color: "var(--primary)", fontWeight: 700, marginTop: 4 }}>Giảm {discount}%</p>
-                  )}
+                <Field label="Giá bán voucher (đ)" required>
+                  <input type="number" value={form.priceSale} onChange={(e) => set("priceSale", e.target.value)} placeholder="10000" min="0" style={inp} />
                 </Field>
               </div>
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
                 <Field label="Số lượng" required>
-                  <input type="number" value={form.quantityTotal} onChange={(e) => set("quantityTotal", e.target.value)} min="1" max="100" style={inp} />
+                  <input type="number" value={form.quantityTotal} onChange={(e) => set("quantityTotal", e.target.value)} min="1" max="500" style={inp} />
                 </Field>
-                <Field label="Nhận từ">
+                <Field label="Khung giờ từ">
                   <input type="time" value={form.pickupStart} onChange={(e) => set("pickupStart", e.target.value)} style={inp} />
                 </Field>
                 <Field label="Đến">
@@ -190,7 +176,7 @@ export default function CreateBoxModal({ storeAddress }: { storeAddress: string 
                 </Field>
               </div>
 
-              <Field label="Ngày bán" required>
+              <Field label="Ngày áp dụng" required>
                 <input type="date" value={form.date} onChange={(e) => set("date", e.target.value)} min={vnToday()} style={inp} />
               </Field>
             </div>
@@ -206,7 +192,7 @@ export default function CreateBoxModal({ storeAddress }: { storeAddress: string 
                 Hủy
               </button>
               <button onClick={submit} disabled={loading} style={{ flex: 2, padding: "11px", borderRadius: 10, background: loading ? "var(--primary-soft)" : "var(--primary)", color: loading ? "var(--primary)" : "white", border: "none", fontSize: 13, fontWeight: 700, cursor: loading ? "not-allowed" : "pointer" }}>
-                {loading ? "Đang tạo..." : "Tạo box"}
+                {loading ? "Đang tạo..." : "Tạo voucher"}
               </button>
             </div>
           </div>
@@ -233,4 +219,3 @@ const inp: React.CSSProperties = {
   outline: "none", background: "var(--ivory)",
   boxSizing: "border-box", color: "var(--text)",
 };
-

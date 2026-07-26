@@ -3,6 +3,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
 import CreateBoxModal from "./CreateBoxModal";
+import CreateVoucherModal from "./CreateVoucherModal";
 import PartnerLogoutButton from "./PartnerLogoutButton";
 import PartnerTables from "./PartnerTables";
 import BoxHistoryTab from "./BoxHistoryTab";
@@ -229,7 +230,10 @@ export default async function PartnerDashboard({
                   </div>
                   <p style={{ fontSize: 13, color: "var(--text-muted)" }}>{displayDate}</p>
                 </div>
-                <CreateBoxModal storeAddress={store.address} />
+                <div style={{ display: "flex", gap: 10 }}>
+                  <CreateVoucherModal storeAddress={store.address} />
+                  <CreateBoxModal storeAddress={store.address} />
+                </div>
               </div>
 
               {!store.verified && (

@@ -19,6 +19,14 @@ enum FoodCategory {
   MON_MAN
   TRANG_MIENG
   KHAC
+  SUPERMARKET_CONVENIENCE
+  PRODUCE
+  LOCAL_SPECIALTY
+}
+
+enum ProductType {
+  SURPRISE_BOX
+  VOUCHER
 }
 
 model User {
@@ -72,6 +80,7 @@ model Box {
   date            DateTime
   image           String?
   category        FoodCategory @default(KHAC)
+  productType     ProductType @default(SURPRISE_BOX)
   active          Boolean  @default(true)
   createdAt       DateTime @default(now())
 

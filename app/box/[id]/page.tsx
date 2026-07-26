@@ -4,7 +4,8 @@ import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import { prisma } from "@/lib/prisma";
 import { createClient } from "@/lib/supabase/server";
-import { formatPrice, discountPercent, formatVNDate } from "@/lib/utils";
+import { formatPrice, discountPercent, formatVNDate, productTypeLabel, productTypeEmoji } from "@/lib/utils";
+import ProductPlaceholderIcon from "@/components/ProductPlaceholderIcon";
 import BoxCountdown from "./BoxCountdown";
 import StoreMapClient from "./StoreMapClient";
 import OrderButton from "./OrderButton";
@@ -91,6 +92,13 @@ export default async function BoxDetailPage({ params }: { params: Promise<{ id: 
               display: "flex", alignItems: "center", justifyContent: "center",
             }}>
               <div style={{ position: "absolute", top: 20, left: 20, zIndex: 1, display: "flex", gap: 8 }}>
+                <span className="badge" style={{
+                  padding: "6px 14px", fontSize: 13, fontWeight: 700,
+                  background: box.productType === "VOUCHER" ? "#ede9fe" : "var(--primary-soft)",
+                  color: box.productType === "VOUCHER" ? "#6d28d9" : "var(--primary-dark)",
+                }}>
+                  {productTypeEmoji(box.productType)} {productTypeLabel(box.productType)}
+                </span>
                 <span className="badge badge-primary" style={{ padding: "6px 14px", fontSize: 13 }}>−{disc}%</span>
                 {box.quantityLeft <= 2 && (
                   <span className="badge badge-warm" style={{ padding: "6px 14px", fontSize: 13 }}>Sắp hết</span>
@@ -100,7 +108,9 @@ export default async function BoxDetailPage({ params }: { params: Promise<{ id: 
                 <img src={box.image} alt={box.name}
                   style={{ width: "100%", height: "100%", minHeight: 360, objectFit: "cover", display: "block" }} />
               ) : (
-                <div style={{ fontSize: 120, lineHeight: 1, padding: "60px 0" }}>🥐</div>
+                <div style={{ padding: "60px 0", color: "var(--text-muted)", opacity: 0.5 }}>
+                  <ProductPlaceholderIcon size={96} />
+                </div>
               )}
             </div>
 

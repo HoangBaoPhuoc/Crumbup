@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import RepostBoxModal from "./RepostBoxModal";
+import { productTypeLabel, productTypeEmoji } from "@/lib/utils";
 
 type Box = {
   id: string; name: string; description: string | null; image: string | null;
-  category: string;
+  category: string; productType: string;
   priceOriginal: number; priceSale: number;
   quantityTotal: number; quantityLeft: number;
   pickupStart: string; pickupEnd: string; active: boolean;
@@ -75,7 +76,16 @@ export default function BoxHistoryTab({
                       {new Date(b.date).toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" })}
                     </td>
                     <td style={td}>
-                      <div style={{ fontWeight: 600 }}>{b.name}</div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <span style={{
+                          padding: "1px 8px", borderRadius: 999, fontSize: 10, fontWeight: 700, whiteSpace: "nowrap",
+                          background: b.productType === "VOUCHER" ? "#ede9fe" : "var(--primary-soft)",
+                          color: b.productType === "VOUCHER" ? "#6d28d9" : "var(--primary-dark)",
+                        }}>
+                          {productTypeEmoji(b.productType)} {productTypeLabel(b.productType)}
+                        </span>
+                        <div style={{ fontWeight: 600 }}>{b.name}</div>
+                      </div>
                       <div style={{ fontSize: 11, color: "var(--text-muted)" }}>{b.pickupStart} – {b.pickupEnd}</div>
                     </td>
                     <td style={{ ...td, fontWeight: 700, color: "var(--primary)" }}>

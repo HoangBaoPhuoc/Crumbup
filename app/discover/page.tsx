@@ -5,12 +5,14 @@ import SiteFooter from "@/components/SiteFooter";
 import { prisma } from "@/lib/prisma";
 import { createClient } from "@/lib/supabase/server";
 import { FoodCategory } from "@/app/generated/prisma/enums";
-import { formatPrice, discountPercent, getVietnamToday, formatVNDate, categoryEmoji, categoryLabel, FOOD_CATEGORIES } from "@/lib/utils";
+import { formatPrice, discountPercent, getVietnamToday, formatVNDate, FOOD_CATEGORIES, productTypeLabel, productTypeEmoji } from "@/lib/utils";
 import MapView from "@/components/MapView";
 import type { StorePin } from "@/components/MapView";
+import ProductPlaceholderIcon from "@/components/ProductPlaceholderIcon";
 import PickupCountdown from "./PickupCountdown";
 import FilterSidebar from "./FilterSidebar";
 import SortButtons from "./SortButtons";
+import ProductTypeTabs from "./ProductTypeTabs";
 import ClearSearchButton from "./ClearSearchButton";
 import DiscoverTabs from "./DiscoverTabs";
 import { DiscoverNavProvider } from "./DiscoverNavContext";
@@ -50,7 +52,7 @@ const PRICE_RANGES: Record<string, { gte?: number; lt?: number; lte?: number }> 
 // How many days of past (expired) boxes to still show, dimmed and unclickable, below today's boxes.
 const PAST_DAYS_SHOWN = 100;
 
-async function getBoxes(sort: string, prices: string[], pickups: string[], categories: string[], q: string) {
+async function getBoxes(sort: string, prices: string[], pickups: string[], categories: string[], q: string, productType: string) {
   const { from, to } = getVietnamToday();
   const windowStart = new Date(from.getTime() - PAST_DAYS_SHOWN * 24 * 60 * 60 * 1000);
 
@@ -69,6 +71,7 @@ async function getBoxes(sort: string, prices: string[], pickups: string[], categ
       active: true,
       date: { gte: windowStart, lt: to },
       ...(categoryValues.length > 0 && { category: { in: categoryValues } }),
+      ...((productType === "SURPRISE_BOX" || productType === "VOUCHER") && { productType }),
       AND: [
         // Today's boxes must still have stock; past days show regardless (they're expired either way).
         { OR: [{ date: { gte: from }, quantityLeft: { gt: 0 } }, { date: { lt: from } }] },
@@ -146,8 +149,8 @@ function BoxSkeleton() {
   );
 }
 
-async function BoxList({ sort, prices, pickups, categories, q }: { sort: string; prices: string[]; pickups: string[]; categories: string[]; q: string }) {
-  const boxes = await getBoxes(sort, prices, pickups, categories, q);
+async function BoxList({ sort, prices, pickups, categories, q, productType }: { sort: string; prices: string[]; pickups: string[]; categories: string[]; q: string; productType: string }) {
+  const boxes = await getBoxes(sort, prices, pickups, categories, q, productType);
   const nowHHMM = vnTimeHHMM(0);
   const { from: todayStart } = getVietnamToday();
 
@@ -172,7 +175,6 @@ async function BoxList({ sort, prices, pickups, categories, q }: { sort: string;
       )}
       {boxes.map((box, i) => {
         const disc      = discountPercent(box.priceOriginal, box.priceSale);
-        const emoji     = categoryEmoji(box.category);
         const isLow     = box.quantityLeft <= 2;
         const isPastDay = box.date.getTime() < todayStart.getTime();
         const isExpired = isPastDay || box.pickupEnd < nowHHMM;
@@ -201,7 +203,7 @@ async function BoxList({ sort, prices, pickups, categories, q }: { sort: string;
             }}>
               {box.image
                 ? <img src={box.image} alt={box.name} style={{ width: "100%", height: "100%", objectFit: "contain", padding: 6, boxSizing: "border-box" }} />
-                : <span style={{ fontSize: 42 }}>{emoji}</span>}
+                : <ProductPlaceholderIcon size={36} style={{ color: "var(--text-muted)", opacity: 0.5 }} />}
             </div>
 
             {/* Info */}
@@ -212,9 +214,18 @@ async function BoxList({ sort, prices, pickups, categories, q }: { sort: string;
               }}>
                 {box.store.name} · {box.store.address.split(",")[0]}
               </div>
-              <h3 style={{ fontSize: 17, margin: "0 0 7px", color: "var(--text)", fontWeight: 700 }}>
-                {box.name}
-              </h3>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 7 }}>
+                <span style={{
+                  padding: "2px 9px", borderRadius: 999, fontSize: 10, fontWeight: 700, whiteSpace: "nowrap",
+                  background: box.productType === "VOUCHER" ? "#ede9fe" : "var(--primary-soft)",
+                  color: box.productType === "VOUCHER" ? "#6d28d9" : "var(--primary-dark)",
+                }}>
+                  {productTypeEmoji(box.productType)} {productTypeLabel(box.productType)}
+                </span>
+                <h3 style={{ fontSize: 17, margin: 0, color: "var(--text)", fontWeight: 700 }}>
+                  {box.name}
+                </h3>
+              </div>
               <div style={{ fontSize: 13, color: "var(--text-muted)" }}>
                 {isExpired
                   ? <span style={{ color: "#9ca3af" }}>{isPastDay ? `Đã hết hạn · ${formatVNDate(box.date)}` : "Đã hết giờ nhận"}</span>
@@ -267,7 +278,7 @@ async function BoxList({ sort, prices, pickups, categories, q }: { sort: string;
 export default async function DiscoverPage({
   searchParams,
 }: {
-  searchParams: Promise<{ sort?: string; price?: string | string[]; pickup?: string | string[]; category?: string | string[]; q?: string }>;
+  searchParams: Promise<{ sort?: string; price?: string | string[]; pickup?: string | string[]; category?: string | string[]; q?: string; type?: string }>;
 }) {
   const sp         = await searchParams;
   const sort       = sp.sort ?? "default";
@@ -275,6 +286,7 @@ export default async function DiscoverPage({
   const pickups    = sp.pickup   ? (Array.isArray(sp.pickup)   ? sp.pickup   : [sp.pickup])   : [];
   const categories = sp.category ? (Array.isArray(sp.category) ? sp.category : [sp.category]) : [];
   const q          = sp.q ?? "";
+  const productType = sp.type ?? "";
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -325,13 +337,20 @@ export default async function DiscoverPage({
 
           {/* Results — editorial list */}
           <div className="rise rise-4">
+            {/* Product type tabs — Surprise Box vs Voucher */}
+            <div style={{ marginBottom: 16 }}>
+              <Suspense fallback={null}>
+                <ProductTypeTabs current={productType} />
+              </Suspense>
+            </div>
+
             {/* List header with hairline */}
             <div style={{
               display: "flex", alignItems: "baseline", gap: 12,
               borderBottom: "2px solid var(--text)", paddingBottom: 14, marginBottom: 12,
             }}>
               <h2 style={{ fontSize: 26, margin: 0, color: "var(--text)", letterSpacing: "-0.02em" }}>
-                Box hôm nay
+                Hôm nay
               </h2>
               <span style={{ fontSize: 13, color: "var(--text-muted)" }}>
                 {totalBoxes} box
@@ -349,7 +368,7 @@ export default async function DiscoverPage({
             <div style={{ position: "relative" }}>
               <DiscoverLoadingOverlay />
               <Suspense fallback={<BoxSkeleton />}>
-                <BoxList sort={sort} prices={prices} pickups={pickups} categories={categories} q={q} />
+                <BoxList sort={sort} prices={prices} pickups={pickups} categories={categories} q={q} productType={productType} />
               </Suspense>
             </div>
           </div>

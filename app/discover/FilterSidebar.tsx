@@ -15,7 +15,7 @@ const PICKUP_OPTIONS = [
   { label: "Trong 2 giờ tới", value: "soon" },
 ];
 
-const CATEGORY_OPTIONS = FOOD_CATEGORIES.map((c) => ({ label: `${c.emoji} ${c.label}`, value: c.value }));
+const CATEGORY_OPTIONS = FOOD_CATEGORIES.map((c) => ({ label: c.label, value: c.value }));
 
 type FilterKey = "price" | "pickup" | "category";
 
@@ -90,9 +90,9 @@ export default function FilterSidebar() {
         )}
       </div>
 
-      {/* Loại đồ ăn */}
+      {/* Ngành hàng */}
       <FilterGroup
-        title="Loại đồ ăn"
+        title="Ngành hàng"
         options={CATEGORY_OPTIONS}
         selected={categories}
         onToggle={(v) => toggle("category", v)}

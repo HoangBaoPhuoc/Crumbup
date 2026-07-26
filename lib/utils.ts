@@ -9,6 +9,9 @@ export const FOOD_CATEGORIES = [
   { value: "MON_MAN",     label: "Món mặn",     emoji: "🥪" },
   { value: "TRANG_MIENG", label: "Tráng miệng", emoji: "🧁" },
   { value: "KHAC",        label: "Khác",        emoji: "🎁" },
+  { value: "SUPERMARKET_CONVENIENCE", label: "Siêu thị/tiện lợi", emoji: "🏪" },
+  { value: "PRODUCE",                 label: "Trái cây/rau củ",   emoji: "🥦" },
+  { value: "LOCAL_SPECIALTY",         label: "Đặc sản đóng gói",  emoji: "🍯" },
 ] as const;
 
 export type FoodCategoryValue = (typeof FOOD_CATEGORIES)[number]["value"];
@@ -19,6 +22,21 @@ export function categoryEmoji(category: string): string {
 
 export function categoryLabel(category: string): string {
   return FOOD_CATEGORIES.find((c) => c.value === category)?.label ?? "Khác";
+}
+
+export const PRODUCT_TYPES = [
+  { value: "SURPRISE_BOX", label: "Surprise Box", emoji: "🎁" },
+  { value: "VOUCHER",      label: "Voucher",       emoji: "🎟️" },
+] as const;
+
+export type ProductTypeValue = (typeof PRODUCT_TYPES)[number]["value"];
+
+export function productTypeLabel(productType: string): string {
+  return PRODUCT_TYPES.find((p) => p.value === productType)?.label ?? "Surprise Box";
+}
+
+export function productTypeEmoji(productType: string): string {
+  return PRODUCT_TYPES.find((p) => p.value === productType)?.emoji ?? "🎁";
 }
 
 export function discountPercent(original: number, sale: number): number {

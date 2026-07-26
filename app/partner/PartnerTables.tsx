@@ -5,6 +5,7 @@ import BoxToggle from "./BoxToggle";
 import PartnerOrderActions from "./PartnerOrderActions";
 import CreateBoxModal from "./CreateBoxModal";
 import EditBoxModal from "./EditBoxModal";
+import { productTypeLabel, productTypeEmoji } from "@/lib/utils";
 
 const STATUS_LABEL: Record<string, string> = {
   PENDING:   "Chờ xác nhận",
@@ -21,7 +22,7 @@ const STATUS_COLOR: Record<string, React.CSSProperties> = {
 
 type Box = {
   id: string; name: string; description: string | null; image: string | null;
-  category: string;
+  category: string; productType: string;
   priceOriginal: number; priceSale: number;
   quantityTotal: number; quantityLeft: number;
   pickupStart: string; pickupEnd: string; active: boolean;
@@ -143,7 +144,16 @@ export default function PartnerTables({
                         : new Date(new Date(b.date).getTime() + 7 * 60 * 60_000).toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit" })}
                     </td>
                     <td style={td}>
-                      <div style={{ fontWeight: 600 }}>{b.name}</div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <span style={{
+                          padding: "1px 8px", borderRadius: 999, fontSize: 10, fontWeight: 700, whiteSpace: "nowrap",
+                          background: b.productType === "VOUCHER" ? "#ede9fe" : "var(--primary-soft)",
+                          color: b.productType === "VOUCHER" ? "#6d28d9" : "var(--primary-dark)",
+                        }}>
+                          {productTypeEmoji(b.productType)} {productTypeLabel(b.productType)}
+                        </span>
+                        <div style={{ fontWeight: 600 }}>{b.name}</div>
+                      </div>
                       {b.description && <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>{b.description}</div>}
                     </td>
                     <td style={{ ...td, color: "var(--text-muted)", textDecoration: "line-through", fontSize: 12 }}>

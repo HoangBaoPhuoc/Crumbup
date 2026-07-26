@@ -14,7 +14,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   const { id } = await params;
   const box = await prisma.box.findUnique({
     where: { id },
-    select: { id: true, quantityTotal: true, quantityLeft: true, store: { select: { ownerId: true } } },
+    select: { id: true, quantityTotal: true, quantityLeft: true, productType: true, store: { select: { ownerId: true } } },
   });
   if (!box) return NextResponse.json({ error: "Không tìm thấy box" }, { status: 404 });
   if (box.store.ownerId !== user.id) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -25,9 +25,11 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   if (!name || !image || !priceOriginal || !priceSale || !quantityTotal || !pickupStart || !pickupEnd || !date) {
     return NextResponse.json({ error: "Thiếu thông tin bắt buộc" }, { status: 400 });
   }
-  if (!category || !CATEGORY_VALUES.has(category)) {
-    return NextResponse.json({ error: "Loại đồ ăn không hợp lệ" }, { status: 400 });
+  // productType không đổi được sau khi tạo — chỉ Surprise Box bắt buộc chọn ngành hàng.
+  if (box.productType === "SURPRISE_BOX" && (!category || !CATEGORY_VALUES.has(category))) {
+    return NextResponse.json({ error: "Ngành hàng không hợp lệ" }, { status: 400 });
   }
+  const resolvedCategory: FoodCategory = category && CATEGORY_VALUES.has(category) ? (category as FoodCategory) : "KHAC";
   if (Number(priceSale) >= Number(priceOriginal)) {
     return NextResponse.json({ error: "Giá bán phải nhỏ hơn giá gốc" }, { status: 400 });
   }
@@ -48,7 +50,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       name,
       description:   description || null,
       image,
-      category:      category as FoodCategory,
+      category:      resolvedCategory,
       priceOriginal: Number(priceOriginal),
       priceSale:     Number(priceSale),
       quantityTotal: newQtyTotal,
