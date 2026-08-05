@@ -145,13 +145,13 @@ export default function SearchBar() {
           placeholder="Tìm box, trang..."
           style={{
             border: "none", outline: "none", background: "transparent",
-            fontSize: 14, color: "var(--text)", width: "100%", caretColor: "var(--primary)",
+            fontSize: 16, color: "var(--text)", width: "100%", caretColor: "var(--primary)",
           }}
         />
         {query && (
           <button
             onClick={(e) => { e.stopPropagation(); setQuery(""); inputRef.current?.focus(); }}
-            style={{ border: "none", background: "none", cursor: "pointer", color: "var(--text-muted)", padding: 0, lineHeight: 1, flexShrink: 0, fontSize: 14 }}
+            style={{ border: "none", background: "none", cursor: "pointer", color: "var(--text-muted)", padding: 0, lineHeight: 1, flexShrink: 0, fontSize: 16 }}
           >✕</button>
         )}
       </div>
@@ -182,7 +182,7 @@ export default function SearchBar() {
                 >
                   <span style={{ width: 28, height: 28, borderRadius: 8, background: "var(--cream)", display: "grid", placeItems: "center", flexShrink: 0, fontSize: 12 }}>📄</span>
                   <div>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text)" }}>{p.label}</div>
+                    <div style={{ fontSize: 15, fontWeight: 600, color: "var(--text)" }}>{p.label}</div>
                     <div style={{ fontSize: 11, color: "var(--text-muted)" }}>{p.group}</div>
                   </div>
                 </button>
@@ -197,7 +197,7 @@ export default function SearchBar() {
                 Box hôm nay {!loading && `· ${boxes.length} kết quả`}
               </div>
               {loading ? (
-                <div style={{ padding: "14px 16px", fontSize: 13, color: "var(--text-muted)" }}>Đang tìm...</div>
+                <div style={{ padding: "14px 16px", fontSize: 15, color: "var(--text-muted)" }}>Đang tìm...</div>
               ) : (
                 boxes.map((b) => (
                   <button
@@ -207,16 +207,16 @@ export default function SearchBar() {
                     onMouseEnter={(e) => (e.currentTarget.style.background = "var(--cream)")}
                     onMouseLeave={(e) => (e.currentTarget.style.background = "none")}
                   >
-                    <div style={{ width: 36, height: 36, borderRadius: 8, flexShrink: 0, overflow: "hidden", background: "var(--cream)", display: "grid", placeItems: "center", fontSize: 18 }}>
+                    <div style={{ width: 36, height: 36, borderRadius: 8, flexShrink: 0, overflow: "hidden", background: "var(--cream)", display: "grid", placeItems: "center", fontSize: 21 }}>
                       {b.image
                         ? <img src={b.image} alt={b.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                         : "🥐"}
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{b.name}</div>
+                      <div style={{ fontSize: 15, fontWeight: 600, color: "var(--text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{b.name}</div>
                       <div style={{ fontSize: 11, color: "var(--text-muted)" }}>{b.store.name}</div>
                     </div>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: "var(--primary)", flexShrink: 0 }}>
+                    <div style={{ fontSize: 15, fontWeight: 700, color: "var(--primary)", flexShrink: 0 }}>
                       {b.priceSale.toLocaleString("vi-VN")}đ
                     </div>
                   </button>
@@ -227,7 +227,7 @@ export default function SearchBar() {
 
           {/* No results */}
           {!loading && q.length >= 2 && filteredPages.length === 0 && boxes.length === 0 && (
-            <div style={{ padding: "20px 16px", textAlign: "center", color: "var(--text-muted)", fontSize: 13 }}>
+            <div style={{ padding: "20px 16px", textAlign: "center", color: "var(--text-muted)", fontSize: 15 }}>
               Không tìm thấy kết quả cho &ldquo;{q}&rdquo;
             </div>
           )}

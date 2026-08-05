@@ -17,7 +17,6 @@ export default function LoginPage() {
   const [oauthLoading, setOauthLoading] = useState<"google" | null>(null);
   const [oauthError, setOauthError] = useState("");
   const [error, setError]           = useState("");
-  const [comingSoon, setComingSoon] = useState(false);
   const [forgotMsg, setForgotMsg]   = useState(false);
 
   async function signInWithGoogle() {
@@ -33,11 +32,6 @@ export default function LoginPage() {
       setOauthError("Không thể đăng nhập bằng Google. Vui lòng thử lại.");
     }
     // On success Supabase redirects the browser away to Google — nothing left to do here.
-  }
-
-  function facebookComingSoon() {
-    setComingSoon(true);
-    setTimeout(() => setComingSoon(false), 3500);
   }
 
   async function loginPassword() {
@@ -62,13 +56,13 @@ export default function LoginPage() {
       <BrandPanel />
 
       <div style={{ background: "white", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "48px 40px", position: "relative" }}>
-        <Link href="/" style={{ position: "absolute", top: 24, left: 28, display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 600, color: "var(--text-muted)", textDecoration: "none" }}>
+        <Link href="/" style={{ position: "absolute", top: 24, left: 28, display: "flex", alignItems: "center", gap: 6, fontSize: 15, fontWeight: 600, color: "var(--text-muted)", textDecoration: "none" }}>
           ← Trang chủ
         </Link>
         <div style={{ width: "100%", maxWidth: 380 }}>
 
-          <h1 style={{ fontSize: 28, fontWeight: 900, marginBottom: 8 }}>Đăng nhập</h1>
-          <p style={{ fontSize: 14, color: "var(--text-muted)", marginBottom: 36 }}>
+          <h1 style={{ fontSize: 32, fontWeight: 900, marginBottom: 8 }}>Đăng nhập</h1>
+          <p style={{ fontSize: 16, color: "var(--text-muted)", marginBottom: 36 }}>
             Chưa có tài khoản?{" "}
             <Link href="/register" style={{ color: "var(--primary)", fontWeight: 700 }}>Đăng ký ngay</Link>
           </p>
@@ -82,15 +76,8 @@ export default function LoginPage() {
               primary
               onClick={signInWithGoogle}
             />
-            <OAuthBtn
-              icon={<FacebookIcon />}
-              label="Tiếp tục với Facebook"
-              loading={false}
-              onClick={facebookComingSoon}
-            />
           </div>
           {oauthError && <ErrBox msg={oauthError} />}
-          {comingSoon && <ComingSoonBox msg="Tính năng đang được phát triển, vui lòng đăng nhập bằng email." />}
           {forgotMsg && <ComingSoonBox msg="Tính năng đang được phát triển, vui lòng liên hệ admin." />}
 
           <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "28px 0" }}>
@@ -127,7 +114,7 @@ export default function LoginPage() {
                     onBlur={(e) => (e.target.style.borderColor = "var(--border)")}
                     onKeyDown={(e) => e.key === "Enter" && loginPassword()} />
                   <button type="button" onClick={() => setShowPw((v) => !v)}
-                    style={{ position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)", fontSize: 13, color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer", fontWeight: 600 }}>
+                    style={{ position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)", fontSize: 15, color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer", fontWeight: 600 }}>
                     {showPw ? "ẩn" : "hiện"}
                   </button>
                 </div>
@@ -136,7 +123,7 @@ export default function LoginPage() {
               {error && <ErrBox msg={error} />}
 
               <button onClick={loginPassword} disabled={loading}
-                style={{ width: "100%", padding: "13px", fontSize: 15, fontWeight: 700, borderRadius: 12, background: "var(--text)", color: "white", border: "none", cursor: "pointer", opacity: loading ? 0.7 : 1 }}>
+                style={{ width: "100%", padding: "13px", fontSize: 17, fontWeight: 700, borderRadius: 12, background: "var(--text)", color: "white", border: "none", cursor: "pointer", opacity: loading ? 0.7 : 1 }}>
                 {loading ? "Đang đăng nhập..." : "Đăng nhập"}
               </button>
             </div>
@@ -159,10 +146,10 @@ function BrandPanel() {
         <div style={{ width: 96, height: 96, borderRadius: 28, overflow: "hidden", margin: "0 auto 28px", boxShadow: "0 8px 32px rgba(232,119,34,0.4)" }}>
             <img src="/crumbup-logo-tabweb.jpg" alt="CrumbUp" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           </div>
-        <div style={{ fontFamily: "var(--font-display)", fontSize: 48, fontWeight: 900, color: "white", letterSpacing: "-0.03em", lineHeight: 1, marginBottom: 14 }}>CrumbUp</div>
+        <div style={{ fontFamily: "var(--font-display)", fontSize: 55, fontWeight: 900, color: "white", letterSpacing: "-0.03em", lineHeight: 1, marginBottom: 14 }}>CrumbUp</div>
         <div style={{ fontSize: 11, fontWeight: 700, color: "var(--primary)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 32 }}>Save Every Crumb</div>
-        <p style={{ fontSize: 18, fontWeight: 700, color: "white", lineHeight: 1.4, maxWidth: 280, opacity: 0.9 }}>
-          Cứu bánh ngon cuối ngày,<br />
+        <p style={{ fontSize: 21, fontWeight: 700, color: "white", lineHeight: 1.4, maxWidth: 280, opacity: 0.9 }}>
+          Cứu món ngon cuối ngày,<br />
           <em style={{ color: "var(--primary)", fontStyle: "italic" }}>tiết kiệm mỗi tối.</em>
         </p>
       </div>
@@ -181,7 +168,7 @@ function OAuthBtn({ icon, label, loading, primary = false, onClick }: {
       border: primary ? "none" : "1.5px solid var(--border)",
       background: primary ? "var(--text)" : "white",
       display: "flex", alignItems: "center", gap: 12,
-      fontSize: 14, fontWeight: 700,
+      fontSize: 16, fontWeight: 700,
       color: primary ? "white" : "var(--text)",
       cursor: loading ? "not-allowed" : "pointer",
       opacity: loading ? 0.7 : 1,
@@ -206,18 +193,10 @@ function GoogleIcon() {
   );
 }
 
-function FacebookIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="#1877F2">
-      <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.532-4.697 1.313 0 2.686.235 2.686.235v2.97h-1.513c-1.491 0-1.956.93-1.956 1.886v2.269h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/>
-    </svg>
-  );
-}
-
 /* ── Micro ── */
 function ComingSoonBox({ msg }: { msg: string }) {
   return (
-    <div style={{ marginTop: 12, padding: "11px 14px", background: "#fffbeb", border: "1px solid #fcd34d", borderRadius: 10, fontSize: 13, color: "#92400e" }}>
+    <div style={{ marginTop: 12, padding: "11px 14px", background: "#fffbeb", border: "1px solid #fcd34d", borderRadius: 10, fontSize: 15, color: "#92400e" }}>
       {msg}
     </div>
   );
@@ -225,11 +204,11 @@ function ComingSoonBox({ msg }: { msg: string }) {
 
 function ErrBox({ msg }: { msg: string }) {
   return (
-    <div style={{ padding: "11px 14px", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 10, fontSize: 13, color: "var(--danger)" }}>
+    <div style={{ padding: "11px 14px", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 10, fontSize: 15, color: "var(--danger)" }}>
       {msg}
     </div>
   );
 }
 
-const lbl: React.CSSProperties = { display: "block", fontSize: 13, fontWeight: 700, marginBottom: 8 };
-const inp: React.CSSProperties = { width: "100%", padding: "13px 16px", borderRadius: 12, border: "1.5px solid var(--border)", fontSize: 14, outline: "none", background: "var(--ivory)", transition: "border-color 0.2s", boxSizing: "border-box" };
+const lbl: React.CSSProperties = { display: "block", fontSize: 15, fontWeight: 700, marginBottom: 8 };
+const inp: React.CSSProperties = { width: "100%", padding: "13px 16px", borderRadius: 12, border: "1.5px solid var(--border)", fontSize: 16, outline: "none", background: "var(--ivory)", transition: "border-color 0.2s", boxSizing: "border-box" };

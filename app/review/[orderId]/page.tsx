@@ -33,7 +33,7 @@ export default async function ReviewPage({ params }: { params: Promise<{ orderId
       <SiteHeader />
       <main style={{ minHeight: "100vh", background: "var(--ivory)", paddingTop: 80 }}>
         <div style={{ maxWidth: 520, margin: "0 auto", padding: "32px 20px 64px" }}>
-          <Link href="/orders" style={{ fontSize: 13, color: "var(--text-muted)", fontWeight: 600, textDecoration: "none" }}>
+          <Link href="/orders" style={{ fontSize: 15, color: "var(--text-muted)", fontWeight: 600, textDecoration: "none" }}>
             ← Đơn hàng của tôi
           </Link>
 
@@ -44,14 +44,14 @@ export default async function ReviewPage({ params }: { params: Promise<{ orderId
             <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 20 }}>
               <div style={{
                 width: 56, height: 56, borderRadius: 12, overflow: "hidden", flexShrink: 0,
-                background: "var(--cream)", display: "grid", placeItems: "center", fontSize: 24,
+                background: "var(--cream)", display: "grid", placeItems: "center", fontSize: 28,
               }}>
                 {firstBox?.image
                   ? <img src={firstBox.image} alt={firstBox.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   : "🥐"}
               </div>
               <div>
-                <div style={{ fontSize: 16, fontWeight: 800, color: "var(--text)" }}>{order.store.name}</div>
+                <div style={{ fontSize: 18, fontWeight: 800, color: "var(--text)" }}>{order.store.name}</div>
                 <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 2 }}>{firstBox?.name}</div>
               </div>
             </div>

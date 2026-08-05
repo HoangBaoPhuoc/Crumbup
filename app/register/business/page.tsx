@@ -4,12 +4,14 @@ import Link from "next/link";
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import AddressPicker from "./AddressPicker";
+import { createClient } from "@/lib/supabase/client";
+import { INDUSTRY_OPTIONS, type CategoryOption } from "@/lib/utils";
 
 type Step = "search" | "confirm" | "account" | "documents" | "payment" | "review" | "box";
 
 const STEPS: { key: Step; label: string; icon: string }[] = [
-  { key: "search",    label: "Địa chỉ tiệm",       icon: "📍" },
-  { key: "confirm",   label: "Thông tin tiệm",      icon: "🏪" },
+  { key: "search",    label: "Địa chỉ cửa hàng",   icon: "📍" },
+  { key: "confirm",   label: "Thông tin cửa hàng", icon: "🏪" },
   { key: "account",   label: "Tài khoản",          icon: "🔐" },
   { key: "documents", label: "Giấy tờ",            icon: "📋" },
   { key: "payment",   label: "Thanh toán",         icon: "🏦" },
@@ -18,7 +20,7 @@ const STEPS: { key: Step; label: string; icon: string }[] = [
 ];
 
 const BANKS = ["Vietcombank", "BIDV", "Techcombank", "MB Bank", "VPBank", "ACB", "Agribank", "TPBank", "Sacombank", "VietinBank"];
-const BOX_TYPES = ["Bánh ngọt", "Bánh mặn", "Đồ uống", "Mix (ngẫu nhiên)"];
+const BOX_BUCKET = "box-images";
 
 export default function BusinessRegisterPage() {
   const router = useRouter();
@@ -36,6 +38,7 @@ export default function BusinessRegisterPage() {
   const [storeOpen, setStoreOpen]       = useState("07:00");
   const [storeClose, setStoreClose]     = useState("22:00");
   const [storeDesc, setStoreDesc]       = useState("");
+  const [industry, setIndustry]         = useState<string>(INDUSTRY_OPTIONS[0].value);
 
   // Step 3: account
   const [email, setEmail]           = useState("");
@@ -54,12 +57,47 @@ export default function BusinessRegisterPage() {
   const [accountName, setAccountName] = useState("");
 
   // Step 7: first box
-  const [boxType, setBoxType]     = useState(BOX_TYPES[3]);
+  const fileRef                       = useRef<HTMLInputElement>(null);
+  const [categories, setCategories]   = useState<CategoryOption[]>([]);
+  const [categoryId, setCategoryId]   = useState("");
+  const [boxName, setBoxName]         = useState("");
+  const [boxImage, setBoxImage]       = useState("");
+  const [uploadingImg, setUploadingImg] = useState(false);
   const [priceOrig, setPriceOrig] = useState("");
   const [priceSale, setPriceSale] = useState("");
   const [pickStart, setPickStart] = useState("17:00");
   const [pickEnd, setPickEnd]     = useState("20:00");
   const [qty, setQty]             = useState("5");
+
+  async function loadCategories() {
+    try {
+      const res = await fetch(`/api/categories?industry=${encodeURIComponent(industry)}`);
+      const data = await res.json();
+      const list: CategoryOption[] = data.categories ?? [];
+      setCategories(list);
+      if (list.length > 0) setCategoryId(list[0].id);
+    } catch { /* box step will show empty select; user can retry by going back */ }
+  }
+
+  async function handleBoxImage(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) { setError("Chỉ chấp nhận file ảnh"); return; }
+    if (file.size > 5 * 1024 * 1024) { setError("Ảnh tối đa 5MB"); return; }
+
+    setError("");
+    setUploadingImg(true);
+    const supabase = createClient();
+    const ext  = file.name.split(".").pop();
+    const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+
+    const { error: upErr } = await supabase.storage.from(BOX_BUCKET).upload(path, file, { upsert: false });
+    if (upErr) { setError("Upload thất bại: " + upErr.message); setUploadingImg(false); return; }
+
+    const { data } = supabase.storage.from(BOX_BUCKET).getPublicUrl(path);
+    setBoxImage(data.publicUrl);
+    setUploadingImg(false);
+  }
 
   const curIdx = STEPS.findIndex((s) => s.key === step);
 
@@ -94,7 +132,7 @@ export default function BusinessRegisterPage() {
             email, password, name: storeName,
             storeName, storeAddr, storePhone,
             storeHours: storeOpen && storeClose ? `${storeOpen} – ${storeClose}` : "",
-            storeDesc, lat: storeLat, lng: storeLng,
+            storeDesc, lat: storeLat, lng: storeLng, industry,
           }),
         });
         const data = await res.json();
@@ -132,12 +170,12 @@ export default function BusinessRegisterPage() {
         <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 40, position: "relative" }}>
           <img src="/crumbup-logo-tabweb.jpg" alt="CrumbUp" style={{ width: 44, height: 44, borderRadius: 14, objectFit: "cover", boxShadow: "0 4px 16px rgba(232,119,34,0.4)" }} />
           <div>
-            <div style={{ fontWeight: 900, fontSize: 17, color: "white", letterSpacing: "-0.02em" }}>CrumbUp</div>
+            <div style={{ fontWeight: 900, fontSize: 20, color: "white", letterSpacing: "-0.02em" }}>CrumbUp</div>
             <div style={{ fontSize: 10, fontWeight: 700, color: "var(--primary)", letterSpacing: "0.1em", textTransform: "uppercase" }}>Dành cho cửa hàng</div>
           </div>
         </Link>
 
-        <div style={{ fontSize: 13, fontWeight: 700, color: "rgba(255,255,255,0.4)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 16 }}>Các bước</div>
+        <div style={{ fontSize: 15, fontWeight: 700, color: "rgba(255,255,255,0.4)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 16 }}>Các bước</div>
 
         {/* Step list */}
         <div style={{ display: "flex", flexDirection: "column", gap: 4, flex: 1, position: "relative" }}>
@@ -157,12 +195,12 @@ export default function BusinessRegisterPage() {
                   width: 32, height: 32, borderRadius: "50%", flexShrink: 0,
                   background: done ? "var(--accent)" : active ? "var(--primary)" : "rgba(255,255,255,0.1)",
                   display: "grid", placeItems: "center",
-                  fontSize: done ? 14 : 13, fontWeight: 800, color: "white",
+                  fontSize: done ? 16 : 15, fontWeight: 800, color: "white",
                 }}>
                   {done ? "✓" : active ? s.icon : i + 1}
                 </div>
                 <div>
-                  <div style={{ fontSize: 13, fontWeight: active ? 700 : 500, color: active ? "white" : done ? "rgba(255,255,255,0.7)" : "rgba(255,255,255,0.4)" }}>
+                  <div style={{ fontSize: 15, fontWeight: active ? 700 : 500, color: active ? "white" : done ? "rgba(255,255,255,0.7)" : "rgba(255,255,255,0.4)" }}>
                     {s.label}
                   </div>
                 </div>
@@ -172,7 +210,7 @@ export default function BusinessRegisterPage() {
         </div>
 
         <div style={{ paddingTop: 20, borderTop: "1px solid rgba(255,255,255,0.08)", position: "relative" }}>
-          <Link href="/" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 13, color: "rgba(255,255,255,0.5)", textDecoration: "none", marginBottom: 14, fontWeight: 600 }}>
+          <Link href="/" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 15, color: "rgba(255,255,255,0.5)", textDecoration: "none", marginBottom: 14, fontWeight: 600 }}>
             ← Trang chủ
           </Link>
           <p style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", lineHeight: 1.6 }}>
@@ -188,7 +226,7 @@ export default function BusinessRegisterPage() {
         <div className="biz-reg-mobile-header">
           <Link href="/" style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <img src="/crumbup-logo-tabweb.jpg" alt="CrumbUp" style={{ width: 36, height: 36, borderRadius: 12, objectFit: "cover" }} />
-            <span style={{ fontWeight: 900, fontSize: 15, letterSpacing: "-0.02em" }}>CrumbUp</span>
+            <span style={{ fontWeight: 900, fontSize: 17, letterSpacing: "-0.02em" }}>CrumbUp</span>
           </Link>
           <span style={{ fontSize: 12, fontWeight: 700, color: "var(--primary)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
             Bước {curIdx + 1}/{STEPS.length}
@@ -212,7 +250,7 @@ export default function BusinessRegisterPage() {
           {/* ── STEP 1: ADDRESS SEARCH ── */}
           {step === "search" && (
             <>
-              <h1 style={h1}>Địa chỉ tiệm của bạn</h1>
+              <h1 style={h1}>Địa chỉ cửa hàng của bạn</h1>
               <p style={sub}>Nhập địa chỉ và chọn từ gợi ý để xác định vị trí chính xác trên bản đồ.</p>
 
               <AddressPicker
@@ -226,7 +264,7 @@ export default function BusinessRegisterPage() {
               <Btn
                 onClick={() => {
                   setError("");
-                  if (!storeAddr.trim()) { setError("Vui lòng nhập địa chỉ tiệm"); return; }
+                  if (!storeAddr.trim()) { setError("Vui lòng nhập địa chỉ cửa hàng"); return; }
                   if (!storeLat || !storeLng) { setError("Vui lòng chọn địa chỉ từ gợi ý để xác định vị trí trên bản đồ"); return; }
                   setStep("confirm");
                   window.scrollTo({ top: 0, behavior: "smooth" });
@@ -242,18 +280,18 @@ export default function BusinessRegisterPage() {
           {step === "confirm" && (
             <>
               <BackBtn onClick={() => setStep("search")} />
-              <h1 style={h1}>Thông tin tiệm</h1>
-              <p style={sub}>Điền tên và thông tin tiệm. Địa chỉ đã được xác định ở bước trước.</p>
+              <h1 style={h1}>Thông tin cửa hàng</h1>
+              <p style={sub}>Điền tên và thông tin cửa hàng. Địa chỉ đã được xác định ở bước trước.</p>
 
               {/* Address read-only */}
               <div style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "12px 16px", background: "var(--accent-soft)", borderRadius: 12, border: "1px solid var(--accent)", marginBottom: 18 }}>
-                <span style={{ fontSize: 16, flexShrink: 0, marginTop: 1 }}>📍</span>
-                <span style={{ fontSize: 13, color: "var(--text)", lineHeight: 1.5 }}>{storeAddr}</span>
+                <span style={{ fontSize: 18, flexShrink: 0, marginTop: 1 }}>📍</span>
+                <span style={{ fontSize: 15, color: "var(--text)", lineHeight: 1.5 }}>{storeAddr}</span>
               </div>
 
               <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-                <Field label="Tên tiệm" required>
-                  <input type="text" value={storeName} onChange={(e) => setStoreName(e.target.value)} placeholder="Tiệm Bánh Mì ABC" style={inp}
+                <Field label="Tên cửa hàng" required>
+                  <input type="text" value={storeName} onChange={(e) => setStoreName(e.target.value)} placeholder="Cửa Hàng ABC" style={inp}
                     onFocus={(e) => (e.target.style.borderColor = "var(--primary)")}
                     onBlur={(e) => (e.target.style.borderColor = "var(--border)")} />
                 </Field>
@@ -264,13 +302,21 @@ export default function BusinessRegisterPage() {
                     onBlur={(e) => (e.target.style.borderColor = "var(--border)")} />
                 </Field>
 
+                <Field label="Ngành hàng" required>
+                  <select value={industry} onChange={(e) => setIndustry(e.target.value)}
+                    style={{ ...inp, appearance: "none", cursor: "pointer" }}>
+                    {INDUSTRY_OPTIONS.map((i) => <option key={i.value} value={i.value}>{i.label}</option>)}
+                  </select>
+                  <p style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 6 }}>Quyết định danh mục sản phẩm hiển thị khi bạn tạo box sau này</p>
+                </Field>
+
                 <div>
-                  <label style={{ display: "block", fontSize: 13, fontWeight: 700, marginBottom: 8 }}>Giờ mở – đóng cửa</label>
+                  <label style={{ display: "block", fontSize: 15, fontWeight: 700, marginBottom: 8 }}>Giờ mở – đóng cửa</label>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: 10, alignItems: "center" }}>
                     <input type="time" value={storeOpen} onChange={(e) => setStoreOpen(e.target.value)} style={inp}
                       onFocus={(e) => (e.target.style.borderColor = "var(--primary)")}
                       onBlur={(e) => (e.target.style.borderColor = "var(--border)")} />
-                    <span style={{ fontSize: 14, color: "var(--text-muted)", fontWeight: 600, textAlign: "center" }}>–</span>
+                    <span style={{ fontSize: 16, color: "var(--text-muted)", fontWeight: 600, textAlign: "center" }}>–</span>
                     <input type="time" value={storeClose} onChange={(e) => setStoreClose(e.target.value)} style={inp}
                       onFocus={(e) => (e.target.style.borderColor = "var(--primary)")}
                       onBlur={(e) => (e.target.style.borderColor = "var(--border)")} />
@@ -282,7 +328,7 @@ export default function BusinessRegisterPage() {
 
                 <Field label="Mô tả ngắn">
                   <textarea value={storeDesc} onChange={(e) => setStoreDesc(e.target.value)}
-                    placeholder="Mô tả về tiệm, món đặc trưng, không khí..."
+                    placeholder="Mô tả về cửa hàng, sản phẩm đặc trưng, không khí..."
                     rows={3}
                     style={{ ...inp, resize: "vertical" }}
                     onFocus={(e) => (e.target.style.borderColor = "var(--primary)")}
@@ -294,7 +340,7 @@ export default function BusinessRegisterPage() {
               {error && <ErrBox msg={error} />}
 
               <Btn onClick={() => go("account", () => {
-                if (!storeName.trim()) return "Vui lòng nhập tên tiệm";
+                if (!storeName.trim()) return "Vui lòng nhập tên cửa hàng";
                 if (storeOpen && storeClose && storeClose <= storeOpen) return "Giờ đóng cửa phải sau giờ mở cửa";
                 return null;
               })} loading={loading}>
@@ -307,7 +353,7 @@ export default function BusinessRegisterPage() {
           {step === "account" && (
             <>
               <BackBtn onClick={() => setStep("confirm")} />
-              <h1 style={h1}>Tạo tài khoản chủ tiệm</h1>
+              <h1 style={h1}>Tạo tài khoản chủ cửa hàng</h1>
               <p style={sub}>Tài khoản này sẽ có quyền quản lý đơn hàng và xem doanh thu.</p>
 
               <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
@@ -324,7 +370,7 @@ export default function BusinessRegisterPage() {
                       onFocus={(e) => (e.target.style.borderColor = "var(--primary)")}
                       onBlur={(e) => (e.target.style.borderColor = "var(--border)")} />
                     <button type="button" onClick={() => setShowPw((v) => !v)}
-                      style={{ position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)", fontSize: 15, color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer" }}>
+                      style={{ position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)", fontSize: 17, color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer" }}>
                       {showPw ? "ẩn" : "hiện"}
                     </button>
                   </div>
@@ -342,14 +388,14 @@ export default function BusinessRegisterPage() {
 
                 {/* Mandatory 2FA notice */}
                 <div style={{ background: "var(--cream)", borderRadius: 14, padding: "16px 18px", border: "1px solid var(--border)" }}>
-                  <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 4 }}>Xác thực 2 lớp (2FA) — Bắt buộc</div>
+                  <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 4 }}>Xác thực 2 lớp (2FA) — Bắt buộc</div>
                   <p style={{ fontSize: 12, color: "var(--text-muted)", lineHeight: 1.6, marginBottom: 10 }}>
                     Tài khoản cửa hàng bắt buộc bật 2FA để bảo vệ dữ liệu doanh thu và thông tin đơn hàng.
                   </p>
                   <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
                     <input type="checkbox" checked={twoFa} onChange={(e) => setTwoFa(e.target.checked)}
                       style={{ width: 16, height: 16, accentColor: "var(--primary)" }} />
-                    <span style={{ fontSize: 13, fontWeight: 600 }}>Tôi đồng ý bật 2FA sau khi tạo tài khoản</span>
+                    <span style={{ fontSize: 15, fontWeight: 600 }}>Tôi đồng ý bật 2FA sau khi tạo tài khoản</span>
                   </label>
                 </div>
               </div>
@@ -395,7 +441,7 @@ export default function BusinessRegisterPage() {
               </div>
 
               {!gpkdFile && !attFile && (
-                <div style={{ marginTop: 16, padding: "12px 16px", background: "#fffbeb", border: "1px solid #fcd34d", borderRadius: 12, fontSize: 13, color: "#92400e", display: "flex", gap: 10 }}>
+                <div style={{ marginTop: 16, padding: "12px 16px", background: "#fffbeb", border: "1px solid #fcd34d", borderRadius: 12, fontSize: 15, color: "#92400e", display: "flex", gap: 10 }}>
                   <span>⚠️</span>
                   <span>Bạn có thể bỏ qua và bổ sung sau. Tuy nhiên, box sẽ không được publish cho đến khi đủ giấy tờ.</span>
                 </div>
@@ -442,7 +488,7 @@ export default function BusinessRegisterPage() {
               </div>
 
               {/* Fee info */}
-              <div style={{ marginTop: 16, background: "var(--accent-soft)", borderRadius: 14, padding: "14px 18px", fontSize: 13, color: "var(--text)" }}>
+              <div style={{ marginTop: 16, background: "var(--accent-soft)", borderRadius: 14, padding: "14px 18px", fontSize: 15, color: "var(--text)" }}>
                 <div style={{ fontWeight: 700, marginBottom: 4 }}>Phí nền tảng: 15% / đơn</div>
                 <div style={{ color: "var(--text-muted)", lineHeight: 1.6 }}>Doanh thu được chuyển mỗi thứ Hai, không phí rút tiền tối thiểu.</div>
               </div>
@@ -465,7 +511,7 @@ export default function BusinessRegisterPage() {
             <>
               <div style={{ textAlign: "center" }}>
                 <h1 style={{ ...h1, textAlign: "center" }}>Đã nhận hồ sơ!</h1>
-                <p style={{ fontSize: 15, color: "var(--text-muted)", lineHeight: 1.7, maxWidth: 400, margin: "0 auto 28px" }}>
+                <p style={{ fontSize: 17, color: "var(--text-muted)", lineHeight: 1.7, maxWidth: 400, margin: "0 auto 28px" }}>
                   Đội ngũ CrumbUp sẽ xét duyệt giấy tờ trong <strong style={{ color: "var(--text)" }}>1–2 ngày làm việc</strong>.
                   Chúng tôi sẽ email cho bạn khi có kết quả.
                 </p>
@@ -476,19 +522,19 @@ export default function BusinessRegisterPage() {
                     "Bạn có thể vào dashboard để setup box trước",
                     "Box sẽ ở chế độ preview cho đến khi được duyệt",
                   ].map((text) => (
-                    <div key={text} style={{ padding: "12px 16px", background: "white", borderRadius: 12, border: "1px solid var(--border)", fontSize: 13 }}>
+                    <div key={text} style={{ padding: "12px 16px", background: "white", borderRadius: 12, border: "1px solid var(--border)", fontSize: 15 }}>
                       {text}
                     </div>
                   ))}
                 </div>
 
-                <button onClick={() => setStep("box")}
+                <button onClick={() => { loadCategories(); setStep("box"); }}
                   style={{ ...btnStyle, marginBottom: 12 }}>
                   Setup box đầu tiên (preview) →
                 </button>
 
                 <Link href="/partner"
-                  style={{ display: "block", width: "100%", padding: "13px", borderRadius: 12, border: "1.5px solid var(--border)", fontSize: 14, fontWeight: 600, color: "var(--text-muted)", textAlign: "center" }}>
+                  style={{ display: "block", width: "100%", padding: "13px", borderRadius: 12, border: "1.5px solid var(--border)", fontSize: 16, fontWeight: 600, color: "var(--text-muted)", textAlign: "center" }}>
                   Vào Dashboard →
                 </Link>
               </div>
@@ -506,15 +552,39 @@ export default function BusinessRegisterPage() {
               <p style={sub}>Box sẽ hiển thị cho khách hàng ngay khi tài khoản được duyệt.</p>
 
               <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-                <Field label="Loại box" required>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                    {BOX_TYPES.map((t) => (
-                      <button key={t} onClick={() => setBoxType(t)}
-                        style={{ padding: "11px 14px", borderRadius: 12, border: boxType === t ? "2px solid var(--primary)" : "1.5px solid var(--border)", background: boxType === t ? "var(--primary-soft)" : "white", fontSize: 13, fontWeight: boxType === t ? 700 : 500, cursor: "pointer", transition: "all 0.15s", color: boxType === t ? "var(--primary)" : "var(--text)" }}>
-                        {t}
+                <Field label="Tên box" required>
+                  <input type="text" value={boxName} onChange={(e) => setBoxName(e.target.value)} placeholder="Box Bánh Ngọt Cuối Ngày" style={inp}
+                    onFocus={(e) => (e.target.style.borderColor = "var(--primary)")}
+                    onBlur={(e) => (e.target.style.borderColor = "var(--border)")} />
+                </Field>
+
+                <Field label="Ngành hàng sản phẩm" required>
+                  {categories.length > 0 ? (
+                    <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)}
+                      style={{ ...inp, appearance: "none", cursor: "pointer" }}>
+                      {categories.map((c) => <option key={c.id} value={c.id}>{c.emoji} {c.label}</option>)}
+                    </select>
+                  ) : (
+                    <p style={{ fontSize: 13, color: "var(--text-muted)" }}>Đang tải danh mục…</p>
+                  )}
+                </Field>
+
+                <Field label="Ảnh bìa" required>
+                  <input ref={fileRef} type="file" accept="image/*" onChange={handleBoxImage} style={{ display: "none" }} />
+                  {boxImage ? (
+                    <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", height: 140, background: "var(--cream)" }}>
+                      <img src={boxImage} alt="preview" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      <button onClick={() => { setBoxImage(""); if (fileRef.current) fileRef.current.value = ""; }}
+                        style={{ position: "absolute", top: 8, right: 8, width: 28, height: 28, borderRadius: "50%", background: "rgba(0,0,0,0.55)", color: "white", border: "none", cursor: "pointer", fontSize: 16, display: "grid", placeItems: "center" }}>
+                        ✕
                       </button>
-                    ))}
-                  </div>
+                    </div>
+                  ) : (
+                    <button type="button" onClick={() => fileRef.current?.click()} disabled={uploadingImg}
+                      style={{ ...inp, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 80, cursor: uploadingImg ? "not-allowed" : "pointer", border: "2px dashed var(--border)", background: "white", color: "var(--text-muted)", fontWeight: 600 }}>
+                      {uploadingImg ? "Đang upload..." : "Chọn ảnh (tối đa 5MB)"}
+                    </button>
+                  )}
                 </Field>
 
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
@@ -558,11 +628,43 @@ export default function BusinessRegisterPage() {
 
               {error && <ErrBox msg={error} />}
 
-              <Btn onClick={() => go("review" as Step, () => {
-                if (!priceOrig || !priceSale) return "Vui lòng nhập giá gốc và giá bán";
-                if (Number(priceSale) >= Number(priceOrig)) return "Giá bán phải thấp hơn giá gốc";
-                return null;
-              })} loading={loading}>
+              <Btn onClick={async () => {
+                setError("");
+                if (!boxName.trim()) { setError("Vui lòng nhập tên box"); return; }
+                if (!categoryId) { setError("Vui lòng chọn ngành hàng sản phẩm"); return; }
+                if (!boxImage) { setError("Vui lòng upload ảnh bìa"); return; }
+                if (!priceOrig || !priceSale) { setError("Vui lòng nhập giá gốc và giá bán"); return; }
+                if (Number(priceSale) >= Number(priceOrig)) { setError("Giá bán phải thấp hơn giá gốc"); return; }
+                if (pickEnd <= pickStart) { setError("Giờ kết thúc phải sau giờ bắt đầu"); return; }
+
+                setLoading(true);
+                try {
+                  const today = new Date(Date.now() + 7 * 60 * 60_000).toISOString().slice(0, 10);
+                  const res = await fetch("/api/partner/boxes", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      name: boxName,
+                      image: boxImage,
+                      categoryId,
+                      priceOriginal: Number(priceOrig),
+                      priceSale: Number(priceSale),
+                      quantityTotal: Number(qty),
+                      pickupStart: pickStart,
+                      pickupEnd: pickEnd,
+                      date: today,
+                    }),
+                  });
+                  const data = await res.json();
+                  if (!res.ok) { setError(data.error ?? "Lỗi tạo box. Vui lòng thử lại."); setLoading(false); return; }
+                } catch {
+                  setError("Lỗi kết nối. Vui lòng thử lại.");
+                  setLoading(false);
+                  return;
+                }
+                setLoading(false);
+                router.push("/partner");
+              }} loading={loading}>
                 Tạo box & vào Dashboard
               </Btn>
             </>
@@ -577,7 +679,7 @@ export default function BusinessRegisterPage() {
 /* ── Sub-components ── */
 function BackBtn({ onClick }: { onClick: () => void }) {
   return (
-    <button onClick={onClick} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: "var(--text-muted)", marginBottom: 24, background: "none", border: "none", cursor: "pointer", padding: 0 }}>
+    <button onClick={onClick} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 15, color: "var(--text-muted)", marginBottom: 24, background: "none", border: "none", cursor: "pointer", padding: 0 }}>
       ← Quay lại
     </button>
   );
@@ -586,7 +688,7 @@ function BackBtn({ onClick }: { onClick: () => void }) {
 function Field({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) {
   return (
     <div>
-      <label style={{ display: "block", fontSize: 13, fontWeight: 700, marginBottom: 8 }}>
+      <label style={{ display: "block", fontSize: 15, fontWeight: 700, marginBottom: 8 }}>
         {label} {required && <span style={{ color: "var(--danger)" }}>*</span>}
       </label>
       {children}
@@ -604,7 +706,7 @@ function Btn({ onClick, loading, children }: { onClick: () => void; loading?: bo
 }
 
 function ErrBox({ msg }: { msg: string }) {
-  return <div style={{ marginTop: 16, padding: "11px 14px", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 10, fontSize: 13, color: "var(--danger)" }}>{msg}</div>;
+  return <div style={{ marginTop: 16, padding: "11px 14px", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 10, fontSize: 15, color: "var(--danger)" }}>{msg}</div>;
 }
 
 function UploadBox({ label, desc, required, icon, file, onChange }: {
@@ -614,7 +716,7 @@ function UploadBox({ label, desc, required, icon, file, onChange }: {
   const ref = useRef<HTMLInputElement>(null);
   return (
     <div>
-      <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 8 }}>
+      <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 8 }}>
         {label} {required && <span style={{ color: "var(--danger)" }}>*</span>}
       </div>
       <input ref={ref} type="file" accept=".pdf,.jpg,.jpeg,.png" style={{ display: "none" }}
@@ -630,9 +732,9 @@ function UploadBox({ label, desc, required, icon, file, onChange }: {
           background: file ? "var(--accent-soft)" : "white",
           cursor: "pointer", display: "flex", alignItems: "center", gap: 14, transition: "all 0.15s",
         }}>
-        <span style={{ fontSize: 28 }}>{file ? "✅" : icon}</span>
+        <span style={{ fontSize: 32 }}>{file ? "✅" : icon}</span>
         <div>
-          <div style={{ fontSize: 13, fontWeight: 700, color: file ? "var(--accent)" : "var(--text)" }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: file ? "var(--accent)" : "var(--text)" }}>
             {file ? file.name : "Nhấn để upload"}
           </div>
           <div style={{ fontSize: 12, color: "var(--text-muted)" }}>{file ? `${(file.size / 1024).toFixed(0)} KB` : desc}</div>
@@ -641,7 +743,7 @@ function UploadBox({ label, desc, required, icon, file, onChange }: {
           <button
             type="button"
             onClick={(e) => { e.stopPropagation(); onChange(null); }}
-            style={{ marginLeft: "auto", fontSize: 18, background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", flexShrink: 0 }}>
+            style={{ marginLeft: "auto", fontSize: 21, background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", flexShrink: 0 }}>
             ✕
           </button>
         )}
@@ -668,7 +770,7 @@ function StrengthBar({ pw }: { pw: string }) {
 }
 
 /* ── Shared styles ── */
-const h1: React.CSSProperties = { fontSize: 26, fontWeight: 900, marginBottom: 8 };
-const sub: React.CSSProperties = { fontSize: 14, color: "var(--text-muted)", marginBottom: 28, lineHeight: 1.6 };
-const inp: React.CSSProperties = { width: "100%", padding: "13px 16px", borderRadius: 12, border: "1.5px solid var(--border)", fontSize: 14, outline: "none", background: "white", transition: "border-color 0.2s" };
-const btnStyle: React.CSSProperties = { width: "100%", padding: "14px", fontSize: 15, fontWeight: 700, borderRadius: 12, background: "var(--text)", color: "white", border: "none", cursor: "pointer" };
+const h1: React.CSSProperties = { fontSize: 30, fontWeight: 900, marginBottom: 8 };
+const sub: React.CSSProperties = { fontSize: 16, color: "var(--text-muted)", marginBottom: 28, lineHeight: 1.6 };
+const inp: React.CSSProperties = { width: "100%", padding: "13px 16px", borderRadius: 12, border: "1.5px solid var(--border)", fontSize: 16, outline: "none", background: "white", transition: "border-color 0.2s" };
+const btnStyle: React.CSSProperties = { width: "100%", padding: "14px", fontSize: 17, fontWeight: 700, borderRadius: 12, background: "var(--text)", color: "white", border: "none", cursor: "pointer" };

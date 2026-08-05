@@ -72,7 +72,7 @@ export default function OtpInput({ value, onChange, length = 6, disabled, autoFo
               height: 60,
               borderRadius: 14,
               border: filled ? "2.5px solid var(--primary)" : "1.5px solid var(--border)",
-              fontSize: 26,
+              fontSize: 30,
               fontWeight: 800,
               textAlign: "center",
               background: filled ? "var(--primary-soft)" : "var(--ivory)",

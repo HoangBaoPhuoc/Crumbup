@@ -31,7 +31,7 @@ export default function PendingActions({ storeId, storeName }: { storeId: string
         style={{
           padding: "9px 20px", borderRadius: 10, border: "none",
           background: loading === "approve" ? "#86efac" : "#b87c52",
-          color: "white", fontSize: 13, fontWeight: 700,
+          color: "white", fontSize: 15, fontWeight: 700,
           cursor: loading ? "not-allowed" : "pointer", minWidth: 100,
         }}
       >
@@ -45,7 +45,7 @@ export default function PendingActions({ storeId, storeName }: { storeId: string
           border: "1px solid #e5d5c8",
           background: "white",
           color: loading === "reject" ? "#c4a882" : "#78716c",
-          fontSize: 13, fontWeight: 700,
+          fontSize: 15, fontWeight: 700,
           cursor: loading ? "not-allowed" : "pointer", minWidth: 100,
         }}
       >

@@ -3,13 +3,13 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { FOOD_CATEGORIES } from "@/lib/utils";
+import type { CategoryOption } from "@/lib/utils";
 
 const BUCKET = "box-images";
 
 type PrefillBox = {
   name: string; description: string | null; image: string | null;
-  category: string; productType: string;
+  categoryId: string;
   priceOriginal: number; priceSale: number;
   quantityTotal: number; pickupStart: string; pickupEnd: string;
 };
@@ -27,17 +27,16 @@ function Field({ label, required, children }: { label: string; required?: boolea
 
 const inp: React.CSSProperties = {
   width: "100%", padding: "10px 12px", borderRadius: 10,
-  border: "1px solid var(--border)", fontSize: 13,
+  border: "1px solid var(--border)", fontSize: 15,
   outline: "none", background: "var(--ivory)",
   boxSizing: "border-box", color: "var(--text)",
 };
 
-export default function RepostBoxModal({ box, storeAddress, onClose }: {
-  box: PrefillBox; storeAddress: string; onClose: () => void;
+export default function RepostBoxModal({ box, storeAddress, categories, onClose }: {
+  box: PrefillBox; storeAddress: string; categories: CategoryOption[]; onClose: () => void;
 }) {
   const router  = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
-  const isVoucher = box.productType === "VOUCHER";
 
   const todayStr = new Date(Date.now() + 7 * 60 * 60_000).toISOString().slice(0, 10);
   const nowVN    = new Date(Date.now() + 7 * 60 * 60_000);
@@ -50,7 +49,7 @@ export default function RepostBoxModal({ box, storeAddress, onClose }: {
     name:          box.name,
     description:   box.description ?? "",
     image:         box.image ?? "",
-    category:      box.category,
+    categoryId:    box.categoryId,
     priceOriginal: String(box.priceOriginal),
     priceSale:     String(box.priceSale),
     quantityTotal: String(box.quantityTotal),
@@ -98,7 +97,6 @@ export default function RepostBoxModal({ box, storeAddress, onClose }: {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ...form,
-        productType: box.productType,
         priceOriginal: Number(form.priceOriginal),
         priceSale:     Number(form.priceSale),
         quantityTotal: Number(form.quantityTotal),
@@ -106,7 +104,7 @@ export default function RepostBoxModal({ box, storeAddress, onClose }: {
     });
     const data = await res.json();
     setLoading(false);
-    if (!res.ok) { setError(data.error ?? (isVoucher ? "Lỗi đăng lại voucher" : "Lỗi đăng lại box")); return; }
+    if (!res.ok) { setError(data.error ?? "Lỗi đăng lại box"); return; }
     onClose();
     router.refresh();
   }
@@ -121,13 +119,11 @@ export default function RepostBoxModal({ box, storeAddress, onClose }: {
         width: "100%", maxWidth: 520, maxHeight: "90vh", overflowY: "auto",
       }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 900, color: "var(--text)" }}>{isVoucher ? "Đăng lại Voucher" : "Đăng lại Box"}</h2>
-          <button onClick={onClose} style={{ fontSize: 18, color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer" }}>✕</button>
+          <h2 style={{ fontSize: 21, fontWeight: 900, color: "var(--text)" }}>Đăng lại Box</h2>
+          <button onClick={onClose} style={{ fontSize: 21, color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer" }}>✕</button>
         </div>
         <p style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 24 }}>
-          {isVoucher
-            ? "Thông tin được điền sẵn từ voucher cũ. Cập nhật khung giờ hoặc ngày nếu đăng lại hôm nay."
-            : "Thông tin được điền sẵn từ box cũ. Cập nhật giờ nhận hoặc ngày nếu đăng lại hôm nay."}
+          Thông tin được điền sẵn từ box cũ. Cập nhật giờ nhận hoặc ngày nếu đăng lại hôm nay.
         </p>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
@@ -135,7 +131,7 @@ export default function RepostBoxModal({ box, storeAddress, onClose }: {
             <span style={{ fontWeight: 700, color: "var(--text)" }}>Địa chỉ nhận hàng: </span>{storeAddress}
           </div>
 
-          <Field label={isVoucher ? "Tên ưu đãi" : "Tên box"} required>
+          <Field label="Tên box" required>
             <input value={form.name} onChange={(e) => set("name", e.target.value)} placeholder="Box Bánh Ngọt Cuối Ngày" style={inp} />
           </Field>
 
@@ -144,15 +140,13 @@ export default function RepostBoxModal({ box, storeAddress, onClose }: {
               rows={2} style={{ ...inp, resize: "vertical" }} />
           </Field>
 
-          {!isVoucher && (
-            <Field label="Ngành hàng" required>
-              <select value={form.category} onChange={(e) => set("category", e.target.value)} style={inp}>
-                {FOOD_CATEGORIES.map((c) => (
-                  <option key={c.value} value={c.value}>{c.emoji} {c.label}</option>
-                ))}
-              </select>
-            </Field>
-          )}
+          <Field label="Ngành hàng" required>
+            <select value={form.categoryId} onChange={(e) => set("categoryId", e.target.value)} style={inp}>
+              {categories.map((c) => (
+                <option key={c.id} value={c.id}>{c.emoji} {c.label}</option>
+              ))}
+            </select>
+          </Field>
 
           <Field label="Ảnh bìa" required>
             <input ref={fileRef} type="file" accept="image/*" onChange={handleFile} style={{ display: "none" }} />
@@ -160,21 +154,21 @@ export default function RepostBoxModal({ box, storeAddress, onClose }: {
               <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", height: 140, background: "var(--cream)" }}>
                 <img src={form.image} alt="preview" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                 <button onClick={() => { set("image", ""); if (fileRef.current) fileRef.current.value = ""; }}
-                  style={{ position: "absolute", top: 8, right: 8, width: 28, height: 28, borderRadius: "50%", background: "rgba(0,0,0,0.55)", color: "white", border: "none", cursor: "pointer", fontSize: 14, display: "grid", placeItems: "center" }}>✕</button>
+                  style={{ position: "absolute", top: 8, right: 8, width: 28, height: 28, borderRadius: "50%", background: "rgba(0,0,0,0.55)", color: "white", border: "none", cursor: "pointer", fontSize: 16, display: "grid", placeItems: "center" }}>✕</button>
               </div>
             ) : (
               <button type="button" onClick={() => fileRef.current?.click()} disabled={uploading}
-                style={{ ...inp, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 80, cursor: uploading ? "not-allowed" : "pointer", border: "2px dashed var(--border)", background: "var(--ivory)", color: "var(--text-muted)", fontSize: 13, fontWeight: 600 }}>
+                style={{ ...inp, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 80, cursor: uploading ? "not-allowed" : "pointer", border: "2px dashed var(--border)", background: "var(--ivory)", color: "var(--text-muted)", fontSize: 15, fontWeight: 600 }}>
                 {uploading ? "Đang upload..." : "Chọn ảnh mới (tùy chọn)"}
               </button>
             )}
           </Field>
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-            <Field label={isVoucher ? "Giá trị gốc (đ)" : "Giá gốc (đ)"} required>
+            <Field label="Giá gốc (đ)" required>
               <input type="number" value={form.priceOriginal} onChange={(e) => set("priceOriginal", e.target.value)} min="0" style={inp} />
             </Field>
-            <Field label={isVoucher ? "Giá bán voucher (đ)" : "Giá bán (đ)"} required>
+            <Field label="Giá bán (đ)" required>
               <input type="number" value={form.priceSale} onChange={(e) => set("priceSale", e.target.value)} min="0" style={inp} />
               {discount !== null && discount > 0 && (
                 <p style={{ fontSize: 11, color: "var(--primary)", fontWeight: 700, marginTop: 4 }}>Giảm {discount}%</p>
@@ -185,13 +179,13 @@ export default function RepostBoxModal({ box, storeAddress, onClose }: {
           {/* Time & date — highlighted as "requires update" */}
           <div style={{ padding: 14, background: "#fffbeb", border: "1px solid #fcd34d", borderRadius: 12 }}>
             <div style={{ fontSize: 12, fontWeight: 700, color: "#92400e", marginBottom: 10 }}>
-              ⏰ {isVoucher ? "Kiểm tra lại khung giờ và ngày" : "Kiểm tra lại giờ nhận và ngày"}
+              ⏰ Kiểm tra lại giờ nhận và ngày
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
               <Field label="Số lượng" required>
                 <input type="number" value={form.quantityTotal} onChange={(e) => set("quantityTotal", e.target.value)} min="1" max="100" style={inp} />
               </Field>
-              <Field label={isVoucher ? "Khung giờ từ" : "Nhận từ"}>
+              <Field label="Nhận từ">
                 <input type="time" value={form.pickupStart} onChange={(e) => set("pickupStart", e.target.value)} style={inp} />
               </Field>
               <Field label="Đến">
@@ -207,17 +201,17 @@ export default function RepostBoxModal({ box, storeAddress, onClose }: {
         </div>
 
         {error && (
-          <div style={{ marginTop: 14, padding: "10px 14px", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 10, fontSize: 13, color: "#b91c1c" }}>
+          <div style={{ marginTop: 14, padding: "10px 14px", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 10, fontSize: 15, color: "#b91c1c" }}>
             {error}
           </div>
         )}
 
         <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
-          <button onClick={onClose} style={{ flex: 1, padding: "11px", borderRadius: 10, border: "1px solid var(--border)", background: "white", fontSize: 13, fontWeight: 600, cursor: "pointer", color: "var(--text-muted)" }}>
+          <button onClick={onClose} style={{ flex: 1, padding: "11px", borderRadius: 10, border: "1px solid var(--border)", background: "white", fontSize: 15, fontWeight: 600, cursor: "pointer", color: "var(--text-muted)" }}>
             Hủy
           </button>
-          <button onClick={submit} disabled={loading} style={{ flex: 2, padding: "11px", borderRadius: 10, background: loading ? "var(--primary-soft)" : "var(--primary)", color: loading ? "var(--primary)" : "white", border: "none", fontSize: 13, fontWeight: 700, cursor: loading ? "not-allowed" : "pointer" }}>
-            {loading ? "Đang đăng..." : (isVoucher ? "Đăng lại Voucher" : "Đăng lại Box")}
+          <button onClick={submit} disabled={loading} style={{ flex: 2, padding: "11px", borderRadius: 10, background: loading ? "var(--primary-soft)" : "var(--primary)", color: loading ? "var(--primary)" : "white", border: "none", fontSize: 15, fontWeight: 700, cursor: loading ? "not-allowed" : "pointer" }}>
+            {loading ? "Đang đăng..." : "Đăng lại Box"}
           </button>
         </div>
       </div>

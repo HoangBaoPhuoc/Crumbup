@@ -31,7 +31,6 @@ function RegisterForm() {
   const [oauthLoading, setOauthLoading] = useState<"google" | null>(null);
   const [oauthError, setOauthError] = useState("");
   const [error, setError]       = useState("");
-  const [comingSoon, setComingSoon] = useState(false);
 
   useEffect(() => {
     if (searchParams.get("error") === "email-exists") {
@@ -52,11 +51,6 @@ function RegisterForm() {
       setOauthError("Không thể đăng ký bằng Google. Vui lòng thử lại.");
     }
     // On success Supabase redirects the browser away to Google — nothing left to do here.
-  }
-
-  function facebookComingSoon() {
-    setComingSoon(true);
-    setTimeout(() => setComingSoon(false), 3500);
   }
 
   async function register() {
@@ -106,7 +100,7 @@ function RegisterForm() {
       <BrandPanel />
 
       <div style={{ background: "white", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "48px 40px", position: "relative" }}>
-        <Link href="/" style={{ position: "absolute", top: 24, left: 28, display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 600, color: "var(--text-muted)", textDecoration: "none" }}>
+        <Link href="/" style={{ position: "absolute", top: 24, left: 28, display: "flex", alignItems: "center", gap: 6, fontSize: 15, fontWeight: 600, color: "var(--text-muted)", textDecoration: "none" }}>
           ← Trang chủ
         </Link>
         <div style={{ width: "100%", maxWidth: 420 }}>
@@ -114,8 +108,8 @@ function RegisterForm() {
           {/* ── STEP: FORM ── */}
           {step === "form" && (
             <>
-              <h1 style={{ fontSize: 26, fontWeight: 900, marginBottom: 6 }}>Tạo tài khoản</h1>
-              <p style={{ fontSize: 14, color: "var(--text-muted)", marginBottom: 28 }}>
+              <h1 style={{ fontSize: 30, fontWeight: 900, marginBottom: 6 }}>Tạo tài khoản</h1>
+              <p style={{ fontSize: 16, color: "var(--text-muted)", marginBottom: 28 }}>
                 Đã có tài khoản?{" "}
                 <Link href="/login" style={{ color: "var(--primary)", fontWeight: 700 }}>Đăng nhập</Link>
               </p>
@@ -127,14 +121,8 @@ function RegisterForm() {
                   loading={oauthLoading === "google"} primary
                   onClick={signInWithGoogle}
                 />
-                <OAuthBtn
-                  icon={<FacebookIcon />} label="Đăng ký với Facebook"
-                  loading={false}
-                  onClick={facebookComingSoon}
-                />
               </div>
               {oauthError && <ErrBox msg={oauthError} />}
-              {comingSoon && <ComingSoonBox msg="Tính năng đang được phát triển, vui lòng đăng ký bằng email." />}
 
               <Divider label="hoặc đăng ký bằng email" />
 
@@ -167,7 +155,7 @@ function RegisterForm() {
                       onFocus={(e) => (e.target.style.borderColor = "var(--primary)")}
                       onBlur={(e) => (e.target.style.borderColor = "var(--border)")} />
                     <button type="button" onClick={() => setShowPw((v) => !v)}
-                      style={{ position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)", fontSize: 13, color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer", fontWeight: 600 }}>
+                      style={{ position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)", fontSize: 15, color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer", fontWeight: 600 }}>
                       {showPw ? "ẩn" : "hiện"}
                     </button>
                   </div>
@@ -177,7 +165,7 @@ function RegisterForm() {
                 <div>
                   <label style={lbl}>Số điện thoại <Req /></label>
                   <div style={{ display: "flex", gap: 8 }}>
-                    <div style={{ padding: "13px 14px", borderRadius: 12, border: "1.5px solid var(--border)", background: "var(--cream)", fontSize: 14, fontWeight: 700, whiteSpace: "nowrap", flexShrink: 0 }}>
+                    <div style={{ padding: "13px 14px", borderRadius: 12, border: "1.5px solid var(--border)", background: "var(--cream)", fontSize: 16, fontWeight: 700, whiteSpace: "nowrap", flexShrink: 0 }}>
                       🇻🇳 +84
                     </div>
                     <input type="tel" value={phone} placeholder="901 234 567"
@@ -210,19 +198,19 @@ function RegisterForm() {
           {/* ── STEP: EMAIL SENT ── */}
           {step === "sent" && (
             <div style={{ textAlign: "center" }}>
-              <div style={{ width: 72, height: 72, borderRadius: 20, background: "var(--primary-soft)", display: "grid", placeItems: "center", fontSize: 36, margin: "0 auto 24px" }}>
+              <div style={{ width: 72, height: 72, borderRadius: 20, background: "var(--primary-soft)", display: "grid", placeItems: "center", fontSize: 41, margin: "0 auto 24px" }}>
                 ✉️
               </div>
-              <h1 style={{ fontSize: 24, fontWeight: 900, marginBottom: 12 }}>Kiểm tra email của bạn</h1>
-              <p style={{ fontSize: 15, color: "var(--text-muted)", lineHeight: 1.7, marginBottom: 8 }}>
+              <h1 style={{ fontSize: 28, fontWeight: 900, marginBottom: 12 }}>Kiểm tra email của bạn</h1>
+              <p style={{ fontSize: 17, color: "var(--text-muted)", lineHeight: 1.7, marginBottom: 8 }}>
                 Chúng tôi đã gửi link xác nhận đến
               </p>
-              <p style={{ fontSize: 15, fontWeight: 700, color: "var(--text)", marginBottom: 28 }}>{email}</p>
-              <p style={{ fontSize: 13, color: "var(--text-muted)", lineHeight: 1.7, marginBottom: 32 }}>
+              <p style={{ fontSize: 17, fontWeight: 700, color: "var(--text)", marginBottom: 28 }}>{email}</p>
+              <p style={{ fontSize: 15, color: "var(--text-muted)", lineHeight: 1.7, marginBottom: 32 }}>
                 Nhấn vào link trong email để kích hoạt tài khoản. Kiểm tra cả thư mục <strong>Spam</strong> nếu không thấy.
               </p>
               <Link href="/login"
-                style={{ display: "block", width: "100%", padding: "14px", fontSize: 15, fontWeight: 700, borderRadius: 12, background: "var(--text)", color: "white", textDecoration: "none", textAlign: "center" }}>
+                style={{ display: "block", width: "100%", padding: "14px", fontSize: 17, fontWeight: 700, borderRadius: 12, background: "var(--text)", color: "white", textDecoration: "none", textAlign: "center" }}>
                 Về trang đăng nhập
               </Link>
             </div>
@@ -231,21 +219,21 @@ function RegisterForm() {
           {/* ── STEP: LOCATION ── */}
           {step === "location" && (
             <div style={{ textAlign: "center" }}>
-              <div style={{ width: 72, height: 72, borderRadius: 20, background: "var(--accent-soft)", display: "grid", placeItems: "center", fontSize: 36, margin: "0 auto 24px" }}>
+              <div style={{ width: 72, height: 72, borderRadius: 20, background: "var(--accent-soft)", display: "grid", placeItems: "center", fontSize: 41, margin: "0 auto 24px" }}>
                 📍
               </div>
-              <h1 style={{ fontSize: 24, fontWeight: 900, marginBottom: 10 }}>Cho phép vị trí?</h1>
-              <p style={{ fontSize: 14, color: "var(--text-muted)", lineHeight: 1.7, maxWidth: 320, margin: "0 auto 28px" }}>
+              <h1 style={{ fontSize: 28, fontWeight: 900, marginBottom: 10 }}>Cho phép vị trí?</h1>
+              <p style={{ fontSize: 16, color: "var(--text-muted)", lineHeight: 1.7, maxWidth: 320, margin: "0 auto 28px" }}>
                 Chúng tôi sẽ hiện các Surprise Box gần bạn nhất — tươi, nhanh, đúng tầm tay.
               </p>
 
               <div style={{ background: "var(--cream)", borderRadius: 16, padding: "16px 20px", marginBottom: 28, textAlign: "left" }}>
                 {[
-                  "Box từ các tiệm gần nhà",
+                  "Box từ các cửa hàng gần nhà",
                   "Thời gian nhận hàng ngắn nhất",
                   "Vị trí chỉ dùng trong app, không chia sẻ",
                 ].map((t) => (
-                  <div key={t} style={{ display: "flex", alignItems: "center", gap: 10, padding: "6px 0", fontSize: 13, fontWeight: 500 }}>
+                  <div key={t} style={{ display: "flex", alignItems: "center", gap: 10, padding: "6px 0", fontSize: 15, fontWeight: 500 }}>
                     <div style={{ width: 5, height: 5, borderRadius: 999, background: "var(--primary)", flexShrink: 0 }} />
                     <span>{t}</span>
                   </div>
@@ -256,7 +244,7 @@ function RegisterForm() {
                 Cho phép vị trí
               </button>
               <button onClick={() => router.push("/discover")}
-                style={{ width: "100%", padding: "13px", fontSize: 14, fontWeight: 600, borderRadius: 12, background: "transparent", color: "var(--text-muted)", border: "1.5px solid var(--border)", cursor: "pointer" }}>
+                style={{ width: "100%", padding: "13px", fontSize: 16, fontWeight: 600, borderRadius: 12, background: "transparent", color: "var(--text-muted)", border: "1.5px solid var(--border)", cursor: "pointer" }}>
                 Bỏ qua
               </button>
             </div>
@@ -277,17 +265,17 @@ function BrandPanel() {
         <div style={{ width: 80, height: 80, borderRadius: 24, overflow: "hidden", margin: "0 auto 22px", boxShadow: "0 8px 32px rgba(232,119,34,0.4)" }}>
             <img src="/crumbup-logo-tabweb.jpg" alt="CrumbUp" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           </div>
-        <div style={{ fontFamily: "var(--font-display)", fontSize: 40, fontWeight: 900, color: "white", letterSpacing: "-0.03em", marginBottom: 8 }}>CrumbUp</div>
+        <div style={{ fontFamily: "var(--font-display)", fontSize: 46, fontWeight: 900, color: "white", letterSpacing: "-0.03em", marginBottom: 8 }}>CrumbUp</div>
         <div style={{ fontSize: 11, fontWeight: 700, color: "var(--primary)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 36 }}>Save Every Crumb</div>
         <div style={{ display: "flex", flexDirection: "column", gap: 16, textAlign: "left" }}>
           {[
-            { icon: "🛍️", text: "Mua box bánh ngon giá ưu đãi 50–70%" },
+            { icon: "🛍️", text: "Mua Surprise Box & Chương trình khuyến mãi với giá ưu đãi 50–70%" },
             { icon: "♻️", text: "Góp phần giảm lãng phí thực phẩm" },
-            { icon: "📍", text: "Tìm tiệm bánh gần bạn theo thời gian thực" },
+            { icon: "📍", text: "Tìm cửa hàng gần bạn theo thời gian thực" },
           ].map((item) => (
             <div key={item.text} style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
-              <span style={{ fontSize: 20, flexShrink: 0 }}>{item.icon}</span>
-              <span style={{ fontSize: 14, color: "rgba(255,255,255,0.8)", lineHeight: 1.5 }}>{item.text}</span>
+              <span style={{ fontSize: 23, flexShrink: 0 }}>{item.icon}</span>
+              <span style={{ fontSize: 16, color: "rgba(255,255,255,0.8)", lineHeight: 1.5 }}>{item.text}</span>
             </div>
           ))}
         </div>
@@ -299,16 +287,8 @@ function BrandPanel() {
 
 function Req() { return <span style={{ color: "var(--danger)" }}>*</span>; }
 
-function ComingSoonBox({ msg }: { msg: string }) {
-  return (
-    <div style={{ marginTop: 12, padding: "11px 14px", background: "#fffbeb", border: "1px solid #fcd34d", borderRadius: 10, fontSize: 13, color: "#92400e" }}>
-      {msg}
-    </div>
-  );
-}
-
 function ErrBox({ msg }: { msg: string }) {
-  return <div style={{ marginTop: 14, padding: "11px 14px", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 10, fontSize: 13, color: "var(--danger)" }}>{msg}</div>;
+  return <div style={{ marginTop: 14, padding: "11px 14px", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 10, fontSize: 15, color: "var(--danger)" }}>{msg}</div>;
 }
 
 function Divider({ label }: { label: string }) {
@@ -330,7 +310,7 @@ function OAuthBtn({ icon, label, loading, primary = false, onClick }: {
       border: primary ? "none" : "1.5px solid var(--border)",
       background: primary ? "var(--text)" : "white",
       display: "flex", alignItems: "center", gap: 12,
-      fontSize: 14, fontWeight: 700,
+      fontSize: 16, fontWeight: 700,
       color: primary ? "white" : "var(--text)",
       cursor: loading ? "not-allowed" : "pointer",
       opacity: loading ? 0.7 : 1,
@@ -354,14 +334,6 @@ function GoogleIcon() {
   );
 }
 
-function FacebookIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="#1877F2">
-      <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.532-4.697 1.313 0 2.686.235 2.686.235v2.97h-1.513c-1.491 0-1.956.93-1.956 1.886v2.269h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/>
-    </svg>
-  );
-}
-
-const lbl: React.CSSProperties = { display: "block", fontSize: 13, fontWeight: 700, marginBottom: 8 };
-const inp: React.CSSProperties = { width: "100%", padding: "13px 16px", borderRadius: 12, border: "1.5px solid var(--border)", fontSize: 14, outline: "none", background: "var(--ivory)", transition: "border-color 0.2s", boxSizing: "border-box" };
-const btn: React.CSSProperties = { width: "100%", padding: "14px", fontSize: 15, fontWeight: 700, borderRadius: 12, background: "var(--text)", color: "white", border: "none", cursor: "pointer" };
+const lbl: React.CSSProperties = { display: "block", fontSize: 15, fontWeight: 700, marginBottom: 8 };
+const inp: React.CSSProperties = { width: "100%", padding: "13px 16px", borderRadius: 12, border: "1.5px solid var(--border)", fontSize: 16, outline: "none", background: "var(--ivory)", transition: "border-color 0.2s", boxSizing: "border-box" };
+const btn: React.CSSProperties = { width: "100%", padding: "14px", fontSize: 17, fontWeight: 700, borderRadius: 12, background: "var(--text)", color: "white", border: "none", cursor: "pointer" };

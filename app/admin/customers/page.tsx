@@ -40,8 +40,8 @@ export default async function CustomersPage({
   return (
     <div>
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontSize: 22, fontWeight: 900, color: "#3d2f1f", marginBottom: 4 }}>Khách hàng</h1>
-        <p style={{ fontSize: 13, color: "#78716c" }}>{total.toLocaleString()} tài khoản</p>
+        <h1 style={{ fontSize: 25, fontWeight: 900, color: "#3d2f1f", marginBottom: 4 }}>Khách hàng</h1>
+        <p style={{ fontSize: 15, color: "#78716c" }}>{total.toLocaleString()} tài khoản</p>
       </div>
 
       <AdminSearch placeholder="Tìm theo tên, email, SĐT..." defaultValue={q} />
@@ -72,7 +72,7 @@ export default async function CustomersPage({
               </tr>
             ))}
             {users.length === 0 && (
-              <tr><td colSpan={5} style={{ padding: "40px", textAlign: "center", color: "#78716c", fontSize: 13 }}>Không có kết quả</td></tr>
+              <tr><td colSpan={5} style={{ padding: "40px", textAlign: "center", color: "#78716c", fontSize: 15 }}>Không có kết quả</td></tr>
             )}
           </tbody>
         </table>
@@ -89,7 +89,7 @@ function Pagination({ page, pages, q, base }: { page: number; pages: number; q: 
   return (
     <div style={{ display: "flex", gap: 8, justifyContent: "center", marginTop: 24 }}>
       {page > 1 && <a href={`${base}?page=${page - 1}${qs}`} style={pgBtn}>← Trước</a>}
-      <span style={{ padding: "8px 14px", fontSize: 13, color: "#78716c" }}>Trang {page} / {pages}</span>
+      <span style={{ padding: "8px 14px", fontSize: 15, color: "#78716c" }}>Trang {page} / {pages}</span>
       {page < pages && <a href={`${base}?page=${page + 1}${qs}`} style={pgBtn}>Tiếp →</a>}
     </div>
   );
@@ -99,9 +99,9 @@ const th: React.CSSProperties = {
   padding: "10px 20px", textAlign: "left", fontSize: 11,
   fontWeight: 700, color: "#78716c", textTransform: "uppercase", letterSpacing: "0.05em",
 };
-const td: React.CSSProperties = { padding: "12px 20px", fontSize: 13, color: "#3d2f1f" };
+const td: React.CSSProperties = { padding: "12px 20px", fontSize: 15, color: "#3d2f1f" };
 const pgBtn: React.CSSProperties = {
   padding: "8px 14px", borderRadius: 8, background: "#ffffff",
-  border: "1px solid #e5d5c8", fontSize: 13, fontWeight: 600,
+  border: "1px solid #e5d5c8", fontSize: 15, fontWeight: 600,
   color: "#3d2f1f", textDecoration: "none",
 };

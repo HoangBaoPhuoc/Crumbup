@@ -43,8 +43,8 @@ export default async function PendingPage({
   return (
     <div>
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontSize: 22, fontWeight: 900, color: "#3d2f1f", marginBottom: 4 }}>Phê duyệt cửa hàng</h1>
-        <p style={{ fontSize: 13, color: total > 0 ? "#b87c52" : "#78716c", fontWeight: total > 0 ? 600 : 400 }}>
+        <h1 style={{ fontSize: 25, fontWeight: 900, color: "#3d2f1f", marginBottom: 4 }}>Phê duyệt cửa hàng</h1>
+        <p style={{ fontSize: 15, color: total > 0 ? "#b87c52" : "#78716c", fontWeight: total > 0 ? 600 : 400 }}>
           {total > 0 ? `${total.toLocaleString()} cửa hàng chờ duyệt` : "Không có cửa hàng nào chờ duyệt"}
         </p>
       </div>
@@ -56,8 +56,8 @@ export default async function PendingPage({
           background: "#ffffff", borderRadius: 14, border: "1px solid #e5d5c8",
           padding: "60px 40px", textAlign: "center", marginTop: 14,
         }}>
-          <div style={{ fontSize: 14, fontWeight: 700, color: "#3d2f1f", marginBottom: 4 }}>Tất cả đã được xử lý</div>
-          <div style={{ fontSize: 13, color: "#78716c" }}>Không có cửa hàng nào đang chờ phê duyệt</div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: "#3d2f1f", marginBottom: 4 }}>Tất cả đã được xử lý</div>
+          <div style={{ fontSize: 15, color: "#78716c" }}>Không có cửa hàng nào đang chờ phê duyệt</div>
         </div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 14 }}>
@@ -69,7 +69,7 @@ export default async function PendingPage({
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16 }}>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-                    <h3 style={{ fontSize: 15, fontWeight: 800, color: "#3d2f1f", margin: 0 }}>{s.name}</h3>
+                    <h3 style={{ fontSize: 17, fontWeight: 800, color: "#3d2f1f", margin: 0 }}>{s.name}</h3>
                     <span style={{
                       padding: "2px 8px", borderRadius: 999, fontSize: 11, fontWeight: 700,
                       background: "#fef3c7", color: "#92400e",
@@ -89,7 +89,7 @@ export default async function PendingPage({
                   {s.description && (
                     <div style={{
                       marginTop: 10, padding: "9px 12px", background: "#fefbf7",
-                      borderRadius: 8, fontSize: 13, color: "#78716c", border: "1px solid #f0e5d8",
+                      borderRadius: 8, fontSize: 15, color: "#78716c", border: "1px solid #f0e5d8",
                     }}>
                       {s.description}
                     </div>
@@ -110,7 +110,7 @@ export default async function PendingPage({
 
 function Info({ label, value }: { label: string; value: string }) {
   return (
-    <div style={{ fontSize: 13 }}>
+    <div style={{ fontSize: 15 }}>
       <span style={{ color: "#78716c", fontWeight: 600 }}>{label}: </span>
       <span style={{ color: "#3d2f1f" }}>{value}</span>
     </div>
@@ -123,7 +123,7 @@ function Pagination({ page, pages, q, base }: { page: number; pages: number; q: 
   return (
     <div style={{ display: "flex", gap: 8, justifyContent: "center", marginTop: 24 }}>
       {page > 1 && <a href={`${base}?page=${page - 1}${qs}`} style={pgBtn}>← Trước</a>}
-      <span style={{ padding: "8px 14px", fontSize: 13, color: "#78716c" }}>Trang {page} / {pages}</span>
+      <span style={{ padding: "8px 14px", fontSize: 15, color: "#78716c" }}>Trang {page} / {pages}</span>
       {page < pages && <a href={`${base}?page=${page + 1}${qs}`} style={pgBtn}>Tiếp →</a>}
     </div>
   );
@@ -131,6 +131,6 @@ function Pagination({ page, pages, q, base }: { page: number; pages: number; q: 
 
 const pgBtn: React.CSSProperties = {
   padding: "8px 14px", borderRadius: 8, background: "#ffffff",
-  border: "1px solid #e5d5c8", fontSize: 13, fontWeight: 600,
+  border: "1px solid #e5d5c8", fontSize: 15, fontWeight: 600,
   color: "#3d2f1f", textDecoration: "none",
 };

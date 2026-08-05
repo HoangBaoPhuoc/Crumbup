@@ -74,7 +74,7 @@ export default function AdminSidebar({ pendingCount }: { pendingCount: number })
     }}>
       {/* Brand */}
       <div style={{ paddingLeft: 12, marginBottom: 32 }}>
-        <div style={{ fontSize: 18, fontWeight: 900, color: "#3d2f1f", letterSpacing: "-0.02em" }}>CrumbUp</div>
+        <div style={{ fontSize: 21, fontWeight: 900, color: "#3d2f1f", letterSpacing: "-0.02em" }}>CrumbUp</div>
         <div style={{ fontSize: 10, fontWeight: 700, color: "#b87c52", letterSpacing: "0.1em", textTransform: "uppercase", marginTop: 2 }}>
           Admin
         </div>
@@ -90,7 +90,7 @@ export default function AdminSidebar({ pendingCount }: { pendingCount: number })
               padding: "9px 12px", borderRadius: 10,
               background: active ? "#f0e5d8" : "transparent",
               color: active ? "#b87c52" : "#78716c",
-              fontWeight: active ? 700 : 500, fontSize: 14,
+              fontWeight: active ? 700 : 500, fontSize: 16,
               textDecoration: "none", transition: "all 0.12s",
               position: "relative",
             }}>
@@ -116,7 +116,7 @@ export default function AdminSidebar({ pendingCount }: { pendingCount: number })
         display: "flex", alignItems: "center", gap: 10,
         padding: "9px 12px", borderRadius: 10, marginTop: 8,
         background: "transparent", border: "none",
-        color: "#78716c", fontSize: 14, fontWeight: 500,
+        color: "#78716c", fontSize: 16, fontWeight: 500,
         cursor: "pointer", width: "100%", textAlign: "left",
         transition: "color 0.12s",
       }}

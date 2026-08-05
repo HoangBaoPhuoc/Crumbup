@@ -104,16 +104,16 @@ export default function SettingsModal({ onClose }: Props) {
             position: "absolute", top: 18, right: 18, width: 30, height: 30,
             borderRadius: 999, border: "none", background: "var(--cream)",
             display: "grid", placeItems: "center", cursor: "pointer",
-            fontSize: 16, color: "var(--text-muted)",
+            fontSize: 18, color: "var(--text-muted)",
           }}
         >
           ✕
         </button>
 
-        <h2 style={{ fontSize: 20, fontWeight: 900, marginBottom: 22 }}>⚙️ Cài đặt tài khoản</h2>
+        <h2 style={{ fontSize: 23, fontWeight: 900, marginBottom: 22 }}>⚙️ Cài đặt tài khoản</h2>
 
         {step === "loading" && (
-          <p style={{ fontSize: 14, color: "var(--text-muted)" }}>Đang tải...</p>
+          <p style={{ fontSize: 16, color: "var(--text-muted)" }}>Đang tải...</p>
         )}
 
         {/* ── VIEW ── */}
@@ -127,7 +127,7 @@ export default function SettingsModal({ onClose }: Props) {
                 Số điện thoại
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <div style={{ fontSize: 15, fontWeight: 700, color: "var(--text)" }}>
+                <div style={{ fontSize: 17, fontWeight: 700, color: "var(--text)" }}>
                   {phone || "Chưa cập nhật"}
                 </div>
                 <button
@@ -149,13 +149,13 @@ export default function SettingsModal({ onClose }: Props) {
         {/* ── EDIT PHONE ── */}
         {step === "edit" && (
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            <p style={{ fontSize: 13, color: "var(--text-muted)", lineHeight: 1.6 }}>
+            <p style={{ fontSize: 15, color: "var(--text-muted)", lineHeight: 1.6 }}>
               Nhập số điện thoại mới. Chúng tôi sẽ gửi mã xác thực đến email <strong>{email}</strong> để xác nhận trước khi đổi.
             </p>
             <div>
-              <label style={{ display: "block", fontSize: 13, fontWeight: 700, marginBottom: 8 }}>Số điện thoại mới</label>
+              <label style={{ display: "block", fontSize: 15, fontWeight: 700, marginBottom: 8 }}>Số điện thoại mới</label>
               <div style={{ display: "flex", gap: 8 }}>
-                <div style={{ padding: "13px 14px", borderRadius: 12, border: "1.5px solid var(--border)", background: "var(--cream)", fontSize: 14, fontWeight: 700, whiteSpace: "nowrap", flexShrink: 0 }}>
+                <div style={{ padding: "13px 14px", borderRadius: 12, border: "1.5px solid var(--border)", background: "var(--cream)", fontSize: 16, fontWeight: 700, whiteSpace: "nowrap", flexShrink: 0 }}>
                   🇻🇳 +84
                 </div>
                 <input
@@ -164,7 +164,7 @@ export default function SettingsModal({ onClose }: Props) {
                   placeholder="901 234 567"
                   onChange={(e) => setNewPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
                   onKeyDown={(e) => e.key === "Enter" && sendOtp()}
-                  style={{ width: "100%", flex: 1, padding: "13px 16px", borderRadius: 12, border: "1.5px solid var(--border)", fontSize: 14, outline: "none", background: "var(--ivory)", boxSizing: "border-box" }}
+                  style={{ width: "100%", flex: 1, padding: "13px 16px", borderRadius: 12, border: "1.5px solid var(--border)", fontSize: 16, outline: "none", background: "var(--ivory)", boxSizing: "border-box" }}
                 />
               </div>
             </div>
@@ -183,7 +183,7 @@ export default function SettingsModal({ onClose }: Props) {
         {/* ── OTP ── */}
         {step === "otp" && (
           <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-            <p style={{ fontSize: 13, color: "var(--text-muted)", lineHeight: 1.6 }}>
+            <p style={{ fontSize: 15, color: "var(--text-muted)", lineHeight: 1.6 }}>
               Nhập mã 6 số vừa gửi đến <strong>{email}</strong> để xác nhận đổi số điện thoại thành <strong>+84{newPhone}</strong>.
             </p>
 
@@ -216,14 +216,14 @@ function Field({ label, value }: { label: string; value: string }) {
   return (
     <div>
       <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text-muted)", marginBottom: 4 }}>{label}</div>
-      <div style={{ fontSize: 15, fontWeight: 700, color: "var(--text)" }}>{value}</div>
+      <div style={{ fontSize: 17, fontWeight: 700, color: "var(--text)" }}>{value}</div>
     </div>
   );
 }
 
 function ErrBox({ msg }: { msg: string }) {
   return (
-    <div style={{ padding: "11px 14px", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 10, fontSize: 13, color: "var(--danger)" }}>
+    <div style={{ padding: "11px 14px", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 10, fontSize: 15, color: "var(--danger)" }}>
       {msg}
     </div>
   );
@@ -231,18 +231,18 @@ function ErrBox({ msg }: { msg: string }) {
 
 function SuccessBox({ msg }: { msg: string }) {
   return (
-    <div style={{ padding: "11px 14px", background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 10, fontSize: 13, color: "#166534" }}>
+    <div style={{ padding: "11px 14px", background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 10, fontSize: 15, color: "#166534" }}>
       {msg}
     </div>
   );
 }
 
 const primaryBtn: React.CSSProperties = {
-  flex: 1, padding: "13px", fontSize: 14, fontWeight: 700, borderRadius: 12,
+  flex: 1, padding: "13px", fontSize: 16, fontWeight: 700, borderRadius: 12,
   background: "var(--text)", color: "white", border: "none", cursor: "pointer",
 };
 
 const secondaryBtn: React.CSSProperties = {
-  flex: 1, padding: "13px", fontSize: 14, fontWeight: 700, borderRadius: 12,
+  flex: 1, padding: "13px", fontSize: 16, fontWeight: 700, borderRadius: 12,
   background: "white", color: "var(--text)", border: "1.5px solid var(--border)", cursor: "pointer",
 };

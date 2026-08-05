@@ -122,7 +122,7 @@ h4 {
 .site-header {
   background: var(--surface);
   border-bottom: 1px solid var(--border);
-  padding: 18px 64px;
+  padding: 18px 56px;
   display: flex;
   align-items: center;
   gap: 32px;
@@ -172,6 +172,29 @@ h4 {
   border-radius: var(--r-md);
   font-size: 13px;
   font-weight: 500;
+}
+
+/* Hover-to-scroll marquee for long resolved addresses that don't fit */
+.addr-marquee {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+.addr-marquee-track {
+  display: inline-flex;
+  white-space: nowrap;
+}
+.addr-marquee-item {
+  padding-right: 32px;
+}
+.addr-pill:hover .addr-marquee-track {
+  animation: addr-marquee-scroll 6s linear infinite;
+}
+@keyframes addr-marquee-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
 }
 
 .nav {
@@ -240,13 +263,13 @@ h4 {
 .site-footer {
   background: var(--text);
   color: var(--cream);
-  padding: 56px 64px 24px;
+  padding: 56px 56px 24px;
 }
 .footer-grid {
   display: grid;
   grid-template-columns: 1.5fr 1fr 1fr 1fr;
   gap: 40px;
-  max-width: 1280px;
+  max-width: 1600px;
   margin: 0 auto;
 }
 .footer-col h4 {
@@ -270,7 +293,7 @@ h4 {
   color: white;
 }
 .footer-bottom {
-  max-width: 1280px;
+  max-width: 1600px;
   margin: 40px auto 0;
   padding-top: 24px;
   border-top: 1px solid rgba(253, 245, 230, 0.15);
@@ -281,9 +304,9 @@ h4 {
 
 /* ============ UTILITIES ============ */
 .container {
-  max-width: 1280px;
+  max-width: 1600px;
   margin: 0 auto;
-  padding: 0 64px;
+  padding: 0 56px;
 }
 
 .badge {
@@ -704,10 +727,10 @@ h4 {
 
 /* Discover page specific */
 .discover-tabs {
-  padding: 0 64px;
+  padding: 0 56px;
 }
 .discover-main {
-  padding: 32px 64px 48px;
+  padding: 32px 56px 48px;
   background-color: var(--ivory);
 }
 

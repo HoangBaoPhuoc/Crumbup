@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { FOOD_CATEGORIES } from "@/lib/utils";
+import type { CategoryOption } from "@/lib/utils";
 
 const BUCKET = "box-images";
 
@@ -16,7 +16,7 @@ function vnNowHHMM() {
   return `${String(d.getUTCHours()).padStart(2, "0")}:${String(d.getUTCMinutes()).padStart(2, "0")}`;
 }
 
-export default function CreateBoxModal({ storeAddress }: { storeAddress: string }) {
+export default function CreateBoxModal({ storeAddress, categories }: { storeAddress: string; categories: CategoryOption[] }) {
   const router    = useRouter();
   const fileRef   = useRef<HTMLInputElement>(null);
   const [open, setOpen]         = useState(false);
@@ -25,7 +25,7 @@ export default function CreateBoxModal({ storeAddress }: { storeAddress: string 
   const [error, setError]       = useState("");
   const [form, setForm]         = useState({
     name: "", description: "", image: "",
-    category: FOOD_CATEGORIES[0].value as string,
+    categoryId: categories[0]?.id ?? "",
     priceOriginal: "", priceSale: "",
     quantityTotal: "5",
     pickupStart: "17:00", pickupEnd: "20:00",
@@ -85,7 +85,7 @@ export default function CreateBoxModal({ storeAddress }: { storeAddress: string 
     setLoading(false);
     if (!res.ok) { setError(data.error ?? "Lỗi tạo box"); return; }
     setOpen(false);
-    setForm({ name: "", description: "", image: "", category: FOOD_CATEGORIES[0].value, priceOriginal: "", priceSale: "", quantityTotal: "5", pickupStart: "17:00", pickupEnd: "20:00", date: vnToday() });
+    setForm({ name: "", description: "", image: "", categoryId: categories[0]?.id ?? "", priceOriginal: "", priceSale: "", quantityTotal: "5", pickupStart: "17:00", pickupEnd: "20:00", date: vnToday() });
     if (fileRef.current) fileRef.current.value = "";
     router.refresh();
   }
@@ -95,7 +95,7 @@ export default function CreateBoxModal({ storeAddress }: { storeAddress: string 
       <button onClick={() => setOpen(true)} style={{
         padding: "9px 18px", borderRadius: 10,
         background: "var(--primary)", color: "white",
-        border: "none", fontSize: 13, fontWeight: 700, cursor: "pointer",
+        border: "none", fontSize: 15, fontWeight: 700, cursor: "pointer",
       }}>
         + Tạo box mới
       </button>
@@ -110,8 +110,8 @@ export default function CreateBoxModal({ storeAddress }: { storeAddress: string 
             width: "100%", maxWidth: 520, maxHeight: "90vh", overflowY: "auto",
           }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
-              <h2 style={{ fontSize: 18, fontWeight: 900, color: "var(--text)" }}>Tạo Surprise Box</h2>
-              <button onClick={() => setOpen(false)} style={{ fontSize: 18, color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer" }}>✕</button>
+              <h2 style={{ fontSize: 21, fontWeight: 900, color: "var(--text)" }}>Tạo Surprise Box</h2>
+              <button onClick={() => setOpen(false)} style={{ fontSize: 21, color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer" }}>✕</button>
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
@@ -130,9 +130,9 @@ export default function CreateBoxModal({ storeAddress }: { storeAddress: string 
               </Field>
 
               <Field label="Ngành hàng" required>
-                <select value={form.category} onChange={(e) => set("category", e.target.value)} style={inp}>
-                  {FOOD_CATEGORIES.map((c) => (
-                    <option key={c.value} value={c.value}>{c.emoji} {c.label}</option>
+                <select value={form.categoryId} onChange={(e) => set("categoryId", e.target.value)} style={inp}>
+                  {categories.map((c) => (
+                    <option key={c.id} value={c.id}>{c.emoji} {c.label}</option>
                   ))}
                 </select>
               </Field>
@@ -144,13 +144,13 @@ export default function CreateBoxModal({ storeAddress }: { storeAddress: string 
                   <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", height: 140, background: "var(--cream)" }}>
                     <img src={form.image} alt="preview" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                     <button onClick={() => { set("image", ""); if (fileRef.current) fileRef.current.value = ""; }}
-                      style={{ position: "absolute", top: 8, right: 8, width: 28, height: 28, borderRadius: "50%", background: "rgba(0,0,0,0.55)", color: "white", border: "none", cursor: "pointer", fontSize: 14, display: "grid", placeItems: "center" }}>
+                      style={{ position: "absolute", top: 8, right: 8, width: 28, height: 28, borderRadius: "50%", background: "rgba(0,0,0,0.55)", color: "white", border: "none", cursor: "pointer", fontSize: 16, display: "grid", placeItems: "center" }}>
                       ✕
                     </button>
                   </div>
                 ) : (
                   <button type="button" onClick={() => fileRef.current?.click()} disabled={uploading}
-                    style={{ ...inp, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 80, cursor: uploading ? "not-allowed" : "pointer", border: "2px dashed var(--border)", background: "var(--ivory)", color: "var(--text-muted)", fontSize: 13, fontWeight: 600 }}>
+                    style={{ ...inp, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 80, cursor: uploading ? "not-allowed" : "pointer", border: "2px dashed var(--border)", background: "var(--ivory)", color: "var(--text-muted)", fontSize: 15, fontWeight: 600 }}>
                     {uploading ? (
                       <>
                         <span style={{ width: 16, height: 16, border: "2px solid var(--border)", borderTopColor: "var(--primary)", borderRadius: "50%", display: "inline-block", animation: "spin 0.7s linear infinite" }} />
@@ -196,16 +196,16 @@ export default function CreateBoxModal({ storeAddress }: { storeAddress: string 
             </div>
 
             {error && (
-              <div style={{ marginTop: 14, padding: "10px 14px", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 10, fontSize: 13, color: "#b91c1c" }}>
+              <div style={{ marginTop: 14, padding: "10px 14px", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 10, fontSize: 15, color: "#b91c1c" }}>
                 {error}
               </div>
             )}
 
             <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
-              <button onClick={() => setOpen(false)} style={{ flex: 1, padding: "11px", borderRadius: 10, border: "1px solid var(--border)", background: "white", fontSize: 13, fontWeight: 600, cursor: "pointer", color: "var(--text-muted)" }}>
+              <button onClick={() => setOpen(false)} style={{ flex: 1, padding: "11px", borderRadius: 10, border: "1px solid var(--border)", background: "white", fontSize: 15, fontWeight: 600, cursor: "pointer", color: "var(--text-muted)" }}>
                 Hủy
               </button>
-              <button onClick={submit} disabled={loading} style={{ flex: 2, padding: "11px", borderRadius: 10, background: loading ? "var(--primary-soft)" : "var(--primary)", color: loading ? "var(--primary)" : "white", border: "none", fontSize: 13, fontWeight: 700, cursor: loading ? "not-allowed" : "pointer" }}>
+              <button onClick={submit} disabled={loading} style={{ flex: 2, padding: "11px", borderRadius: 10, background: loading ? "var(--primary-soft)" : "var(--primary)", color: loading ? "var(--primary)" : "white", border: "none", fontSize: 15, fontWeight: 700, cursor: loading ? "not-allowed" : "pointer" }}>
                 {loading ? "Đang tạo..." : "Tạo box"}
               </button>
             </div>
@@ -229,7 +229,7 @@ function Field({ label, required, children }: { label: string; required?: boolea
 
 const inp: React.CSSProperties = {
   width: "100%", padding: "10px 12px", borderRadius: 10,
-  border: "1px solid var(--border)", fontSize: 13,
+  border: "1px solid var(--border)", fontSize: 15,
   outline: "none", background: "var(--ivory)",
   boxSizing: "border-box", color: "var(--text)",
 };

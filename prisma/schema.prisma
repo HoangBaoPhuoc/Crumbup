@@ -12,21 +12,40 @@ enum AccountRole {
   BUSINESS
 }
 
-enum FoodCategory {
-  BANH_NGOT
-  BANH_MI
-  DO_UONG
-  MON_MAN
-  TRANG_MIENG
-  KHAC
-  SUPERMARKET_CONVENIENCE
-  PRODUCE
-  LOCAL_SPECIALTY
+enum PromotionKind {
+  PLATFORM_VOUCHER
+  STORE_ANNOUNCEMENT
 }
 
-enum ProductType {
-  SURPRISE_BOX
-  VOUCHER
+enum ClaimStatus {
+  CLAIMED
+  REDEEMED
+  EXPIRED
+}
+
+enum Industry {
+  BAKERY_CAFE
+  SUPERMARKET_CONVENIENCE
+}
+
+enum DealType {
+  PERCENT_OFF
+  FIXED_AMOUNT_OFF
+  BOGO
+  FREEBIE
+  OTHER
+}
+
+model ProductCategory {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  label     String
+  emoji     String?
+  industry  Industry?
+  sortOrder Int      @default(0)
+  active    Boolean  @default(true)
+
+  boxes Box[]
 }
 
 model User {
@@ -39,9 +58,10 @@ model User {
   address   String?
   createdAt DateTime    @default(now())
 
-  orders  Order[]
-  reviews Review[]
-  stores  Store[]
+  orders        Order[]
+  reviews       Review[]
+  stores        Store[]
+  voucherClaims VoucherClaim[]
 }
 
 model Store {
@@ -56,12 +76,14 @@ model Store {
   logo        String?
   description String?
   verified    Boolean  @default(false)
+  industry    Industry @default(BAKERY_CAFE)
   createdAt   DateTime @default(now())
 
-  owner   User     @relation(fields: [ownerId], references: [id])
-  boxes   Box[]
-  orders  Order[]
-  reviews Review[]
+  owner      User        @relation(fields: [ownerId], references: [id])
+  boxes      Box[]
+  orders     Order[]
+  reviews    Review[]
+  promotions Promotion[]
 
   @@unique([name, address])
 }
@@ -79,12 +101,12 @@ model Box {
   pickupEnd       String
   date            DateTime
   image           String?
-  category        FoodCategory @default(KHAC)
-  productType     ProductType @default(SURPRISE_BOX)
+  categoryId      String
   active          Boolean  @default(true)
   createdAt       DateTime @default(now())
 
-  store      Store       @relation(fields: [storeId], references: [id])
+  store      Store           @relation(fields: [storeId], references: [id])
+  category   ProductCategory @relation(fields: [categoryId], references: [id])
   orderItems OrderItem[]
 }
 
@@ -135,4 +157,39 @@ enum OrderStatus {
   CONFIRMED
   PICKED_UP
   CANCELLED
+}
+
+model Promotion {
+  id            String        @id @default(cuid())
+  storeId       String
+  kind          PromotionKind
+  title         String
+  description   String?
+  image         String?
+  dealType      DealType?
+  discountValue Int?
+  validFrom     DateTime
+  validUntil    DateTime
+  totalCodes    Int?
+  claimedCount  Int           @default(0)
+  active        Boolean       @default(true)
+  createdAt     DateTime      @default(now())
+
+  store  Store          @relation(fields: [storeId], references: [id])
+  claims VoucherClaim[]
+}
+
+model VoucherClaim {
+  id          String      @id @default(cuid())
+  promotionId String
+  userId      String
+  code        String      @unique
+  status      ClaimStatus @default(CLAIMED)
+  claimedAt   DateTime    @default(now())
+  redeemedAt  DateTime?
+
+  promotion Promotion @relation(fields: [promotionId], references: [id])
+  user      User      @relation(fields: [userId], references: [id])
+
+  @@unique([promotionId, userId])
 }

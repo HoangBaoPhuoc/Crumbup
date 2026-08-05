@@ -39,13 +39,10 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
             { headers: { "User-Agent": "StillGood/1.0" } }
           );
           const data = await res.json();
-          const addr =
-            data.address?.suburb ||
-            data.address?.quarter ||
-            data.address?.neighbourhood ||
-            data.address?.city_district ||
-            data.address?.city ||
-            data.display_name?.split(",")[0];
+          const ward = data.address?.suburb || data.address?.quarter || data.address?.neighbourhood;
+          const area = data.address?.city_district || data.address?.town || data.address?.city || data.address?.state;
+          const parts = [ward, area].filter((p, i, arr) => p && arr.indexOf(p) === i);
+          const addr = parts.length > 0 ? parts.join(", ") : data.display_name?.split(",").slice(0, 2).join(",");
           setAddress(addr ?? null);
         } catch {
           // silently fail on geocoding

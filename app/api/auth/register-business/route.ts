@@ -1,13 +1,20 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
+import { Industry } from "@/app/generated/prisma/enums";
+
+const INDUSTRY_VALUES = new Set<string>(["BAKERY_CAFE", "SUPERMARKET_CONVENIENCE"]);
 
 export async function POST(request: Request) {
   const {
     email, password, name,
     storeName, storeAddr, storePhone, storeHours, storeDesc,
-    lat, lng,
+    lat, lng, industry,
   } = await request.json();
+
+  if (industry !== undefined && !INDUSTRY_VALUES.has(industry)) {
+    return NextResponse.json({ error: "Ngành hàng không hợp lệ" }, { status: 400 });
+  }
 
   // 1. Check email not already used (by any role)
   const existingByEmail = await prisma.user.findUnique({ where: { email }, select: { role: true } });
@@ -26,7 +33,7 @@ export async function POST(request: Request) {
     });
     if (existingByPhone) {
       return NextResponse.json(
-        { error: "Tiệm này đã được đăng ký bởi chủ khác. Nếu bạn là chủ tiệm, vui lòng liên hệ hỗ trợ." },
+        { error: "Cửa hàng này đã được đăng ký bởi chủ khác. Nếu bạn là chủ cửa hàng, vui lòng liên hệ hỗ trợ." },
         { status: 409 },
       );
     }
@@ -39,7 +46,7 @@ export async function POST(request: Request) {
   });
   if (existingByNameAddr) {
     return NextResponse.json(
-      { error: "Tiệm này đã được đăng ký bởi chủ khác. Nếu bạn là chủ tiệm, vui lòng liên hệ hỗ trợ." },
+      { error: "Cửa hàng này đã được đăng ký bởi chủ khác. Nếu bạn là chủ cửa hàng, vui lòng liên hệ hỗ trợ." },
       { status: 409 },
     );
   }
@@ -85,6 +92,7 @@ export async function POST(request: Request) {
         lat:         lat          ?? null,
         lng:         lng          ?? null,
         verified:    false,
+        ...(industry !== undefined && { industry: industry as Industry }),
       },
     });
   } catch (err) {

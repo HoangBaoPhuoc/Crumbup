@@ -3,11 +3,12 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
 import CreateBoxModal from "./CreateBoxModal";
-import CreateVoucherModal from "./CreateVoucherModal";
 import PartnerLogoutButton from "./PartnerLogoutButton";
 import PartnerTables from "./PartnerTables";
 import BoxHistoryTab from "./BoxHistoryTab";
 import OrderHistoryTab from "./OrderHistoryTab";
+import StoreSettingsForm from "./StoreSettingsForm";
+import PromotionsTab from "./PromotionsTab";
 
 export const dynamic = "force-dynamic";
 
@@ -33,7 +34,7 @@ const th: React.CSSProperties = {
   padding: "10px 20px", textAlign: "left", fontSize: 11,
   fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em",
 };
-const td: React.CSSProperties = { padding: "13px 20px", fontSize: 13, color: "var(--text)" };
+const td: React.CSSProperties = { padding: "13px 20px", fontSize: 15, color: "var(--text)" };
 
 export default async function PartnerDashboard({
   searchParams,
@@ -56,15 +57,15 @@ export default async function PartnerDashboard({
   /* ── Store ── */
   const store = await prisma.store.findFirst({
     where: { ownerId: prismaUser.id },
-    select: { id: true, name: true, address: true, verified: true, openHours: true },
+    select: { id: true, name: true, address: true, phone: true, description: true, verified: true, openHours: true, industry: true },
   });
 
   if (!store) {
     return (
       <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--ivory)" }}>
         <div style={{ textAlign: "center", maxWidth: 400 }}>
-          <div style={{ fontSize: 18, fontWeight: 800, color: "var(--text)", marginBottom: 8 }}>Chưa có cửa hàng</div>
-          <p style={{ fontSize: 14, color: "var(--text-muted)", marginBottom: 20 }}>Tài khoản của bạn chưa liên kết với cửa hàng nào. Vui lòng liên hệ hỗ trợ.</p>
+          <div style={{ fontSize: 21, fontWeight: 800, color: "var(--text)", marginBottom: 8 }}>Chưa có cửa hàng</div>
+          <p style={{ fontSize: 16, color: "var(--text-muted)", marginBottom: 20 }}>Tài khoản của bạn chưa liên kết với cửa hàng nào. Vui lòng liên hệ hỗ trợ.</p>
           <Link href="/" className="btn btn-primary">Về trang chủ</Link>
         </div>
       </div>
@@ -81,19 +82,22 @@ export default async function PartnerDashboard({
   const vnDayStart = new Date(todayVN.getTime() - 7 * 60 * 60_000);
   const vnDayEnd   = new Date(tomorrow.getTime() - 7 * 60 * 60_000);
 
-  const [todayBoxes, futureBoxes, pastBoxes, pendingConfirmedOrders, reviews, allOrdersCount, pendingCount, todayRevenueAgg, completedOrders] = await Promise.all([
+  const [todayBoxes, futureBoxes, pastBoxes, pendingConfirmedOrders, reviews, allOrdersCount, pendingCount, todayRevenueAgg, completedOrders, categoryOptions, promotions] = await Promise.all([
     prisma.box.findMany({
       where: { storeId: store.id, date: { gte: todayVN, lt: tomorrow } },
       orderBy: { createdAt: "desc" },
+      include: { category: true },
     }),
     prisma.box.findMany({
       where: { storeId: store.id, date: { gte: tomorrow } },
       orderBy: { date: "asc" },
+      include: { category: true },
     }),
     prisma.box.findMany({
       where: { storeId: store.id, date: { lt: todayVN } },
       orderBy: { date: "desc" },
       take: 30,
+      include: { category: true },
     }),
     prisma.order.findMany({
       where: { storeId: store.id, status: { in: ["PENDING", "CONFIRMED"] } },
@@ -124,6 +128,16 @@ export default async function PartnerDashboard({
         user: { select: { name: true } },
         items: { take: 1, select: { quantity: true, box: { select: { name: true, date: true, pickupEnd: true } } } },
       },
+    }),
+    prisma.productCategory.findMany({
+      where: { active: true, OR: [{ industry: store.industry }, { industry: null }] },
+      orderBy: { sortOrder: "asc" },
+      select: { id: true, key: true, label: true, emoji: true, industry: true },
+    }),
+    prisma.promotion.findMany({
+      where: { storeId: store.id },
+      orderBy: { createdAt: "desc" },
+      include: { claims: { select: { status: true } } },
     }),
   ]);
 
@@ -161,6 +175,8 @@ export default async function PartnerDashboard({
     { label: "Tổng quan",          href: "/partner",                    key: "overview"      },
     { label: "Lịch sử box",        href: "/partner?tab=box-history",    key: "box-history"   },
     { label: "Lịch sử đơn hàng",   href: "/partner?tab=order-history",  key: "order-history" },
+    { label: "Chương trình khuyến mãi", href: "/partner?tab=promotions", key: "promotions"    },
+    { label: "Cài đặt cửa hàng",   href: "/partner?tab=settings",       key: "settings"      },
   ];
 
   return (
@@ -177,7 +193,7 @@ export default async function PartnerDashboard({
             <div style={{ width: 28, height: 28, backgroundImage: "url('/crumbup-logo-nocap.jpg')", backgroundSize: "contain", backgroundPosition: "center", backgroundRepeat: "no-repeat" }} />
           </div>
           <div>
-            <div style={{ fontSize: 14, fontWeight: 900, color: "var(--text)", letterSpacing: "-0.02em" }}>CrumbUp</div>
+            <div style={{ fontSize: 16, fontWeight: 900, color: "var(--text)", letterSpacing: "-0.02em" }}>CrumbUp</div>
             <div style={{ fontSize: 9, fontWeight: 700, color: "var(--primary)", letterSpacing: "0.1em", textTransform: "uppercase" }}>Cửa hàng</div>
           </div>
         </Link>
@@ -191,7 +207,7 @@ export default async function PartnerDashboard({
                 href={item.href}
                 style={{
                   display: "block", padding: "9px 12px", borderRadius: 10,
-                  fontSize: 14, fontWeight: 600, color: isActive ? "var(--primary)" : "var(--text)",
+                  fontSize: 16, fontWeight: 600, color: isActive ? "var(--primary)" : "var(--text)",
                   textDecoration: "none",
                   background: isActive ? "var(--primary-soft)" : "transparent",
                 }}
@@ -219,7 +235,7 @@ export default async function PartnerDashboard({
               <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
                 <div>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
-                    <h1 style={{ fontSize: 22, fontWeight: 900, color: "var(--text)" }}>{store.name}</h1>
+                    <h1 style={{ fontSize: 25, fontWeight: 900, color: "var(--text)" }}>{store.name}</h1>
                     <span style={{
                       padding: "3px 10px", borderRadius: 999, fontSize: 11, fontWeight: 700,
                       background: store.verified ? "#dcfce7" : "#fef3c7",
@@ -228,16 +244,15 @@ export default async function PartnerDashboard({
                       {store.verified ? "Đã xác nhận" : "Chờ xét duyệt"}
                     </span>
                   </div>
-                  <p style={{ fontSize: 13, color: "var(--text-muted)" }}>{displayDate}</p>
+                  <p style={{ fontSize: 15, color: "var(--text-muted)" }}>{displayDate}</p>
                 </div>
                 <div style={{ display: "flex", gap: 10 }}>
-                  <CreateVoucherModal storeAddress={store.address} />
-                  <CreateBoxModal storeAddress={store.address} />
+                  <CreateBoxModal storeAddress={store.address} categories={categoryOptions} />
                 </div>
               </div>
 
               {!store.verified && (
-                <div style={{ marginTop: 16, padding: "12px 16px", background: "#fffbeb", border: "1px solid #fcd34d", borderRadius: 12, fontSize: 13, color: "#92400e" }}>
+                <div style={{ marginTop: 16, padding: "12px 16px", background: "#fffbeb", border: "1px solid #fcd34d", borderRadius: 12, fontSize: 15, color: "#92400e" }}>
                   Cửa hàng đang chờ admin xét duyệt. Box sẽ hiển thị công khai sau khi được duyệt.
                 </div>
               )}
@@ -256,7 +271,7 @@ export default async function PartnerDashboard({
                   border: (s as { alert?: boolean }).alert ? "2px solid var(--primary)" : "1px solid var(--border)",
                 }}>
                   <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>{s.label}</div>
-                  <div style={{ fontSize: 26, fontWeight: 900, color: (s as { alert?: boolean }).alert ? "var(--primary)" : "var(--text)", lineHeight: 1 }}>{s.value}</div>
+                  <div style={{ fontSize: 30, fontWeight: 900, color: (s as { alert?: boolean }).alert ? "var(--primary)" : "var(--text)", lineHeight: 1 }}>{s.value}</div>
                   <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 6 }}>{s.sub}</div>
                 </div>
               ))}
@@ -268,6 +283,7 @@ export default async function PartnerDashboard({
               recentOrders={activeOrders}
               totalOrders={activeOrders.length}
               storeAddress={store.address}
+              categories={categoryOptions}
             />
           </>
         )}
@@ -275,20 +291,47 @@ export default async function PartnerDashboard({
         {tab === "box-history" && (
           <>
             <div style={{ marginBottom: 24 }}>
-              <h1 style={{ fontSize: 22, fontWeight: 900, color: "var(--text)", marginBottom: 4 }}>Lịch sử box</h1>
-              <p style={{ fontSize: 13, color: "var(--text-muted)" }}>Các box đã hết giờ và từ ngày trước</p>
+              <h1 style={{ fontSize: 25, fontWeight: 900, color: "var(--text)", marginBottom: 4 }}>Lịch sử box</h1>
+              <p style={{ fontSize: 15, color: "var(--text-muted)" }}>Các box đã hết giờ và từ ngày trước</p>
             </div>
-            <BoxHistoryTab historyBoxes={historyBoxes} storeAddress={store.address} />
+            <BoxHistoryTab historyBoxes={historyBoxes} storeAddress={store.address} categories={categoryOptions} />
           </>
         )}
 
         {tab === "order-history" && (
           <>
             <div style={{ marginBottom: 24 }}>
-              <h1 style={{ fontSize: 22, fontWeight: 900, color: "var(--text)", marginBottom: 4 }}>Lịch sử đơn hàng</h1>
-              <p style={{ fontSize: 13, color: "var(--text-muted)" }}>Đơn đã hoàn thành, hủy, hoặc hết giờ nhận</p>
+              <h1 style={{ fontSize: 25, fontWeight: 900, color: "var(--text)", marginBottom: 4 }}>Lịch sử đơn hàng</h1>
+              <p style={{ fontSize: 15, color: "var(--text-muted)" }}>Đơn đã hoàn thành, hủy, hoặc hết giờ nhận</p>
             </div>
             <OrderHistoryTab orders={orderHistory} />
+          </>
+        )}
+
+        {tab === "promotions" && (
+          <>
+            <div style={{ marginBottom: 24 }}>
+              <h1 style={{ fontSize: 25, fontWeight: 900, color: "var(--text)", marginBottom: 4 }}>Chương trình khuyến mãi</h1>
+              <p style={{ fontSize: 15, color: "var(--text-muted)" }}>Quản lý mã khuyến mãi nền tảng và quảng cáo chương trình tại cửa hàng</p>
+            </div>
+            <PromotionsTab promotions={promotions} />
+          </>
+        )}
+
+        {tab === "settings" && (
+          <>
+            <div style={{ marginBottom: 24 }}>
+              <h1 style={{ fontSize: 25, fontWeight: 900, color: "var(--text)", marginBottom: 4 }}>Cài đặt cửa hàng</h1>
+              <p style={{ fontSize: 15, color: "var(--text-muted)" }}>Cập nhật thông tin và ngành hàng của cửa hàng</p>
+            </div>
+            <StoreSettingsForm store={{
+              name: store.name,
+              address: store.address,
+              phone: store.phone,
+              openHours: store.openHours,
+              description: store.description,
+              industry: store.industry,
+            }} />
           </>
         )}
 

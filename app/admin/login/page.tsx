@@ -33,7 +33,7 @@ export default function AdminLoginPage() {
     }}>
       <div style={{ width: "100%", maxWidth: 400, padding: "0 24px" }}>
         <div style={{ textAlign: "center", marginBottom: 36 }}>
-          <div style={{ fontSize: 26, fontWeight: 900, color: "#3d2f1f", letterSpacing: "-0.03em" }}>CrumbUp</div>
+          <div style={{ fontSize: 30, fontWeight: 900, color: "#3d2f1f", letterSpacing: "-0.03em" }}>CrumbUp</div>
           <div style={{ fontSize: 11, fontWeight: 700, color: "#b87c52", letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 4 }}>
             Admin Portal
           </div>
@@ -44,7 +44,7 @@ export default function AdminLoginPage() {
           border: "1px solid #e5d5c8",
           boxShadow: "0 4px 24px -8px rgba(61,47,31,0.08)",
         }}>
-          <h1 style={{ fontSize: 18, fontWeight: 800, color: "#3d2f1f", marginBottom: 24 }}>Đăng nhập quản trị</h1>
+          <h1 style={{ fontSize: 21, fontWeight: 800, color: "#3d2f1f", marginBottom: 24 }}>Đăng nhập quản trị</h1>
 
           <div style={{ marginBottom: 16 }}>
             <label style={lbl}>Email admin</label>
@@ -63,7 +63,7 @@ export default function AdminLoginPage() {
           {error && (
             <div style={{
               marginBottom: 16, padding: "10px 14px", background: "#fef2f2",
-              border: "1px solid #fecaca", borderRadius: 10, fontSize: 13, color: "#b91c1c",
+              border: "1px solid #fecaca", borderRadius: 10, fontSize: 15, color: "#b91c1c",
             }}>
               {error}
             </div>
@@ -72,7 +72,7 @@ export default function AdminLoginPage() {
           <button onClick={login} disabled={loading} style={{
             width: "100%", padding: "13px", borderRadius: 12,
             background: loading ? "#c4a882" : "#b87c52", color: "white",
-            border: "none", fontSize: 15, fontWeight: 700,
+            border: "none", fontSize: 17, fontWeight: 700,
             cursor: loading ? "not-allowed" : "pointer",
           }}>
             {loading ? "Đang đăng nhập..." : "Đăng nhập"}
@@ -88,11 +88,11 @@ export default function AdminLoginPage() {
 }
 
 const lbl: React.CSSProperties = {
-  display: "block", fontSize: 13, fontWeight: 600, color: "#78716c", marginBottom: 8,
+  display: "block", fontSize: 15, fontWeight: 600, color: "#78716c", marginBottom: 8,
 };
 const inp: React.CSSProperties = {
   width: "100%", padding: "11px 14px", borderRadius: 10,
   border: "1px solid #e5d5c8", background: "#fefbf7",
-  fontSize: 14, color: "#3d2f1f", outline: "none",
+  fontSize: 16, color: "#3d2f1f", outline: "none",
   boxSizing: "border-box",
 };

@@ -6,8 +6,8 @@ import { useDiscoverNav } from "./DiscoverNavContext";
 
 const TYPES = [
   { label: "Tất cả",         value: "" },
-  { label: "🎁 Surprise Box", value: "SURPRISE_BOX" },
-  { label: "🎟️ Voucher",     value: "VOUCHER" },
+  { label: "Surprise Box", value: "SURPRISE_BOX" },
+  { label: "Chương trình khuyến mãi", value: "PROMOTION" },
 ];
 
 export default function ProductTypeTabs({ current }: { current: string }) {
