@@ -16,7 +16,7 @@ export default function ClearSearchButton({ q }: { q: string }) {
       }}
     >
       <span>Kết quả cho &ldquo;{q}&rdquo;</span>
-      <span style={{ fontSize: 14, color: "var(--text-muted)" }}>×</span>
+      <span style={{ fontSize: 16, color: "var(--text-muted)" }}>×</span>
     </button>
   );
 }

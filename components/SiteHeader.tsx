@@ -3,7 +3,6 @@ import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import NavLinks from "./NavLinks";
 import SearchBar from "./SearchBar";
-import LocationPill from "./LocationPill";
 import MobileMenuToggle from "./MobileMenuToggle";
 import UserMenu from "./UserMenu";
 
@@ -36,7 +35,6 @@ export default async function SiteHeader() {
 
       {/* Desktop-only middle section */}
       <div className="header-middle" style={{ display: "contents" }}>
-        <LocationPill />
         <NavLinks />
         <Suspense fallback={<div style={{ width: 180, height: 38, borderRadius: 12, background: "var(--ivory)" }} />}>
           <SearchBar />
@@ -66,10 +64,10 @@ export default async function SiteHeader() {
           </div>
         ) : (
           <div style={{ display: "flex", gap: 8 }}>
-            <Link href="/login" className="btn btn-ghost" style={{ padding: "9px 16px", fontSize: 13 }}>
+            <Link href="/login" className="btn btn-ghost" style={{ padding: "9px 16px", fontSize: 15 }}>
               Đăng nhập
             </Link>
-            <Link href="/register" className="btn btn-primary" style={{ padding: "9px 16px", fontSize: 13 }}>
+            <Link href="/register" className="btn btn-primary" style={{ padding: "9px 16px", fontSize: 15 }}>
               Đăng ký
             </Link>
           </div>

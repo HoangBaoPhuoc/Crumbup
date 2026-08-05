@@ -41,7 +41,7 @@ export default function BoxCountdown({ pickupStart, pickupEnd }: { pickupStart: 
         <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>
           Nhận hàng sau
         </div>
-        <div style={{ fontSize: 38, fontWeight: 900, color: "var(--text)", fontVariantNumeric: "tabular-nums", letterSpacing: "0.04em", lineHeight: 1 }}>
+        <div style={{ fontSize: 44, fontWeight: 900, color: "var(--text)", fontVariantNumeric: "tabular-nums", letterSpacing: "0.04em", lineHeight: 1 }}>
           {fmt(diff)}
         </div>
         <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 6 }}>
@@ -64,7 +64,7 @@ export default function BoxCountdown({ pickupStart, pickupEnd }: { pickupStart: 
             Đang mở · Kết thúc sau
           </span>
         </div>
-        <div style={{ fontSize: 38, fontWeight: 900, color: "var(--text)", fontVariantNumeric: "tabular-nums", letterSpacing: "0.04em", lineHeight: 1 }}>
+        <div style={{ fontSize: 44, fontWeight: 900, color: "var(--text)", fontVariantNumeric: "tabular-nums", letterSpacing: "0.04em", lineHeight: 1 }}>
           {fmt(diff)}
         </div>
         <div style={{ fontSize: 11, color: "var(--accent)", marginTop: 6, fontWeight: 700 }}>
@@ -81,7 +81,7 @@ export default function BoxCountdown({ pickupStart, pickupEnd }: { pickupStart: 
       <div style={{ fontSize: 11, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>
         Đã kết thúc
       </div>
-      <div style={{ fontSize: 20, fontWeight: 800, color: "#94a3b8" }}>
+      <div style={{ fontSize: 23, fontWeight: 800, color: "#94a3b8" }}>
         {pickupStart} – {pickupEnd}
       </div>
     </div>

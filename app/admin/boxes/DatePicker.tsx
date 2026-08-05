@@ -27,7 +27,7 @@ export default function DatePicker({ currentDate }: { currentDate: string }) {
         onChange={onInput}
         style={{
           padding: "8px 12px", borderRadius: 10,
-          border: "1px solid #e5d5c8", fontSize: 13,
+          border: "1px solid #e5d5c8", fontSize: 15,
           outline: "none", background: "#ffffff", color: "#3d2f1f", cursor: "pointer",
         }}
       />
@@ -43,6 +43,6 @@ export default function DatePicker({ currentDate }: { currentDate: string }) {
 
 const navBtn: React.CSSProperties = {
   padding: "8px 14px", borderRadius: 10, background: "#ffffff",
-  border: "1px solid #e5d5c8", fontSize: 13, fontWeight: 600,
+  border: "1px solid #e5d5c8", fontSize: 15, fontWeight: 600,
   color: "#3d2f1f", cursor: "pointer",
 };

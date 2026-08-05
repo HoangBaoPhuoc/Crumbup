@@ -64,7 +64,7 @@ export default function AddressPicker({ value, onChange, onCoords }: Props) {
           </div>
         )}
         {coords && !searching && (
-          <div style={{ position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)", fontSize: 14, color: "var(--accent)" }}>
+          <div style={{ position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)", fontSize: 16, color: "var(--accent)" }}>
             ✓
           </div>
         )}
@@ -81,7 +81,7 @@ export default function AddressPicker({ value, onChange, onCoords }: Props) {
                 style={{
                   width: "100%", padding: "10px 16px", border: "none",
                   borderBottom: i < results.length - 1 ? "1px solid var(--border)" : "none",
-                  background: "white", textAlign: "left", cursor: "pointer", fontSize: 13,
+                  background: "white", textAlign: "left", cursor: "pointer", fontSize: 15,
                   lineHeight: 1.4,
                 }}
                 onMouseEnter={(e) => (e.currentTarget.style.background = "var(--cream)")}
@@ -183,7 +183,7 @@ function MiniMap({ lat, lng, onDragEnd }: { lat: number; lng: number; onDragEnd:
 
 const inp: React.CSSProperties = {
   width: "100%", padding: "13px 16px", borderRadius: 12,
-  border: "1.5px solid var(--border)", fontSize: 14,
+  border: "1.5px solid var(--border)", fontSize: 16,
   outline: "none", background: "white", transition: "border-color 0.2s",
   boxSizing: "border-box",
 };

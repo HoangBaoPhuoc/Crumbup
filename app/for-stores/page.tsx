@@ -7,7 +7,7 @@ const businessBenefits = [
     tag: "Dòng tiền",
     tagColor: "var(--primary-dark)",
     title: "Thu hồi chi phí, tối ưu dòng tiền",
-    desc: "Thay vì chịu lỗ kép, đóng gói bánh dư thành Surprise Box biến khoản chi phí chìm thành nguồn doanh thu ổn định mỗi tháng.",
+    desc: "Thay vì chịu lỗ kép, đóng gói hàng dư thành Surprise Box biến khoản chi phí chìm thành nguồn doanh thu ổn định mỗi tháng.",
   },
   {
     tag: "Khách hàng mới",
@@ -25,22 +25,22 @@ const businessBenefits = [
 
 const operationSteps = [
   { step: "01", title: "Đăng ký & Tạo hộp", desc: "Điền form, xác nhận khung giờ và chuyển khoản phí đăng ký." },
-  { step: "02", title: "Khách đặt trước", desc: "Người dùng tìm cửa hàng trên bản đồ và đặt trước Surprise Box." },
-  { step: "03", title: "Trao box tại quầy", desc: "Kiểm tra mã đơn hàng của khách và trao Surprise Box." },
+  { step: "02", title: "Khách đặt trước", desc: "Người dùng tìm cửa hàng trên bản đồ, đặt trước Surprise Box hoặc chọn Chương trình khuyến mãi." },
+  { step: "03", title: "Trao hàng tại quầy", desc: "Kiểm tra mã đơn hàng của khách và trao đúng sản phẩm/ưu đãi." },
   { step: "04", title: "Theo dõi doanh thu", desc: "Quản lý dòng tiền ngay trên app, nhận thanh toán định kỳ." },
 ];
 
 const storeCategories = [
-  { initial: "FB", color: "var(--primary)", label: "Fresh Bakery", title: "Tiệm bánh mì & Bánh ngọt truyền thống" },
-  { initial: "PC", color: "var(--accent)", label: "Pastry & Cake", title: "Tiệm bánh kem & Bánh lạnh cao cấp" },
-  { initial: "BC", color: "var(--primary-dark)", label: "Bakery Café", title: "Mô hình Bakery & Café hiện đại" },
-  { initial: "HB", color: "#2d6a31", label: "Home Bakery", title: "Tiệm bánh online & Bánh thủ công" },
+  { initial: "BK", color: "var(--primary)", label: "Bakery & Café", title: "Tiệm bánh & quán cà phê" },
+  { initial: "SM", color: "var(--accent)", label: "Siêu thị & tiện lợi", title: "Siêu thị mini, cửa hàng tiện lợi" },
+  { initial: "PR", color: "var(--primary-dark)", label: "Trái cây & rau củ", title: "Cửa hàng trái cây, rau củ quả tươi" },
+  { initial: "LS", color: "#2d6a31", label: "Đồ hộp & đặc sản", title: "Đồ hộp, đặc sản đóng gói" },
 ];
 
 const partnerFaqs = [
   {
     q: "Phí dịch vụ tính như thế nào?",
-    a: "Không phí khởi tạo, không phí duy trì. App chỉ trích một phần nhỏ trên mỗi Surprise Box được giải cứu thành công.",
+    a: "Không phí khởi tạo, không phí duy trì. Mức phí hợp tác cụ thể sẽ được tư vấn riêng theo hình thức và quy mô cửa hàng của bạn — liên hệ đội ngũ CrumbUp để nhận báo giá chi tiết.",
   },
   {
     q: "Có cần đầu tư bao bì riêng không?",
@@ -48,11 +48,15 @@ const partnerFaqs = [
   },
   {
     q: "Khách đặt rồi không đến lấy thì sao?",
-    a: "Khách thanh toán 100% trước, đơn mới hoàn tất. Quá giờ không đến — đơn vẫn tính thành công, tiệm không thiệt.",
+    a: "Khách thanh toán 100% trước, đơn mới hoàn tất. Quá giờ không đến — đơn vẫn tính thành công, cửa hàng không thiệt.",
   },
   {
     q: "Có thể thay đổi số lượng & giờ mỗi ngày không?",
-    a: "Hoàn toàn chủ động. Số lượng box và khung giờ nhận do tiệm tự cài đặt mỗi ngày theo lượng bánh dôi dư thực tế.",
+    a: "Hoàn toàn chủ động. Số lượng box và khung giờ nhận do cửa hàng tự cài đặt mỗi ngày theo lượng hàng dôi dư thực tế.",
+  },
+  {
+    q: "Chương trình khuyến mãi khác Surprise Box thế nào?",
+    a: "Surprise Box ẩn nội dung — khách không biết trước sẽ nhận được gì, phù hợp để xử lý hàng dư cuối ngày. Chương trình khuyến mãi thì ngược lại: bạn chủ động chọn đúng deal muốn đăng (giảm giá khung giờ, mua 1 tặng 1...), khách thấy rõ và chọn đúng ưu đãi đó — chạy được bất kỳ lúc nào trong ngày, không chỉ cuối ngày.",
   },
 ];
 
@@ -69,36 +73,48 @@ export default function ForStoresPage() {
             <div style={{ fontSize: 12, fontWeight: 700, color: "var(--primary)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 16 }}>
               Dành cho cửa hàng
             </div>
-            <h1 style={{ fontSize: 48, marginBottom: 20, lineHeight: 1.15, letterSpacing: "-0.02em", maxWidth: 620 }}>
-              Biến bánh dư cuối ngày thành <span style={{ color: "var(--primary)" }}>doanh thu</span>
+            <h1 style={{ fontSize: 55, marginBottom: 20, lineHeight: 1.15, letterSpacing: "-0.02em", maxWidth: 620 }}>
+              Kinh doanh <span style={{ color: "var(--primary)" }}>cả ngày</span>, không chỉ lúc sắp đóng cửa
             </h1>
-            <p style={{ fontSize: 16, color: "var(--text-muted)", lineHeight: 1.8, maxWidth: 560, marginBottom: 32 }}>
-              Những mẻ bánh tươi ngon chưa kịp tìm được chủ nhân không cần phải bị hủy bỏ — hãy để CrumbUp kết nối chúng với hàng ngàn khách hàng xung quanh bạn.
+            <p style={{ fontSize: 18, color: "var(--text-muted)", lineHeight: 1.8, maxWidth: 560, marginBottom: 32 }}>
+              Giải cứu hàng dư cuối ngày với Surprise Box, hoặc chủ động thu hút thêm khách hàng bất kỳ giờ nào với Chương trình khuyến mãi — CrumbUp kết nối cửa hàng của bạn với hàng ngàn khách hàng xung quanh.
             </p>
             <a href="/register/business" className="btn btn-primary btn-lg">Đăng ký đối tác ngay →</a>
           </div>
         </section>
 
-        {/* SURPRISE BOX LÀ GÌ — text card + dark stat card; fills remaining viewport space */}
+        {/* 2 HÌNH THỨC HỢP TÁC — Surprise Box vs Chương trình khuyến mãi, side by side */}
         <section style={{ padding: "0 0 80px", background: "var(--ivory)", flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
-          <div className="container" style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 24 }}>
-            <div data-reveal style={{ background: "var(--primary-soft)", borderRadius: 20, padding: "40px 36px" }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: "var(--primary)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 12 }}>
-                Surprise Box là gì?
+          <div className="container">
+            <div data-reveal style={{ marginBottom: 24 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: "var(--primary)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>
+                2 hình thức hợp tác
               </div>
-              <h2 style={{ fontSize: 26, marginBottom: 14 }}>Một chiếc hộp — vô vàn cơ hội</h2>
-              <p style={{ fontSize: 15, color: "var(--text)", lineHeight: 1.8 }}>
-                Cuối ngày, gom những mẻ bánh tươi chưa kịp bán vào Surprise Box. Khách đặt trước trên app, đến nhận đúng giờ — tiệm thu hồi chi phí, khách được bánh ngon giá hời.
-              </p>
+              <h2 style={{ fontSize: 30 }}>Dù cuối ngày hay giữa trưa, luôn có cách để bán được hàng</h2>
             </div>
-            <div data-reveal style={{
-              background: "var(--text)", borderRadius: 20, padding: "32px 28px",
-              display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", textAlign: "center",
-            }}>
-              <div style={{ fontSize: 44, fontWeight: 800, color: "var(--badge)", letterSpacing: "-0.02em" }}>−50%</div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: "white", marginTop: 8 }}>mức giá trung bình</div>
-              <div style={{ fontSize: 12, color: "rgba(253,245,230,0.6)", marginTop: 4 }}>khách hàng tiết kiệm được</div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+              <div data-reveal style={{ background: "var(--primary-soft)", borderRadius: 20, padding: "36px 32px" }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "var(--primary-dark)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 12 }}>
+                  🎁 Surprise Box · Cuối ngày
+                </div>
+                <h3 style={{ fontSize: 25, marginBottom: 12 }}>Giải cứu hàng dư, thu hồi chi phí</h3>
+                <p style={{ fontSize: 17, color: "var(--text)", lineHeight: 1.8 }}>
+                  Cuối ngày, gom sản phẩm chưa kịp bán vào Surprise Box — nội dung bí ẩn, giá giảm sâu tới 50%. Khách đặt trước trên app, đến nhận đúng giờ.
+                </p>
+              </div>
+              <div data-reveal style={{ background: "#ede9fe", borderRadius: 20, padding: "36px 32px" }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#6d28d9", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 12 }}>
+                  🎟️ Chương trình khuyến mãi · Bất kỳ giờ nào
+                </div>
+                <h3 style={{ fontSize: 25, marginBottom: 12 }}>Thu hút thêm khách hàng, kể cả ban ngày</h3>
+                <p style={{ fontSize: 17, color: "var(--text)", lineHeight: 1.8 }}>
+                  Đăng đúng deal bạn muốn chạy — giảm giá theo khung giờ, mua 1 tặng 1... Khách thấy rõ và chọn đúng ưu đãi, không có yếu tố bất ngờ.
+                </p>
+              </div>
             </div>
+            <p data-reveal style={{ fontSize: 14, color: "var(--text-muted)", marginTop: 24, textAlign: "center" }}>
+              Chi tiết hợp tác và chi phí sẽ được đội ngũ CrumbUp tư vấn riêng khi bạn đăng ký.
+            </p>
           </div>
         </section>
 
@@ -112,7 +128,7 @@ export default function ForStoresPage() {
             <div style={{ fontSize: 12, fontWeight: 700, color: "var(--primary)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 12 }}>
               Tại sao chọn CrumbUp
             </div>
-            <h2 style={{ fontSize: 40 }}>Lợi ích thực tế cho tiệm bánh</h2>
+            <h2 style={{ fontSize: 46 }}>Lợi ích thực tế cho cửa hàng đối tác</h2>
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
@@ -125,8 +141,8 @@ export default function ForStoresPage() {
                   background: item.tagColor, padding: "4px 12px", borderRadius: 999,
                   textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 16,
                 }}>{item.tag}</span>
-                <h3 style={{ fontSize: 18, marginBottom: 10, fontWeight: 700, lineHeight: 1.35 }}>{item.title}</h3>
-                <p style={{ fontSize: 14, color: "var(--text-muted)", lineHeight: 1.75 }}>{item.desc}</p>
+                <h3 style={{ fontSize: 21, marginBottom: 10, fontWeight: 700, lineHeight: 1.35 }}>{item.title}</h3>
+                <p style={{ fontSize: 16, color: "var(--text-muted)", lineHeight: 1.75 }}>{item.desc}</p>
               </div>
             ))}
           </div>
@@ -140,7 +156,7 @@ export default function ForStoresPage() {
             <div style={{ fontSize: 12, fontWeight: 700, color: "var(--primary)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 12 }}>
               Đơn giản — 4 bước
             </div>
-            <h2 style={{ fontSize: 40 }}>Vận hành như thế nào?</h2>
+            <h2 style={{ fontSize: 46 }}>Vận hành như thế nào?</h2>
           </div>
 
           <div data-reveal style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)" }}>
@@ -150,9 +166,9 @@ export default function ForStoresPage() {
                 paddingRight: i === operationSteps.length - 1 ? 0 : 24,
                 borderRight: i === operationSteps.length - 1 ? "none" : "1px solid var(--border)",
               }}>
-                <div style={{ fontSize: 26, fontWeight: 800, color: "var(--border)", marginBottom: 12 }}>{item.step}</div>
-                <h3 style={{ fontSize: 15.5, marginBottom: 10, fontWeight: 700 }}>{item.title}</h3>
-                <p style={{ fontSize: 13, color: "var(--text-muted)", lineHeight: 1.7 }}>{item.desc}</p>
+                <div style={{ fontSize: 30, fontWeight: 800, color: "var(--border)", marginBottom: 12 }}>{item.step}</div>
+                <h3 style={{ fontSize: 18, marginBottom: 10, fontWeight: 700 }}>{item.title}</h3>
+                <p style={{ fontSize: 15, color: "var(--text-muted)", lineHeight: 1.7 }}>{item.desc}</p>
               </div>
             ))}
           </div>
@@ -166,8 +182,8 @@ export default function ForStoresPage() {
             <div style={{ fontSize: 12, fontWeight: 700, color: "var(--primary)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 12 }}>
               Ai phù hợp?
             </div>
-            <h2 style={{ fontSize: 40, marginBottom: 10 }}>Danh mục cửa hàng</h2>
-            <p style={{ fontSize: 15, color: "var(--text-muted)" }}>Chỉ cần có bánh tươi dư thừa cuối ngày, bạn đều có thể tham gia.</p>
+            <h2 style={{ fontSize: 46, marginBottom: 10 }}>Danh mục cửa hàng</h2>
+            <p style={{ fontSize: 17, color: "var(--text-muted)" }}>Có hàng dư cuối ngày hay muốn chạy khuyến mãi ban ngày — cửa hàng nào cũng tham gia được.</p>
           </div>
 
           <div data-reveal style={{
@@ -178,13 +194,13 @@ export default function ForStoresPage() {
               <div key={cat.title} style={{ background: "white", padding: "22px 26px", display: "flex", alignItems: "center", gap: 16 }}>
                 <span style={{
                   width: 40, height: 40, borderRadius: 10, background: cat.color, color: "white",
-                  display: "grid", placeItems: "center", fontSize: 13, fontWeight: 800, flexShrink: 0,
+                  display: "grid", placeItems: "center", fontSize: 15, fontWeight: 800, flexShrink: 0,
                 }}>{cat.initial}</span>
                 <div>
                   <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4 }}>
                     {cat.label}
                   </div>
-                  <div style={{ fontSize: 14.5, fontWeight: 600, color: "var(--text)" }}>{cat.title}</div>
+                  <div style={{ fontSize: 17, fontWeight: 600, color: "var(--text)" }}>{cat.title}</div>
                 </div>
               </div>
             ))}
@@ -199,7 +215,7 @@ export default function ForStoresPage() {
             <div style={{ fontSize: 12, fontWeight: 700, color: "var(--primary)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 12 }}>
               FAQ
             </div>
-            <h2 style={{ fontSize: 40 }}>Câu hỏi thường gặp</h2>
+            <h2 style={{ fontSize: 46 }}>Câu hỏi thường gặp</h2>
           </div>
 
           <div style={{ display: "flex", flexDirection: "column" }}>
@@ -209,13 +225,13 @@ export default function ForStoresPage() {
                 borderBottom: i === partnerFaqs.length - 1 ? "1px solid var(--border)" : undefined,
               }}>
                 <summary style={{
-                  padding: "20px 0", fontSize: 15, fontWeight: 700, cursor: "pointer",
+                  padding: "20px 0", fontSize: 17, fontWeight: 700, cursor: "pointer",
                   display: "flex", alignItems: "center", justifyContent: "space-between", listStyle: "none",
                 }}>
                   <span>{item.q}</span>
-                  <span style={{ color: "var(--text-muted)", fontSize: 20, lineHeight: 1 }}>+</span>
+                  <span style={{ color: "var(--text-muted)", fontSize: 23, lineHeight: 1 }}>+</span>
                 </summary>
-                <div style={{ padding: "0 0 20px", fontSize: 14, color: "var(--text-muted)", lineHeight: 1.8 }}>{item.a}</div>
+                <div style={{ padding: "0 0 20px", fontSize: 16, color: "var(--text-muted)", lineHeight: 1.8 }}>{item.a}</div>
               </details>
             ))}
           </div>
@@ -228,11 +244,11 @@ export default function ForStoresPage() {
           <div data-reveal style={{
             background: "var(--text)", borderRadius: 24, padding: "56px 64px", textAlign: "center",
           }}>
-            <h2 style={{ color: "white", fontSize: 36, marginBottom: 16, lineHeight: 1.15 }}>
+            <h2 style={{ color: "white", fontSize: 41, marginBottom: 16, lineHeight: 1.15 }}>
               Sẵn sàng tham gia CrumbUp?
             </h2>
-            <p style={{ fontSize: 15, color: "rgba(253,245,230,0.75)", maxWidth: 440, margin: "0 auto 28px", lineHeight: 1.7 }}>
-              Hãy cho bánh cuối ngày của bạn một cơ hội thứ hai. Không phí khởi tạo, không ràng buộc.
+            <p style={{ fontSize: 17, color: "rgba(253,245,230,0.75)", maxWidth: 440, margin: "0 auto 28px", lineHeight: 1.7 }}>
+              Hãy cho sản phẩm cuối ngày của bạn một cơ hội thứ hai — hoặc bắt đầu chạy Chương trình khuyến mãi ngay hôm nay. Không phí khởi tạo, không ràng buộc.
             </p>
             <a href="/register/business" className="btn btn-primary btn-lg">Đăng ký đối tác ngay →</a>
           </div>

@@ -2,15 +2,23 @@
 
 import { useLocation } from "@/lib/location-context";
 
-export default function LocationPill() {
+export default function LocationPill({ bar = false }: { bar?: boolean } = {}) {
   const { coords, address, loading, requestLocation } = useLocation();
 
   return (
     <button
       className="addr-pill"
       onClick={requestLocation}
-      title={coords ? "Cập nhật vị trí" : "Bật vị trí để tìm tiệm gần bạn"}
-      style={{ cursor: "pointer", border: "none", transition: "background 0.2s" }}
+      title={coords ? "Cập nhật vị trí" : "Bật vị trí để tìm cửa hàng gần bạn"}
+      style={{
+        cursor: "pointer", border: "none", transition: "background 0.2s",
+        ...(bar && {
+          width: "100%", justifyContent: "center",
+          background: "white", color: "var(--primary-dark)", fontWeight: 700,
+          border: "1.5px solid var(--primary-dark)",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+        }),
+      }}
     >
       {loading ? (
         <>
@@ -18,17 +26,20 @@ export default function LocationPill() {
           <span>Đang xác định...</span>
         </>
       ) : coords ? (
-        <>
-          <span>📍</span>
-          <span style={{ maxWidth: 160, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+        address && address.length > 22 ? (
+          <span className="addr-marquee">
+            <span className="addr-marquee-track">
+              <span className="addr-marquee-item">{address}</span>
+              <span className="addr-marquee-item" aria-hidden="true">{address}</span>
+            </span>
+          </span>
+        ) : (
+          <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
             {address ?? "Vị trí của bạn"}
           </span>
-        </>
+        )
       ) : (
-        <>
-          <span>📍</span>
-          <span style={{ color: "var(--text-muted)" }}>Bật vị trí</span>
-        </>
+        <span>Bật vị trí</span>
       )}
     </button>
   );

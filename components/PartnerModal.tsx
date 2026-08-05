@@ -69,7 +69,7 @@ export default function PartnerModal({ onClose }: Props) {
             border: "1px solid var(--border)",
             background: "var(--surface)",
             cursor: "pointer",
-            fontSize: 16,
+            fontSize: 18,
             display: "grid",
             placeItems: "center",
             color: "var(--text-muted)",
@@ -80,10 +80,10 @@ export default function PartnerModal({ onClose }: Props) {
 
         {/* header */}
         <div style={{ marginBottom: 28 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 8 }}>
+          <h2 style={{ fontSize: 28, fontWeight: 700, marginBottom: 8 }}>
             Dành cho đối tác cửa hàng
           </h2>
-          <p style={{ fontSize: 14, color: "var(--text-muted)", lineHeight: 1.6 }}>
+          <p style={{ fontSize: 16, color: "var(--text-muted)", lineHeight: 1.6 }}>
             Tham gia CrumbUp để bán các box cuối ngày, tăng doanh thu và cùng cộng đồng giảm lãng phí thực phẩm.
           </p>
         </div>
@@ -106,7 +106,7 @@ export default function PartnerModal({ onClose }: Props) {
             "Quản lý đơn hàng và doanh thu dễ dàng",
             "Góp phần giảm lãng phí thực phẩm mỗi ngày",
           ].map((text) => (
-            <div key={text} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 13 }}>
+            <div key={text} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 15 }}>
               <div style={{ width: 5, height: 5, borderRadius: 999, background: "var(--primary)", flexShrink: 0 }} />
               <span style={{ color: "var(--text)" }}>{text}</span>
             </div>
@@ -118,7 +118,7 @@ export default function PartnerModal({ onClose }: Props) {
           <Link
             href="/register/business"
             className="btn btn-primary"
-            style={{ textAlign: "center", padding: "13px 0", fontSize: 15, fontWeight: 600, borderRadius: 12 }}
+            style={{ textAlign: "center", padding: "13px 0", fontSize: 17, fontWeight: 600, borderRadius: 12 }}
             onClick={onClose}
           >
             Đăng ký cửa hàng →
@@ -126,7 +126,7 @@ export default function PartnerModal({ onClose }: Props) {
           <Link
             href="/login"
             className="btn btn-ghost"
-            style={{ textAlign: "center", padding: "13px 0", fontSize: 14, borderRadius: 12 }}
+            style={{ textAlign: "center", padding: "13px 0", fontSize: 16, borderRadius: 12 }}
             onClick={onClose}
           >
             Đã có tài khoản? Đăng nhập

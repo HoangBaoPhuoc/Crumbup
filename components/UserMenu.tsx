@@ -49,7 +49,7 @@ export default function UserMenu({ email, name }: Props) {
           background: "var(--primary-soft)",
           border: `2px solid ${open ? "var(--primary)" : "var(--border)"}`,
           display: "grid", placeItems: "center",
-          fontSize: 13, fontWeight: 800, color: "var(--primary)",
+          fontSize: 15, fontWeight: 800, color: "var(--primary)",
           cursor: "pointer", transition: "border-color 0.15s",
         }}
       >
@@ -68,7 +68,7 @@ export default function UserMenu({ email, name }: Props) {
         }}>
           {/* User info */}
           <div style={{ padding: "16px 18px", borderBottom: "1px solid var(--border)" }}>
-            <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 2, color: "var(--text)" }}>
+            <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 2, color: "var(--text)" }}>
               {name || "Người dùng"}
             </div>
             <div style={{ fontSize: 12, color: "var(--text-muted)", wordBreak: "break-all" }}>
@@ -83,7 +83,7 @@ export default function UserMenu({ email, name }: Props) {
               style={{
                 width: "100%", padding: "10px 18px",
                 display: "flex", alignItems: "center", gap: 10,
-                fontSize: 13, fontWeight: 600,
+                fontSize: 15, fontWeight: 600,
                 color: "var(--text)",
                 background: "none", border: "none",
                 cursor: "pointer", textAlign: "left",
@@ -100,7 +100,7 @@ export default function UserMenu({ email, name }: Props) {
             <button onClick={logout} style={{
               width: "100%", padding: "10px 18px",
               display: "flex", alignItems: "center", gap: 10,
-              fontSize: 13, fontWeight: 600, color: "var(--danger)",
+              fontSize: 15, fontWeight: 600, color: "var(--danger)",
               background: "none", border: "none", cursor: "pointer",
               textAlign: "left",
             }}
@@ -124,7 +124,7 @@ function MenuItem({ href, label, icon, onClick }: {
   return (
     <a href={href} onClick={onClick} style={{
       display: "flex", alignItems: "center", gap: 10,
-      padding: "10px 18px", fontSize: 13, fontWeight: 600,
+      padding: "10px 18px", fontSize: 15, fontWeight: 600,
       color: "var(--text)", textDecoration: "none",
     }}
     onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = "var(--cream)")}

@@ -23,7 +23,7 @@ function QtyButton({ onClick, disabled, children }: { onClick: () => void; disab
       border: `1px solid ${disabled ? "var(--border)" : "var(--primary)"}`,
       background: disabled ? "var(--cream)" : "white",
       color: disabled ? "var(--text-muted)" : "var(--primary)",
-      fontSize: 18, fontWeight: 900, cursor: disabled ? "not-allowed" : "pointer",
+      fontSize: 21, fontWeight: 900, cursor: disabled ? "not-allowed" : "pointer",
       display: "grid", placeItems: "center", flexShrink: 0,
     }}>{children}</button>
   );
@@ -85,7 +85,7 @@ export default function OrderButton({ box, store, isLoggedIn, isExpired }: { box
     return (
       <div style={{
         marginTop: 16, padding: 16, borderRadius: 12, textAlign: "center",
-        background: "#f3f4f6", color: "#9ca3af", fontSize: 14, fontWeight: 700,
+        background: "#f3f4f6", color: "#9ca3af", fontSize: 16, fontWeight: 700,
       }}>
         Đã hết giờ nhận hàng
       </div>
@@ -95,7 +95,7 @@ export default function OrderButton({ box, store, isLoggedIn, isExpired }: { box
   if (!isLoggedIn) {
     return (
       <Link href={`/login?redirect=/box/${box.id}`} style={{
-        display: "block", width: "100%", marginTop: 16, padding: 16, fontSize: 15,
+        display: "block", width: "100%", marginTop: 16, padding: 16, fontSize: 17,
         fontWeight: 700, borderRadius: 12, background: "var(--primary)", color: "white",
         textAlign: "center", textDecoration: "none",
       }}>
@@ -107,7 +107,7 @@ export default function OrderButton({ box, store, isLoggedIn, isExpired }: { box
   return (
     <>
       <button onClick={openModal} className="btn btn-primary btn-lg"
-        style={{ width: "100%", marginTop: 16, padding: 16, fontSize: 15 }}>
+        style={{ width: "100%", marginTop: 16, padding: 16, fontSize: 17 }}>
         Đặt ngay
       </button>
 
@@ -126,7 +126,7 @@ export default function OrderButton({ box, store, isLoggedIn, isExpired }: { box
                 {step === "confirm" ? "Xác nhận đơn" : step === "payment" ? "Thông tin thanh toán" : "Đặt hàng thành công"}
               </div>
               {step !== "done" && (
-                <button onClick={tryClose} style={{ width: 30, height: 30, borderRadius: "50%", border: "1px solid var(--border)", background: "white", cursor: "pointer", display: "grid", placeItems: "center", fontSize: 13 }}>✕</button>
+                <button onClick={tryClose} style={{ width: 30, height: 30, borderRadius: "50%", border: "1px solid var(--border)", background: "white", cursor: "pointer", display: "grid", placeItems: "center", fontSize: 15 }}>✕</button>
               )}
             </div>
 
@@ -135,8 +135,8 @@ export default function OrderButton({ box, store, isLoggedIn, isExpired }: { box
               {/* ── STEP 1: CONFIRM ── */}
               {step === "confirm" && (
                 <>
-                  <h2 style={{ fontSize: 20, fontWeight: 900, marginBottom: 4 }}>{box.name}</h2>
-                  <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 16 }}>{store.name}</p>
+                  <h2 style={{ fontSize: 23, fontWeight: 900, marginBottom: 4 }}>{box.name}</h2>
+                  <p style={{ fontSize: 15, color: "var(--text-muted)", marginBottom: 16 }}>{store.name}</p>
 
                   <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 16 }}>
                     {[
@@ -155,12 +155,12 @@ export default function OrderButton({ box, store, isLoggedIn, isExpired }: { box
                   {/* Quantity selector */}
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 14px", background: "var(--cream)", borderRadius: 10, marginBottom: 16 }}>
                     <div>
-                      <div style={{ fontSize: 13, fontWeight: 700 }}>Số lượng</div>
+                      <div style={{ fontSize: 15, fontWeight: 700 }}>Số lượng</div>
                       <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>Còn {box.quantityLeft} box</div>
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                       <QtyButton onClick={() => setQuantity(q => Math.max(1, q - 1))} disabled={quantity <= 1}>−</QtyButton>
-                      <span style={{ fontSize: 20, fontWeight: 900, minWidth: 24, textAlign: "center" }}>{quantity}</span>
+                      <span style={{ fontSize: 23, fontWeight: 900, minWidth: 24, textAlign: "center" }}>{quantity}</span>
                       <QtyButton onClick={() => setQuantity(q => Math.min(box.quantityLeft, q + 1))} disabled={quantity >= box.quantityLeft}>+</QtyButton>
                     </div>
                   </div>
@@ -174,15 +174,15 @@ export default function OrderButton({ box, store, isLoggedIn, isExpired }: { box
                       </div>
                     )}
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <span style={{ fontSize: 14, fontWeight: 700 }}>Tổng thanh toán</span>
-                      <span style={{ fontSize: 26, fontWeight: 900, color: "var(--primary)" }}>{formatPrice(total)}</span>
+                      <span style={{ fontSize: 16, fontWeight: 700 }}>Tổng thanh toán</span>
+                      <span style={{ fontSize: 30, fontWeight: 900, color: "var(--primary)" }}>{formatPrice(total)}</span>
                     </div>
                   </div>
 
                   <button onClick={goToPayment} style={{
                     width: "100%", padding: 14, borderRadius: 12,
                     background: "var(--text)", color: "white",
-                    border: "none", fontSize: 14, fontWeight: 700, cursor: "pointer",
+                    border: "none", fontSize: 16, fontWeight: 700, cursor: "pointer",
                   }}>
                     Tiến hành thanh toán →
                   </button>
@@ -192,8 +192,8 @@ export default function OrderButton({ box, store, isLoggedIn, isExpired }: { box
               {/* ── STEP 2: PAYMENT ── */}
               {step === "payment" && (
                 <>
-                  <h2 style={{ fontSize: 18, fontWeight: 900, marginBottom: 4 }}>Chuyển khoản ngân hàng</h2>
-                  <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 18 }}>
+                  <h2 style={{ fontSize: 21, fontWeight: 900, marginBottom: 4 }}>Chuyển khoản ngân hàng</h2>
+                  <p style={{ fontSize: 15, color: "var(--text-muted)", marginBottom: 18 }}>
                     Chuyển khoản đúng nội dung, sau đó bấm xác nhận để hoàn tất đặt hàng
                   </p>
 
@@ -218,7 +218,7 @@ export default function OrderButton({ box, store, isLoggedIn, isExpired }: { box
                     ].map((r) => (
                       <div key={r.lbl} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, padding: "7px 0", borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
                         <span style={{ fontSize: 12, color: "var(--text-muted)", flexShrink: 0 }}>{r.lbl}</span>
-                        <span style={{ fontSize: 13, fontWeight: 800, fontFamily: r.mono ? "monospace" : "inherit", color: r.highlight ? "var(--primary)" : "var(--text)", textAlign: "right" }}>{r.val}</span>
+                        <span style={{ fontSize: 15, fontWeight: 800, fontFamily: r.mono ? "monospace" : "inherit", color: r.highlight ? "var(--primary)" : "var(--text)", textAlign: "right" }}>{r.val}</span>
                       </div>
                     ))}
                   </div>
@@ -232,13 +232,13 @@ export default function OrderButton({ box, store, isLoggedIn, isExpired }: { box
                     </span>
                   </label>
 
-                  {error && <div style={{ padding: "10px 14px", background: "#fef2f2", borderRadius: 10, fontSize: 13, color: "#b91c1c", marginBottom: 14 }}>{error}</div>}
+                  {error && <div style={{ padding: "10px 14px", background: "#fef2f2", borderRadius: 10, fontSize: 15, color: "#b91c1c", marginBottom: 14 }}>{error}</div>}
 
                   <button onClick={confirmPayment} disabled={!agreed || loading} style={{
                     width: "100%", padding: 14, borderRadius: 12,
                     background: agreed && !loading ? "var(--accent)" : "var(--cream)",
                     color: agreed && !loading ? "white" : "var(--text-muted)",
-                    border: "none", fontSize: 14, fontWeight: 700,
+                    border: "none", fontSize: 16, fontWeight: 700,
                     cursor: agreed && !loading ? "pointer" : "not-allowed", transition: "all 0.2s",
                   }}>
                     {loading ? "Đang xử lý..." : "Tôi đã chuyển khoản ✓"}
@@ -250,9 +250,9 @@ export default function OrderButton({ box, store, isLoggedIn, isExpired }: { box
               {step === "done" && (
                 <>
                   <div style={{ textAlign: "center", padding: "12px 0 24px" }}>
-                    <div style={{ width: 64, height: 64, borderRadius: "50%", background: "var(--accent-soft)", display: "grid", placeItems: "center", fontSize: 28, margin: "0 auto 14px", color: "var(--accent)" }}>✓</div>
-                    <h2 style={{ fontSize: 20, fontWeight: 900, color: "var(--accent)", marginBottom: 6 }}>Đặt hàng thành công!</h2>
-                    <p style={{ fontSize: 13, color: "var(--text-muted)" }}>Đơn đang chờ cửa hàng xác nhận</p>
+                    <div style={{ width: 64, height: 64, borderRadius: "50%", background: "var(--accent-soft)", display: "grid", placeItems: "center", fontSize: 32, margin: "0 auto 14px", color: "var(--accent)" }}>✓</div>
+                    <h2 style={{ fontSize: 23, fontWeight: 900, color: "var(--accent)", marginBottom: 6 }}>Đặt hàng thành công!</h2>
+                    <p style={{ fontSize: 15, color: "var(--text-muted)" }}>Đơn đang chờ cửa hàng xác nhận</p>
                   </div>
 
                   {/* Order info */}
@@ -269,7 +269,7 @@ export default function OrderButton({ box, store, isLoggedIn, isExpired }: { box
                         {"badge" in r && r.badge ? (
                           <span style={{ fontSize: 11, fontWeight: 700, color: "#92400e", background: "#fef3c7", padding: "3px 10px", borderRadius: 999 }}>{r.val}</span>
                         ) : (
-                          <span style={{ fontSize: 13, fontWeight: 800, fontFamily: "mono" in r && r.mono ? "monospace" : "inherit" }}>{r.val}</span>
+                          <span style={{ fontSize: 15, fontWeight: 800, fontFamily: "mono" in r && r.mono ? "monospace" : "inherit" }}>{r.val}</span>
                         )}
                       </div>
                     ))}
@@ -277,8 +277,8 @@ export default function OrderButton({ box, store, isLoggedIn, isExpired }: { box
 
                   {/* Store contact */}
                   <div style={{ border: "1px solid var(--border)", borderRadius: 14, padding: 16, marginBottom: 14 }}>
-                    <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 8 }}>Thông tin liên hệ</div>
-                    <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 6 }}>{store.name}</div>
+                    <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 8 }}>Thông tin liên hệ</div>
+                    <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 6 }}>{store.name}</div>
                     {store.phone && (
                       <div style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 4, display: "flex", alignItems: "center", gap: 6 }}>
                         <span>📞</span>
@@ -295,7 +295,7 @@ export default function OrderButton({ box, store, isLoggedIn, isExpired }: { box
 
                   {/* Pickup guide */}
                   <div style={{ background: "var(--cream)", borderRadius: 14, padding: 16, marginBottom: 20 }}>
-                    <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 10 }}>Hướng dẫn lấy hàng</div>
+                    <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 10 }}>Hướng dẫn lấy hàng</div>
                     {PICKUP_GUIDE.map((t, i) => (
                       <div key={i} style={{ display: "flex", gap: 8, marginBottom: i < PICKUP_GUIDE.length - 1 ? 8 : 0, fontSize: 12, color: "var(--text)", lineHeight: 1.6 }}>
                         <span style={{ flexShrink: 0, fontWeight: 700, color: "var(--primary)" }}>{i + 1}.</span>
@@ -307,7 +307,7 @@ export default function OrderButton({ box, store, isLoggedIn, isExpired }: { box
                   <Link href="/orders" onClick={() => setOpen(false)} style={{
                     display: "block", width: "100%", padding: 14, borderRadius: 12,
                     background: "var(--text)", color: "white", textAlign: "center",
-                    textDecoration: "none", fontSize: 14, fontWeight: 700,
+                    textDecoration: "none", fontSize: 16, fontWeight: 700,
                   }}>
                     Xem đơn hàng của tôi →
                   </Link>

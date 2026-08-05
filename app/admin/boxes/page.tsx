@@ -46,8 +46,8 @@ export default async function BoxesPage({
   return (
     <div>
       <div style={{ marginBottom: 20 }}>
-        <h1 style={{ fontSize: 22, fontWeight: 900, color: "#3d2f1f", marginBottom: 4 }}>Quan sát Box</h1>
-        <p style={{ fontSize: 13, color: "#78716c" }}>{displayDate}</p>
+        <h1 style={{ fontSize: 25, fontWeight: 900, color: "#3d2f1f", marginBottom: 4 }}>Quan sát Box</h1>
+        <p style={{ fontSize: 15, color: "#78716c" }}>{displayDate}</p>
       </div>
 
       <DatePicker currentDate={isoDate} />
@@ -63,7 +63,7 @@ export default async function BoxesPage({
             background: "#ffffff", borderRadius: 12, padding: "14px 18px",
             border: "1px solid #e5d5c8",
           }}>
-            <div style={{ fontSize: 22, fontWeight: 900, color: "#3d2f1f" }}>{s.value}</div>
+            <div style={{ fontSize: 25, fontWeight: 900, color: "#3d2f1f" }}>{s.value}</div>
             <div style={{ fontSize: 12, color: "#78716c", marginTop: 4, fontWeight: 500 }}>{s.label}</div>
           </div>
         ))}
@@ -75,8 +75,8 @@ export default async function BoxesPage({
           background: "#ffffff", borderRadius: 14, border: "1px solid #e5d5c8",
           padding: "60px 40px", textAlign: "center",
         }}>
-          <div style={{ fontSize: 14, fontWeight: 700, color: "#3d2f1f", marginBottom: 4 }}>Không có box nào</div>
-          <div style={{ fontSize: 13, color: "#78716c" }}>Chưa có cửa hàng nào đăng box cho ngày này</div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: "#3d2f1f", marginBottom: 4 }}>Không có box nào</div>
+          <div style={{ fontSize: 15, color: "#78716c" }}>Chưa có cửa hàng nào đăng box cho ngày này</div>
         </div>
       ) : (
         <div style={{ background: "#ffffff", borderRadius: 14, border: "1px solid #e5d5c8", overflow: "hidden" }}>
@@ -151,4 +151,4 @@ const th: React.CSSProperties = {
   padding: "10px 20px", textAlign: "left", fontSize: 11,
   fontWeight: 700, color: "#78716c", textTransform: "uppercase", letterSpacing: "0.05em",
 };
-const td: React.CSSProperties = { padding: "12px 20px", fontSize: 13, color: "#3d2f1f" };
+const td: React.CSSProperties = { padding: "12px 20px", fontSize: 15, color: "#3d2f1f" };

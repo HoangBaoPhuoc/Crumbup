@@ -72,7 +72,7 @@ export default function OrderCard({ order }: { order: OrderWithRelations }) {
             <span>Đơn đã được xác nhận — Mã nhận hàng:</span>
             <span style={{
               background: "rgba(255,255,255,0.25)", borderRadius: 6,
-              padding: "2px 10px", letterSpacing: "0.12em", fontFamily: "monospace", fontSize: 14,
+              padding: "2px 10px", letterSpacing: "0.12em", fontFamily: "monospace", fontSize: 16,
             }}>
               {order.pickupCode.slice(0, 8).toUpperCase()}
             </span>
@@ -82,7 +82,7 @@ export default function OrderCard({ order }: { order: OrderWithRelations }) {
         <div style={{ padding: "16px 20px" }}>
           <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 14 }}>
             <div>
-              <div style={{ fontSize: 15, fontWeight: 700, color: "var(--text)" }}>{store.name}</div>
+              <div style={{ fontSize: 17, fontWeight: 700, color: "var(--text)" }}>{store.name}</div>
               <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 2 }}>
                 {store.address.split(",")[0]}
               </div>
@@ -97,7 +97,7 @@ export default function OrderCard({ order }: { order: OrderWithRelations }) {
 
           <div style={{ background: "var(--ivory)", borderRadius: 12, padding: "12px 16px", marginBottom: 14 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 6 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text)" }}>
+              <div style={{ fontSize: 15, fontWeight: 700, color: "var(--text)" }}>
                 {firstBox?.name ?? "—"}
                 {extraItems > 0 && (
                   <span style={{ color: "var(--text-muted)", fontWeight: 400 }}> +{extraItems} box khác</span>
@@ -110,7 +110,7 @@ export default function OrderCard({ order }: { order: OrderWithRelations }) {
               )}
             </div>
             {firstBox && (
-              <div style={{ fontSize: 14, fontWeight: 800, color: isExpired ? "#9ca3af" : "var(--primary)" }}>
+              <div style={{ fontSize: 16, fontWeight: 800, color: isExpired ? "#9ca3af" : "var(--primary)" }}>
                 {firstBox.pickupStart} – {firstBox.pickupEnd}
               </div>
             )}
@@ -130,7 +130,7 @@ export default function OrderCard({ order }: { order: OrderWithRelations }) {
                   </span>
                 </div>
               )}
-              <div style={{ fontSize: 17, fontWeight: 900, color: isExpired ? "#9ca3af" : "var(--primary)" }}>
+              <div style={{ fontSize: 20, fontWeight: 900, color: isExpired ? "#9ca3af" : "var(--primary)" }}>
                 {order.total.toLocaleString("vi-VN")}đ
               </div>
             </div>
@@ -202,12 +202,12 @@ export default function OrderCard({ order }: { order: OrderWithRelations }) {
                 <div style={{
                   width: 72, height: 72, borderRadius: "50%",
                   background: "var(--primary-soft)", display: "grid", placeItems: "center",
-                  fontSize: 32, margin: "0 auto 12px",
+                  fontSize: 37, margin: "0 auto 12px",
                   border: "3px solid white", boxShadow: "0 4px 16px rgba(0,0,0,0.1)",
                 }}>🏪</div>
               )}
 
-              <div style={{ fontSize: 18, fontWeight: 900, color: "var(--text)" }}>{store.name}</div>
+              <div style={{ fontSize: 21, fontWeight: 900, color: "var(--text)" }}>{store.name}</div>
             </div>
 
             {/* Info rows */}
@@ -221,14 +221,14 @@ export default function OrderCard({ order }: { order: OrderWithRelations }) {
                   display: "flex", alignItems: "flex-start", gap: 14,
                   padding: "12px 24px", borderBottom: "1px solid var(--border)",
                 }}>
-                  <span style={{ fontSize: 16, flexShrink: 0, marginTop: 1 }}>{row!.ic}</span>
+                  <span style={{ fontSize: 18, flexShrink: 0, marginTop: 1 }}>{row!.ic}</span>
                   {row!.href ? (
                     <a href={row!.href} style={{
-                      fontSize: 14, fontWeight: 600, color: "var(--primary)",
+                      fontSize: 16, fontWeight: 600, color: "var(--primary)",
                       textDecoration: "none", wordBreak: "break-all",
                     }}>{row!.label}</a>
                   ) : (
-                    <span style={{ fontSize: 14, color: "var(--text)", lineHeight: 1.5 }}>{row!.label}</span>
+                    <span style={{ fontSize: 16, color: "var(--text)", lineHeight: 1.5 }}>{row!.label}</span>
                   )}
                 </div>
               ))}

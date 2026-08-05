@@ -41,7 +41,7 @@ export default function PickupCountdown({ pickupStart, pickupEnd }: { pickupStar
         minWidth: 90, textAlign: "center",
       }}>
         <span style={{ fontSize: 9, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3 }}>Nhận hàng sau</span>
-        <span style={{ fontSize: 15, fontWeight: 900, color: "var(--text)", lineHeight: 1 }}>{fmtDiff(diff)}</span>
+        <span style={{ fontSize: 17, fontWeight: 900, color: "var(--text)", lineHeight: 1 }}>{fmtDiff(diff)}</span>
       </div>
     );
   }
@@ -55,7 +55,7 @@ export default function PickupCountdown({ pickupStart, pickupEnd }: { pickupStar
         minWidth: 90, textAlign: "center",
       }}>
         <span style={{ fontSize: 9, fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3 }}>Đang mở • còn</span>
-        <span style={{ fontSize: 15, fontWeight: 900, color: "var(--accent)", lineHeight: 1 }}>{fmtDiff(diff)}</span>
+        <span style={{ fontSize: 17, fontWeight: 900, color: "var(--accent)", lineHeight: 1 }}>{fmtDiff(diff)}</span>
       </div>
     );
   }
@@ -68,7 +68,7 @@ export default function PickupCountdown({ pickupStart, pickupEnd }: { pickupStar
       minWidth: 90, textAlign: "center",
     }}>
       <span style={{ fontSize: 9, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3 }}>Đã kết thúc</span>
-      <span style={{ fontSize: 15, fontWeight: 900, color: "#94a3b8", lineHeight: 1 }}>{pickupStart}–{pickupEnd}</span>
+      <span style={{ fontSize: 17, fontWeight: 900, color: "#94a3b8", lineHeight: 1 }}>{pickupStart}–{pickupEnd}</span>
     </div>
   );
 }

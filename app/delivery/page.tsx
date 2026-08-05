@@ -4,7 +4,7 @@ import ScrollArrow from "@/components/ScrollArrow";
 
 const pickupSteps = [
   { n: 1, ic: "📱", title: "Nhận mã đơn hàng", desc: "Sau khi cửa hàng xác nhận chuyển khoản, mã đơn hàng riêng của bạn sẽ được kích hoạt trong tab \"Đơn hàng của tôi\"." },
-  { n: 2, ic: "🕒", title: "Đến cửa hàng đúng giờ", desc: "Đến tiệm trong khung giờ nhận đã đặt. Bạn có thể xem địa chỉ và bản đồ trong chi tiết đơn." },
+  { n: 2, ic: "🕒", title: "Đến cửa hàng đúng giờ", desc: "Đến cửa hàng trong khung giờ nhận đã đặt. Bạn có thể xem địa chỉ và bản đồ trong chi tiết đơn." },
   { n: 3, ic: "✨", title: "Xuất trình mã đơn hàng", desc: "Cho nhân viên xem mã đơn hàng để xác nhận và nhận Surprise Box của bạn." },
   { n: 4, ic: "💚", title: "Đánh giá & tận hưởng", desc: "Đừng quên đánh giá cửa hàng và chia sẻ trải nghiệm để giúp cộng đồng nhé!" },
 ];
@@ -30,11 +30,11 @@ export default function DeliveryPage() {
             <div className="rise rise-1" style={{ fontSize: 12, fontWeight: 700, color: "var(--primary)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 14 }}>
               Hướng dẫn nhận hàng
             </div>
-            <h1 className="rise rise-2 delivery-hero-title" style={{ fontSize: 56, marginBottom: 16, lineHeight: 1.1 }}>
+            <h1 className="rise rise-2 delivery-hero-title" style={{ fontSize: 64, marginBottom: 16, lineHeight: 1.1 }}>
               Đơn giản — chỉ <em style={{ color: "var(--primary)", fontStyle: "italic" }}>4 bước</em><br />
               để nhận Surprise Box
             </h1>
-            <p className="rise rise-3" style={{ fontSize: 16, color: "var(--text-muted)", maxWidth: 560, margin: "0 auto" }}>
+            <p className="rise rise-3" style={{ fontSize: 18, color: "var(--text-muted)", maxWidth: 560, margin: "0 auto" }}>
               Hiện tại CrumbUp hỗ trợ hình thức <strong style={{ color: "var(--text)" }}>tự đến lấy tại cửa hàng (Pick-up)</strong>.
               Giao tận nơi đang được phát triển.
             </p>
@@ -44,7 +44,7 @@ export default function DeliveryPage() {
         {/* PICKUP STEPS — fills remaining viewport space */}
         <section style={{ padding: "72px 0", background: "var(--ivory)", flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
           <div className="container">
-            <h2 data-reveal style={{ fontSize: 36, textAlign: "center", marginBottom: 48 }}>Quy trình tự đến lấy</h2>
+            <h2 data-reveal style={{ fontSize: 41, textAlign: "center", marginBottom: 48 }}>Quy trình tự đến lấy</h2>
 
             <div className="steps-grid" style={{ gap: 20, position: "relative" }}>
               {/* Connecting dashed line — hidden on mobile via .steps-connector class */}
@@ -68,10 +68,10 @@ export default function DeliveryPage() {
                     placeItems: "center",
                     fontFamily: "var(--font-display)",
                     fontWeight: 800,
-                    fontSize: 13,
+                    fontSize: 15,
                   }}>{s.n}</div>
-                  <h3 style={{ fontSize: 18, marginBottom: 8 }}>{s.title}</h3>
-                  <p style={{ fontSize: 13, color: "var(--text-muted)", lineHeight: 1.6 }}>{s.desc}</p>
+                  <h3 style={{ fontSize: 21, marginBottom: 8 }}>{s.title}</h3>
+                  <p style={{ fontSize: 15, color: "var(--text-muted)", lineHeight: 1.6 }}>{s.desc}</p>
                 </div>
               ))}
             </div>
@@ -96,10 +96,10 @@ export default function DeliveryPage() {
               <div style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 12 }}>
                 Mã đơn hàng riêng
               </div>
-              <h2 style={{ fontSize: 36, marginBottom: 16, lineHeight: 1.2 }}>
+              <h2 style={{ fontSize: 41, marginBottom: 16, lineHeight: 1.2 }}>
                 Một mã — một đơn hàng — một lần dùng.
               </h2>
-              <p style={{ fontSize: 15, color: "var(--text-muted)", lineHeight: 1.7, marginBottom: 24 }}>
+              <p style={{ fontSize: 17, color: "var(--text-muted)", lineHeight: 1.7, marginBottom: 24 }}>
                 Sau khi cửa hàng xác nhận chuyển khoản thành công, mã đơn hàng của bạn được kích hoạt
                 và lưu trong tab "Đơn hàng của tôi". Xuất trình mã cho nhân viên khi đến nhận —
                 nhanh chóng, không nhầm lẫn.
@@ -111,7 +111,7 @@ export default function DeliveryPage() {
                   "Mã dùng 1 lần, tự động hết hiệu lực sau khi nhận",
                   "Xem được offline, không cần mạng khi đến nhận",
                 ].map((t) => (
-                  <div key={t} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 13 }}>
+                  <div key={t} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 15 }}>
                     <div style={{ width: 6, height: 6, borderRadius: 999, background: "var(--accent)", flexShrink: 0 }} />
                     <span>{t}</span>
                   </div>
@@ -196,7 +196,7 @@ export default function DeliveryPage() {
                     <div style={{ fontSize: 9, color: "var(--text-muted)", marginBottom: 8 }}>Đơn hàng của bạn</div>
                     <div style={{
                       fontFamily: "monospace",
-                      fontSize: 22,
+                      fontSize: 25,
                       fontWeight: 900,
                       letterSpacing: "0.14em",
                       color: "var(--text)",
@@ -227,8 +227,8 @@ export default function DeliveryPage() {
             <div style={{ fontSize: 12, fontWeight: 700, color: "var(--danger)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 12 }}>
               Lưu ý quan trọng
             </div>
-            <h2 style={{ fontSize: 36 }}>Quy định xử lý rủi ro</h2>
-            <p style={{ fontSize: 15, color: "var(--text-muted)", maxWidth: 540, margin: "12px auto 0" }}>
+            <h2 style={{ fontSize: 41 }}>Quy định xử lý rủi ro</h2>
+            <p style={{ fontSize: 17, color: "var(--text-muted)", maxWidth: 540, margin: "12px auto 0" }}>
               Để cả khách hàng và cửa hàng đều có trải nghiệm tốt nhất, vui lòng đọc kỹ các điều khoản dưới đây.
             </p>
           </div>
@@ -241,8 +241,8 @@ export default function DeliveryPage() {
                 borderRadius: 16,
                 padding: 22,
               }}>
-                <h3 style={{ fontSize: 15, marginBottom: 6, fontFamily: "var(--font-body)" }}>{r.title}</h3>
-                <p style={{ fontSize: 13, color: "var(--text-muted)", lineHeight: 1.6 }}>{r.desc}</p>
+                <h3 style={{ fontSize: 17, marginBottom: 6, fontFamily: "var(--font-body)" }}>{r.title}</h3>
+                <p style={{ fontSize: 15, color: "var(--text-muted)", lineHeight: 1.6 }}>{r.desc}</p>
               </div>
             ))}
           </div>
@@ -264,10 +264,10 @@ export default function DeliveryPage() {
               <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 12 }}>
                 Sắp ra mắt
               </div>
-              <h2 style={{ fontSize: 32, marginBottom: 12 }}>
+              <h2 style={{ fontSize: 37, marginBottom: 12 }}>
                 Giao tận nơi — sắp có!
               </h2>
-              <p style={{ fontSize: 15, color: "var(--text)", lineHeight: 1.6, maxWidth: 560 }}>
+              <p style={{ fontSize: 17, color: "var(--text)", lineHeight: 1.6, maxWidth: 560 }}>
                 Chúng tôi đang phát triển mạng lưới shipper riêng để bạn có thể nhận Surprise Box mà không cần ra khỏi nhà.
                 Đăng ký nhận thông báo khi tính năng ra mắt nhé!
               </p>

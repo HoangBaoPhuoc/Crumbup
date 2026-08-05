@@ -48,14 +48,14 @@ export default function ReviewForm({ orderId }: { orderId: string }) {
               aria-label={`${n} sao`}
               style={{
                 background: "none", border: "none", cursor: "pointer",
-                fontSize: 34, lineHeight: 1, padding: 2,
+                fontSize: 39, lineHeight: 1, padding: 2,
                 color: n <= shown ? "var(--primary)" : "var(--border)",
                 transition: "color 0.15s",
               }}
             >★</button>
           ))}
         </div>
-        <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text-muted)", marginTop: 6, minHeight: 18 }}>
+        <div style={{ fontSize: 15, fontWeight: 700, color: "var(--text-muted)", marginTop: 6, minHeight: 18 }}>
           {shown > 0 ? STAR_LABELS[shown - 1] : "Chọn số sao"}
         </div>
       </div>
@@ -68,13 +68,13 @@ export default function ReviewForm({ orderId }: { orderId: string }) {
         rows={4}
         style={{
           width: "100%", marginTop: 16, padding: 14, borderRadius: 12,
-          border: "1px solid var(--border)", fontSize: 13, fontFamily: "inherit",
+          border: "1px solid var(--border)", fontSize: 15, fontFamily: "inherit",
           resize: "vertical", boxSizing: "border-box", color: "var(--text)",
         }}
       />
 
       {error && (
-        <div style={{ padding: "10px 14px", background: "#fef2f2", borderRadius: 10, fontSize: 13, color: "#b91c1c", marginTop: 14 }}>
+        <div style={{ padding: "10px 14px", background: "#fef2f2", borderRadius: 10, fontSize: 15, color: "#b91c1c", marginTop: 14 }}>
           {error}
         </div>
       )}
@@ -86,7 +86,7 @@ export default function ReviewForm({ orderId }: { orderId: string }) {
           width: "100%", marginTop: 16, padding: 14, borderRadius: 12,
           background: loading ? "var(--cream)" : "var(--primary)",
           color: loading ? "var(--text-muted)" : "white",
-          border: "none", fontSize: 14, fontWeight: 700,
+          border: "none", fontSize: 16, fontWeight: 700,
           cursor: loading ? "not-allowed" : "pointer",
         }}
       >

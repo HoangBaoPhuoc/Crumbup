@@ -1,10 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
-import { FOOD_CATEGORIES } from "@/lib/utils";
-import { FoodCategory } from "@/app/generated/prisma/enums";
-
-const CATEGORY_VALUES = new Set(FOOD_CATEGORIES.map((c) => c.value));
+import { resolveCategory } from "@/lib/categoryValidation";
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const supabase = await createClient();
@@ -14,20 +11,23 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   const { id } = await params;
   const box = await prisma.box.findUnique({
     where: { id },
-    select: { id: true, quantityTotal: true, quantityLeft: true, store: { select: { ownerId: true } } },
+    select: { id: true, quantityTotal: true, quantityLeft: true, store: { select: { ownerId: true, industry: true } } },
   });
   if (!box) return NextResponse.json({ error: "Không tìm thấy box" }, { status: 404 });
   if (box.store.ownerId !== user.id) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const body = await request.json();
-  const { name, description, image, category, priceOriginal, priceSale, quantityTotal, pickupStart, pickupEnd, date } = body;
+  const { name, description, image, categoryId, priceOriginal, priceSale, quantityTotal, pickupStart, pickupEnd, date } = body;
 
   if (!name || !image || !priceOriginal || !priceSale || !quantityTotal || !pickupStart || !pickupEnd || !date) {
     return NextResponse.json({ error: "Thiếu thông tin bắt buộc" }, { status: 400 });
   }
-  if (!category || !CATEGORY_VALUES.has(category)) {
-    return NextResponse.json({ error: "Loại đồ ăn không hợp lệ" }, { status: 400 });
+
+  const categoryResult = await resolveCategory(categoryId, box.store.industry);
+  if (!categoryResult.ok) {
+    return NextResponse.json({ error: categoryResult.error }, { status: 400 });
   }
+
   if (Number(priceSale) >= Number(priceOriginal)) {
     return NextResponse.json({ error: "Giá bán phải nhỏ hơn giá gốc" }, { status: 400 });
   }
@@ -48,7 +48,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       name,
       description:   description || null,
       image,
-      category:      category as FoodCategory,
+      categoryId:    categoryResult.categoryId,
       priceOriginal: Number(priceOriginal),
       priceSale:     Number(priceSale),
       quantityTotal: newQtyTotal,

@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { FOOD_CATEGORIES } from "@/lib/utils";
+import type { CategoryOption } from "@/lib/utils";
 
 const BUCKET = "box-images";
 
@@ -18,7 +18,7 @@ function vnNowHHMM() {
 type BoxData = {
   id: string;
   name: string; description: string | null; image: string | null;
-  category: string;
+  categoryId: string;
   priceOriginal: number; priceSale: number;
   quantityTotal: number; quantityLeft: number;
   pickupStart: string; pickupEnd: string;
@@ -38,12 +38,12 @@ function Field({ label, required, children }: { label: string; required?: boolea
 
 const inp: React.CSSProperties = {
   width: "100%", padding: "10px 12px", borderRadius: 10,
-  border: "1px solid var(--border)", fontSize: 13,
+  border: "1px solid var(--border)", fontSize: 15,
   outline: "none", background: "var(--ivory)",
   boxSizing: "border-box", color: "var(--text)",
 };
 
-export default function EditBoxModal({ box, onClose }: { box: BoxData; onClose: () => void }) {
+export default function EditBoxModal({ box, categories, onClose }: { box: BoxData; categories: CategoryOption[]; onClose: () => void }) {
   const router  = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -57,7 +57,7 @@ export default function EditBoxModal({ box, onClose }: { box: BoxData; onClose: 
     name:          box.name,
     description:   box.description ?? "",
     image:         box.image ?? "",
-    category:      box.category,
+    categoryId:    box.categoryId,
     priceOriginal: String(box.priceOriginal),
     priceSale:     String(box.priceSale),
     quantityTotal: String(box.quantityTotal),
@@ -129,8 +129,8 @@ export default function EditBoxModal({ box, onClose }: { box: BoxData; onClose: 
         width: "100%", maxWidth: 520, maxHeight: "90vh", overflowY: "auto",
       }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 900, color: "var(--text)" }}>Sửa Box</h2>
-          <button onClick={onClose} style={{ fontSize: 18, color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer" }}>✕</button>
+          <h2 style={{ fontSize: 21, fontWeight: 900, color: "var(--text)" }}>Sửa Box</h2>
+          <button onClick={onClose} style={{ fontSize: 21, color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer" }}>✕</button>
         </div>
         {sold > 0 && (
           <p style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 20 }}>
@@ -149,10 +149,10 @@ export default function EditBoxModal({ box, onClose }: { box: BoxData; onClose: 
               rows={2} style={{ ...inp, resize: "vertical" }} />
           </Field>
 
-          <Field label="Loại đồ ăn" required>
-            <select value={form.category} onChange={(e) => set("category", e.target.value)} style={inp}>
-              {FOOD_CATEGORIES.map((c) => (
-                <option key={c.value} value={c.value}>{c.emoji} {c.label}</option>
+          <Field label="Ngành hàng" required>
+            <select value={form.categoryId} onChange={(e) => set("categoryId", e.target.value)} style={inp}>
+              {categories.map((c) => (
+                <option key={c.id} value={c.id}>{c.emoji} {c.label}</option>
               ))}
             </select>
           </Field>
@@ -163,7 +163,7 @@ export default function EditBoxModal({ box, onClose }: { box: BoxData; onClose: 
               <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", height: 140, background: "var(--cream)" }}>
                 <img src={form.image} alt="preview" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                 <button onClick={() => { set("image", ""); if (fileRef.current) fileRef.current.value = ""; }}
-                  style={{ position: "absolute", top: 8, right: 8, width: 28, height: 28, borderRadius: "50%", background: "rgba(0,0,0,0.55)", color: "white", border: "none", cursor: "pointer", fontSize: 14, display: "grid", placeItems: "center" }}>✕</button>
+                  style={{ position: "absolute", top: 8, right: 8, width: 28, height: 28, borderRadius: "50%", background: "rgba(0,0,0,0.55)", color: "white", border: "none", cursor: "pointer", fontSize: 16, display: "grid", placeItems: "center" }}>✕</button>
                 <button onClick={() => fileRef.current?.click()} disabled={uploading}
                   style={{ position: "absolute", bottom: 8, right: 8, padding: "4px 10px", borderRadius: 8, background: "rgba(0,0,0,0.55)", color: "white", border: "none", cursor: "pointer", fontSize: 11, fontWeight: 600 }}>
                   {uploading ? "Đang upload..." : "Đổi ảnh"}
@@ -171,7 +171,7 @@ export default function EditBoxModal({ box, onClose }: { box: BoxData; onClose: 
               </div>
             ) : (
               <button type="button" onClick={() => fileRef.current?.click()} disabled={uploading}
-                style={{ ...inp, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 80, cursor: uploading ? "not-allowed" : "pointer", border: "2px dashed var(--border)", background: "var(--ivory)", color: "var(--text-muted)", fontSize: 13, fontWeight: 600 }}>
+                style={{ ...inp, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 80, cursor: uploading ? "not-allowed" : "pointer", border: "2px dashed var(--border)", background: "var(--ivory)", color: "var(--text-muted)", fontSize: 15, fontWeight: 600 }}>
                 {uploading ? "Đang upload..." : "Chọn ảnh"}
               </button>
             )}
@@ -206,16 +206,16 @@ export default function EditBoxModal({ box, onClose }: { box: BoxData; onClose: 
         </div>
 
         {error && (
-          <div style={{ marginTop: 14, padding: "10px 14px", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 10, fontSize: 13, color: "#b91c1c" }}>
+          <div style={{ marginTop: 14, padding: "10px 14px", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 10, fontSize: 15, color: "#b91c1c" }}>
             {error}
           </div>
         )}
 
         <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
-          <button onClick={onClose} style={{ flex: 1, padding: "11px", borderRadius: 10, border: "1px solid var(--border)", background: "white", fontSize: 13, fontWeight: 600, cursor: "pointer", color: "var(--text-muted)" }}>
+          <button onClick={onClose} style={{ flex: 1, padding: "11px", borderRadius: 10, border: "1px solid var(--border)", background: "white", fontSize: 15, fontWeight: 600, cursor: "pointer", color: "var(--text-muted)" }}>
             Hủy
           </button>
-          <button onClick={submit} disabled={loading} style={{ flex: 2, padding: "11px", borderRadius: 10, background: loading ? "var(--primary-soft)" : "var(--primary)", color: loading ? "var(--primary)" : "white", border: "none", fontSize: 13, fontWeight: 700, cursor: loading ? "not-allowed" : "pointer" }}>
+          <button onClick={submit} disabled={loading} style={{ flex: 2, padding: "11px", borderRadius: 10, background: loading ? "var(--primary-soft)" : "var(--primary)", color: loading ? "var(--primary)" : "white", border: "none", fontSize: 15, fontWeight: 700, cursor: loading ? "not-allowed" : "pointer" }}>
             {loading ? "Đang lưu..." : "Lưu thay đổi"}
           </button>
         </div>

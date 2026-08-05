@@ -25,7 +25,7 @@ export default function AdminSearch({ placeholder, defaultValue }: { placeholder
         placeholder={placeholder}
         style={{
           flex: 1, padding: "10px 14px", borderRadius: 10,
-          border: "1px solid #e5d5c8", fontSize: 14,
+          border: "1px solid #e5d5c8", fontSize: 16,
           outline: "none", background: "#ffffff", color: "#3d2f1f",
         }}
         onKeyDown={(e) => e.key === "Enter" && search()}
@@ -33,7 +33,7 @@ export default function AdminSearch({ placeholder, defaultValue }: { placeholder
       <button onClick={search} style={{
         padding: "10px 20px", borderRadius: 10,
         background: "#b87c52", color: "white",
-        border: "none", fontSize: 14, fontWeight: 600, cursor: "pointer",
+        border: "none", fontSize: 16, fontWeight: 600, cursor: "pointer",
       }}>
         Tìm
       </button>

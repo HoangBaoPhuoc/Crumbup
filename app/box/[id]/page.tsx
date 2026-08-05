@@ -5,6 +5,7 @@ import SiteFooter from "@/components/SiteFooter";
 import { prisma } from "@/lib/prisma";
 import { createClient } from "@/lib/supabase/server";
 import { formatPrice, discountPercent, formatVNDate } from "@/lib/utils";
+import ProductPlaceholderIcon from "@/components/ProductPlaceholderIcon";
 import BoxCountdown from "./BoxCountdown";
 import StoreMapClient from "./StoreMapClient";
 import OrderButton from "./OrderButton";
@@ -91,16 +92,18 @@ export default async function BoxDetailPage({ params }: { params: Promise<{ id: 
               display: "flex", alignItems: "center", justifyContent: "center",
             }}>
               <div style={{ position: "absolute", top: 20, left: 20, zIndex: 1, display: "flex", gap: 8 }}>
-                <span className="badge badge-primary" style={{ padding: "6px 14px", fontSize: 13 }}>−{disc}%</span>
+                <span className="badge badge-primary" style={{ padding: "6px 14px", fontSize: 15 }}>−{disc}%</span>
                 {box.quantityLeft <= 2 && (
-                  <span className="badge badge-warm" style={{ padding: "6px 14px", fontSize: 13 }}>Sắp hết</span>
+                  <span className="badge badge-warm" style={{ padding: "6px 14px", fontSize: 15 }}>Sắp hết</span>
                 )}
               </div>
               {box.image ? (
                 <img src={box.image} alt={box.name}
                   style={{ width: "100%", height: "100%", minHeight: 360, objectFit: "cover", display: "block" }} />
               ) : (
-                <div style={{ fontSize: 120, lineHeight: 1, padding: "60px 0" }}>🥐</div>
+                <div style={{ padding: "60px 0", color: "var(--text-muted)", opacity: 0.5 }}>
+                  <ProductPlaceholderIcon size={96} />
+                </div>
               )}
             </div>
 
@@ -109,16 +112,16 @@ export default async function BoxDetailPage({ params }: { params: Promise<{ id: 
               <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
                 <span className="badge badge-primary">−{disc}%</span>
                 {avgRating && (
-                  <span style={{ fontSize: 13, fontWeight: 700, color: "var(--text)" }}>⭐ {avgRating} · {reviews.length} đánh giá</span>
+                  <span style={{ fontSize: 15, fontWeight: 700, color: "var(--text)" }}>⭐ {avgRating} · {reviews.length} đánh giá</span>
                 )}
                 {store.verified && (
-                  <span style={{ fontSize: 13, fontWeight: 700, color: "#2d6a31" }}>✓ Đối tác xác thực</span>
+                  <span style={{ fontSize: 15, fontWeight: 700, color: "#2d6a31" }}>✓ Đối tác xác thực</span>
                 )}
               </div>
 
-              <h1 style={{ fontSize: 26, margin: 0, lineHeight: 1.2 }}>{box.name}</h1>
+              <h1 style={{ fontSize: 30, margin: 0, lineHeight: 1.2 }}>{box.name}</h1>
 
-              <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap", fontSize: 13, color: "var(--text-muted)" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap", fontSize: 15, color: "var(--text-muted)" }}>
                 <span>{store.name} · {store.address}</span>
                 {store.phone && <span>📞 {store.phone}</span>}
               </div>
@@ -131,8 +134,8 @@ export default async function BoxDetailPage({ params }: { params: Promise<{ id: 
 
               {(box.description || store.description) && (
                 <div style={{ background: "white", borderRadius: 18, border: "1px solid var(--border)", padding: 24 }}>
-                  <h3 style={{ fontSize: 15, marginBottom: 10, fontWeight: 700 }}>Giới thiệu Box</h3>
-                  <p style={{ fontSize: 13, lineHeight: 1.7, color: "var(--text-muted)", margin: 0 }}>
+                  <h3 style={{ fontSize: 17, marginBottom: 10, fontWeight: 700 }}>Giới thiệu Box</h3>
+                  <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--text-muted)", margin: 0 }}>
                     {box.description ?? store.description}
                   </p>
                 </div>
@@ -142,9 +145,9 @@ export default async function BoxDetailPage({ params }: { params: Promise<{ id: 
             {/* Reviews */}
             <div style={{ background: "white", borderRadius: 20, border: "1px solid var(--border)", padding: 28 }}>
               <div style={{ display: "flex", alignItems: "center", marginBottom: 20, flexWrap: "wrap", gap: 8 }}>
-                <h3 style={{ fontSize: 18, flex: 1, fontWeight: 700 }}>Đánh giá từ khách hàng</h3>
+                <h3 style={{ fontSize: 21, flex: 1, fontWeight: 700 }}>Đánh giá từ khách hàng</h3>
                 {avgRating && (
-                  <span style={{ fontSize: 14, fontWeight: 700, color: "var(--primary)" }}>
+                  <span style={{ fontSize: 16, fontWeight: 700, color: "var(--primary)" }}>
                     ⭐ {avgRating} / 5 · {reviews.length} đánh giá
                   </span>
                 )}
@@ -152,22 +155,22 @@ export default async function BoxDetailPage({ params }: { params: Promise<{ id: 
 
               {reviews.length === 0 ? (
                 <div style={{ textAlign: "center", padding: "32px 0", color: "var(--text-muted)" }}>
-                  <div style={{ fontSize: 36, marginBottom: 10 }}>💬</div>
-                  <p style={{ fontSize: 14 }}>Chưa có đánh giá nào cho tiệm này</p>
+                  <div style={{ fontSize: 41, marginBottom: 10 }}>💬</div>
+                  <p style={{ fontSize: 16 }}>Chưa có đánh giá nào cho tiệm này</p>
                 </div>
               ) : (
                 reviews.map((r, i) => (
                   <div key={r.id} style={{ padding: "16px 0", borderTop: i === 0 ? "none" : "1px solid var(--border)" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
-                      <div style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--accent-soft)", display: "grid", placeItems: "center", fontSize: 16, flexShrink: 0 }}>👤</div>
+                      <div style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--accent-soft)", display: "grid", placeItems: "center", fontSize: 18, flexShrink: 0 }}>👤</div>
                       <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: 14, fontWeight: 700 }}>{r.user.name}</div>
+                        <div style={{ fontSize: 16, fontWeight: 700 }}>{r.user.name}</div>
                         <div style={{ fontSize: 11, color: "var(--text-muted)" }}>{timeAgo(r.createdAt)}</div>
                       </div>
-                      <div style={{ fontSize: 13, flexShrink: 0 }}>{"⭐".repeat(r.rating)}</div>
+                      <div style={{ fontSize: 15, flexShrink: 0 }}>{"⭐".repeat(r.rating)}</div>
                     </div>
                     {r.comment && (
-                      <p style={{ fontSize: 13, color: "var(--text)", lineHeight: 1.6, paddingLeft: 48 }}>{r.comment}</p>
+                      <p style={{ fontSize: 15, color: "var(--text)", lineHeight: 1.6, paddingLeft: 48 }}>{r.comment}</p>
                     )}
                   </div>
                 ))
@@ -181,7 +184,7 @@ export default async function BoxDetailPage({ params }: { params: Promise<{ id: 
               {box.quantityLeft <= 2 && !isExpired && (
                 <div style={{
                   background: "var(--danger)", color: "white", borderRadius: 10,
-                  padding: "8px 14px", fontSize: 13, fontWeight: 700, marginBottom: 14,
+                  padding: "8px 14px", fontSize: 15, fontWeight: 700, marginBottom: 14,
                   textAlign: "center",
                 }}>
                   ⚡ Chỉ còn {box.quantityLeft} box — đặt ngay kẻo hết!
@@ -189,10 +192,10 @@ export default async function BoxDetailPage({ params }: { params: Promise<{ id: 
               )}
 
               <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 6 }}>
-                <span style={{ fontSize: 14, color: "var(--text-muted)", textDecoration: "line-through" }}>
+                <span style={{ fontSize: 16, color: "var(--text-muted)", textDecoration: "line-through" }}>
                   {formatPrice(box.priceOriginal)}
                 </span>
-                <span style={{ fontSize: 34, fontWeight: 800, color: "var(--primary)", fontFamily: "var(--font-display)" }}>
+                <span style={{ fontSize: 39, fontWeight: 800, color: "var(--primary)", fontFamily: "var(--font-display)" }}>
                   {formatPrice(box.priceSale)}
                 </span>
               </div>
@@ -208,7 +211,7 @@ export default async function BoxDetailPage({ params }: { params: Promise<{ id: 
                   { ic: "🏪", lbl: "Hình thức", val: "Nhận tại cửa hàng" },
                 ].map((row) => (
                   <div key={row.lbl} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-                    <span style={{ fontSize: 14, flexShrink: 0, marginTop: 1 }}>{row.ic}</span>
+                    <span style={{ fontSize: 16, flexShrink: 0, marginTop: 1 }}>{row.ic}</span>
                     <span style={{ fontSize: 12, color: "var(--text-muted)", flexShrink: 0, minWidth: 60 }}>{row.lbl}</span>
                     <span style={{ fontSize: 12, fontWeight: 700, textAlign: "right", flex: 1 }}>{row.val}</span>
                   </div>
@@ -228,7 +231,7 @@ export default async function BoxDetailPage({ params }: { params: Promise<{ id: 
             </div>
 
             <div style={{ background: "var(--cream)", borderRadius: 14, padding: "12px 16px", display: "flex", alignItems: "center", gap: 10 }}>
-              <span style={{ fontSize: 18 }}>♻️</span>
+              <span style={{ fontSize: 21 }}>♻️</span>
               <span style={{ fontSize: 12, fontWeight: 600, color: "var(--accent)" }}>Mỗi đơn cứu ~2 kg thực phẩm khỏi thùng rác</span>
             </div>
 

@@ -16,7 +16,7 @@ export default function LogoutButton() {
   }
 
   return (
-    <button onClick={handleLogout} className="btn btn-ghost" style={{ padding: "9px 16px", fontSize: 13 }}>
+    <button onClick={handleLogout} className="btn btn-ghost" style={{ padding: "9px 16px", fontSize: 15 }}>
       Đăng xuất
     </button>
   );

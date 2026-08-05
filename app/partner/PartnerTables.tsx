@@ -5,6 +5,7 @@ import BoxToggle from "./BoxToggle";
 import PartnerOrderActions from "./PartnerOrderActions";
 import CreateBoxModal from "./CreateBoxModal";
 import EditBoxModal from "./EditBoxModal";
+import type { CategoryOption } from "@/lib/utils";
 
 const STATUS_LABEL: Record<string, string> = {
   PENDING:   "Chờ xác nhận",
@@ -21,7 +22,7 @@ const STATUS_COLOR: Record<string, React.CSSProperties> = {
 
 type Box = {
   id: string; name: string; description: string | null; image: string | null;
-  category: string;
+  categoryId: string; category: { id: string; label: string; emoji: string | null } | null;
   priceOriginal: number; priceSale: number;
   quantityTotal: number; quantityLeft: number;
   pickupStart: string; pickupEnd: string; active: boolean;
@@ -42,19 +43,21 @@ const th: React.CSSProperties = {
   padding: "10px 20px", textAlign: "left", fontSize: 11,
   fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em",
 };
-const td: React.CSSProperties = { padding: "13px 20px", fontSize: 13, color: "var(--text)" };
+const td: React.CSSProperties = { padding: "13px 20px", fontSize: 15, color: "var(--text)" };
 
 export default function PartnerTables({
-  activeBoxes, futureBoxes, recentOrders, totalOrders, storeAddress,
+  activeBoxes, futureBoxes, recentOrders, totalOrders, storeAddress, categories,
 }: {
   activeBoxes:  Box[];
   futureBoxes:  Box[];
   recentOrders: Order[];
   totalOrders:  number;
   storeAddress: string;
+  categories:   CategoryOption[];
 }) {
   const [boxQ,     setBoxQ]     = useState("");
   const [boxScope, setBoxScope] = useState<"today" | "all">("today");
+  const [categoryFilter, setCategoryFilter] = useState("");
   const [editBox,  setEditBox]  = useState<Box | null>(null);
   const [orderQ,   setOrderQ]   = useState("");
 
@@ -63,8 +66,9 @@ export default function PartnerTables({
   const scopedBoxes = boxScope === "today" ? activeBoxes : allBoxes;
 
   const filteredBoxes = scopedBoxes.filter((b) =>
-    b.name.toLowerCase().includes(boxQ.toLowerCase()) ||
-    (b.description ?? "").toLowerCase().includes(boxQ.toLowerCase())
+    (b.name.toLowerCase().includes(boxQ.toLowerCase()) ||
+      (b.description ?? "").toLowerCase().includes(boxQ.toLowerCase())) &&
+    (!categoryFilter || b.categoryId === categoryFilter)
   );
 
   const filteredOrders = recentOrders.filter((o) => {
@@ -82,7 +86,7 @@ export default function PartnerTables({
       {/* ── Boxes ── */}
       <section id="boxes" style={{ background: "white", borderRadius: 16, border: "1px solid var(--border)", overflow: "hidden", marginBottom: 24 }}>
         <div style={{ padding: "14px 22px", borderBottom: "1px solid var(--cream)", display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-          <h2 style={{ fontSize: 15, fontWeight: 700, color: "var(--text)" }}>Box</h2>
+          <h2 style={{ fontSize: 17, fontWeight: 700, color: "var(--text)" }}>Box</h2>
 
           {/* scope toggle */}
           <div style={{ display: "flex", borderRadius: 8, border: "1px solid var(--border)", overflow: "hidden", flexShrink: 0 }}>
@@ -104,8 +108,13 @@ export default function PartnerTables({
           <input
             value={boxQ} onChange={(e) => setBoxQ(e.target.value)}
             placeholder="Tìm box..."
-            style={{ padding: "6px 12px", fontSize: 13, borderRadius: 8, border: "1px solid var(--border)", outline: "none", background: "var(--ivory)", width: 180 }}
+            style={{ padding: "6px 12px", fontSize: 15, borderRadius: 8, border: "1px solid var(--border)", outline: "none", background: "var(--ivory)", width: 180 }}
           />
+          <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}
+            style={{ padding: "6px 10px", fontSize: 12, borderRadius: 8, border: "1px solid var(--border)", outline: "none", background: "var(--ivory)", cursor: "pointer" }}>
+            <option value="">Tất cả ngành hàng</option>
+            {categories.map((c) => <option key={c.id} value={c.id}>{c.emoji} {c.label}</option>)}
+          </select>
           <span style={{ fontSize: 12, color: "var(--text-muted)", whiteSpace: "nowrap", marginLeft: "auto" }}>
             {filteredBoxes.length}/{scopedBoxes.length} box
           </span>
@@ -113,12 +122,12 @@ export default function PartnerTables({
 
         {scopedBoxes.length === 0 ? (
           <div style={{ padding: "48px 24px", textAlign: "center" }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text)", marginBottom: 6 }}>Chưa có box nào hôm nay</div>
-            <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 16 }}>Tạo box để bắt đầu bán hàng.</p>
-            <CreateBoxModal storeAddress={storeAddress} />
+            <div style={{ fontSize: 16, fontWeight: 600, color: "var(--text)", marginBottom: 6 }}>Chưa có box nào hôm nay</div>
+            <p style={{ fontSize: 15, color: "var(--text-muted)", marginBottom: 16 }}>Tạo box để bắt đầu bán hàng.</p>
+            <CreateBoxModal storeAddress={storeAddress} categories={categories} />
           </div>
         ) : filteredBoxes.length === 0 ? (
-          <div style={{ padding: "32px 24px", textAlign: "center", color: "var(--text-muted)", fontSize: 13 }}>
+          <div style={{ padding: "32px 24px", textAlign: "center", color: "var(--text-muted)", fontSize: 15 }}>
             Không tìm thấy box nào khớp với &ldquo;{boxQ}&rdquo;
           </div>
         ) : (
@@ -144,6 +153,7 @@ export default function PartnerTables({
                     </td>
                     <td style={td}>
                       <div style={{ fontWeight: 600 }}>{b.name}</div>
+                      {b.category && <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>{b.category.emoji} {b.category.label}</div>}
                       {b.description && <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>{b.description}</div>}
                     </td>
                     <td style={{ ...td, color: "var(--text-muted)", textDecoration: "line-through", fontSize: 12 }}>
@@ -194,16 +204,16 @@ export default function PartnerTables({
         )}
       </section>
 
-      {editBox && <EditBoxModal box={editBox} onClose={() => setEditBox(null)} />}
+      {editBox && <EditBoxModal box={editBox} categories={categories} onClose={() => setEditBox(null)} />}
 
       {/* ── Orders ── */}
       <section id="orders" style={{ background: "white", borderRadius: 16, border: "1px solid var(--border)", overflow: "hidden", marginBottom: 24 }}>
         <div style={{ padding: "14px 22px", borderBottom: "1px solid var(--cream)", display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-          <h2 style={{ fontSize: 15, fontWeight: 700, color: "var(--text)", marginRight: "auto" }}>Đơn hàng gần đây</h2>
+          <h2 style={{ fontSize: 17, fontWeight: 700, color: "var(--text)", marginRight: "auto" }}>Đơn hàng gần đây</h2>
           <input
             value={orderQ} onChange={(e) => setOrderQ(e.target.value)}
             placeholder="Tìm theo tên, mã đơn, trạng thái..."
-            style={{ padding: "6px 12px", fontSize: 13, borderRadius: 8, border: "1px solid var(--border)", outline: "none", background: "var(--ivory)", width: 240 }}
+            style={{ padding: "6px 12px", fontSize: 15, borderRadius: 8, border: "1px solid var(--border)", outline: "none", background: "var(--ivory)", width: 240 }}
           />
           <span style={{ fontSize: 12, color: "var(--text-muted)", whiteSpace: "nowrap" }}>
             {filteredOrders.length}/{totalOrders} đơn
@@ -211,11 +221,11 @@ export default function PartnerTables({
         </div>
 
         {recentOrders.length === 0 ? (
-          <div style={{ padding: "48px 24px", textAlign: "center", color: "var(--text-muted)", fontSize: 13 }}>
+          <div style={{ padding: "48px 24px", textAlign: "center", color: "var(--text-muted)", fontSize: 15 }}>
             Chưa có đơn hàng nào
           </div>
         ) : filteredOrders.length === 0 ? (
-          <div style={{ padding: "32px 24px", textAlign: "center", color: "var(--text-muted)", fontSize: 13 }}>
+          <div style={{ padding: "32px 24px", textAlign: "center", color: "var(--text-muted)", fontSize: 15 }}>
             Không tìm thấy đơn nào khớp với &ldquo;{orderQ}&rdquo;
           </div>
         ) : (

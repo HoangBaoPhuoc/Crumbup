@@ -33,8 +33,8 @@ export default async function AdminDashboard() {
   return (
     <div>
       <div style={{ marginBottom: 32 }}>
-        <h1 style={{ fontSize: 22, fontWeight: 900, color: "#3d2f1f", marginBottom: 4 }}>Tổng quan</h1>
-        <p style={{ fontSize: 13, color: "#78716c" }}>
+        <h1 style={{ fontSize: 25, fontWeight: 900, color: "#3d2f1f", marginBottom: 4 }}>Tổng quan</h1>
+        <p style={{ fontSize: 15, color: "#78716c" }}>
           {new Date().toLocaleDateString("vi-VN", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
         </p>
       </div>
@@ -49,7 +49,7 @@ export default async function AdminDashboard() {
               boxShadow: "0 1px 4px rgba(61,47,31,0.05)",
               cursor: "pointer",
             }}>
-              <div style={{ fontSize: 30, fontWeight: 900, color: s.alert ? "#b87c52" : "#3d2f1f", lineHeight: 1 }}>
+              <div style={{ fontSize: 35, fontWeight: 900, color: s.alert ? "#b87c52" : "#3d2f1f", lineHeight: 1 }}>
                 {s.value}
               </div>
               <div style={{ fontSize: 12, color: "#78716c", marginTop: 6, fontWeight: 500 }}>{s.label}</div>
@@ -64,8 +64,8 @@ export default async function AdminDashboard() {
           padding: "16px 22px", borderBottom: "1px solid #f0e5d8",
           display: "flex", justifyContent: "space-between", alignItems: "center",
         }}>
-          <h2 style={{ fontSize: 14, fontWeight: 700, color: "#3d2f1f" }}>Đăng ký gần đây</h2>
-          <Link href="/admin/customers" style={{ fontSize: 13, color: "#b87c52", fontWeight: 600 }}>Xem tất cả →</Link>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: "#3d2f1f" }}>Đăng ký gần đây</h2>
+          <Link href="/admin/customers" style={{ fontSize: 15, color: "#b87c52", fontWeight: 600 }}>Xem tất cả →</Link>
         </div>
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
@@ -95,7 +95,7 @@ export default async function AdminDashboard() {
               </tr>
             ))}
             {recentUsers.length === 0 && (
-              <tr><td colSpan={4} style={{ padding: "32px", textAlign: "center", color: "#78716c", fontSize: 13 }}>Chưa có dữ liệu</td></tr>
+              <tr><td colSpan={4} style={{ padding: "32px", textAlign: "center", color: "#78716c", fontSize: 15 }}>Chưa có dữ liệu</td></tr>
             )}
           </tbody>
         </table>
@@ -108,4 +108,4 @@ const th: React.CSSProperties = {
   padding: "10px 22px", textAlign: "left", fontSize: 11,
   fontWeight: 700, color: "#78716c", textTransform: "uppercase", letterSpacing: "0.05em",
 };
-const td: React.CSSProperties = { padding: "12px 22px", fontSize: 13, color: "#3d2f1f" };
+const td: React.CSSProperties = { padding: "12px 22px", fontSize: 15, color: "#3d2f1f" };

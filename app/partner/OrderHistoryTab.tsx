@@ -17,7 +17,7 @@ const th: React.CSSProperties = {
   padding: "10px 20px", textAlign: "left", fontSize: 11,
   fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em",
 };
-const td: React.CSSProperties = { padding: "13px 20px", fontSize: 13, color: "var(--text)" };
+const td: React.CSSProperties = { padding: "13px 20px", fontSize: 15, color: "var(--text)" };
 
 function fmtVN(date: Date | string) {
   const d = new Date(new Date(date).getTime() + 7 * 60 * 60_000);
@@ -87,11 +87,11 @@ export default function OrderHistoryTab({ orders }: { orders: HistoryOrder[] }) 
   return (
     <section style={{ background: "white", borderRadius: 16, border: "1px solid var(--border)", overflow: "hidden" }}>
       <div style={{ padding: "14px 22px", borderBottom: "1px solid var(--cream)", display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-        <h2 style={{ fontSize: 15, fontWeight: 700, color: "var(--text)", marginRight: "auto" }}>Tất cả đơn</h2>
+        <h2 style={{ fontSize: 17, fontWeight: 700, color: "var(--text)", marginRight: "auto" }}>Tất cả đơn</h2>
         <input
           value={q} onChange={(e) => setQ(e.target.value)}
           placeholder="Tìm theo tên, mã đơn, box..."
-          style={{ padding: "6px 12px", fontSize: 13, borderRadius: 8, border: "1px solid var(--border)", outline: "none", background: "var(--ivory)", width: 240 }}
+          style={{ padding: "6px 12px", fontSize: 15, borderRadius: 8, border: "1px solid var(--border)", outline: "none", background: "var(--ivory)", width: 240 }}
         />
         <span style={{ fontSize: 12, color: "var(--text-muted)", whiteSpace: "nowrap" }}>
           {filtered.length}/{orders.length} đơn
@@ -99,11 +99,11 @@ export default function OrderHistoryTab({ orders }: { orders: HistoryOrder[] }) 
       </div>
 
       {orders.length === 0 ? (
-        <div style={{ padding: "48px 24px", textAlign: "center", color: "var(--text-muted)", fontSize: 13 }}>
+        <div style={{ padding: "48px 24px", textAlign: "center", color: "var(--text-muted)", fontSize: 15 }}>
           Chưa có đơn hàng nào trong lịch sử
         </div>
       ) : filtered.length === 0 ? (
-        <div style={{ padding: "32px 24px", textAlign: "center", color: "var(--text-muted)", fontSize: 13 }}>
+        <div style={{ padding: "32px 24px", textAlign: "center", color: "var(--text-muted)", fontSize: 15 }}>
           Không tìm thấy đơn nào khớp với &ldquo;{q}&rdquo;
         </div>
       ) : (
