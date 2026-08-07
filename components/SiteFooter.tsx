@@ -8,10 +8,15 @@ export default function SiteFooter() {
           <h4>CrumbUp</h4>
           <p>Save Every Crumb,<br />Share Every Value.</p>
           <p style={{ marginTop: 16, display: "flex", gap: 12 }}>
-            <span style={{ width: 32, height: 32, borderRadius: 8, background: "rgba(255,255,255,0.1)", display: "grid", placeItems: "center" }}>f</span>
-            <span style={{ width: 32, height: 32, borderRadius: 8, background: "rgba(255,255,255,0.1)", display: "grid", placeItems: "center" }}>ig</span>
-            <span style={{ width: 32, height: 32, borderRadius: 8, background: "rgba(255,255,255,0.1)", display: "grid", placeItems: "center" }}>td</span>
-            <span style={{ width: 32, height: 32, borderRadius: 8, background: "rgba(255,255,255,0.1)", display: "grid", placeItems: "center" }}>yt</span>
+            <a
+              href="https://web.facebook.com/profile.php?id=61590329818019"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Facebook"
+              style={{ width: 32, height: 32, borderRadius: 8, background: "rgba(255,255,255,0.1)", display: "grid", placeItems: "center", color: "inherit", textDecoration: "none", marginBottom: 0 }}
+            >
+              f
+            </a>
           </p>
         </div>
         <div className="footer-col">
@@ -30,9 +35,9 @@ export default function SiteFooter() {
         </div>
         <div className="footer-col">
           <h4>Liên hệ</h4>
-          <p>✉ hello@crumbup.vn</p>
-          <p>📞 1900 1234</p>
-          <p>📍 Đà Nẵng, Việt Nam</p>
+          <a href="mailto:khanhdlp05@gmail.com">khanhdlp05@gmail.com</a>
+          <a href="tel:+84985991175">0985 991 175</a>
+          <p>Đà Nẵng, Việt Nam</p>
         </div>
       </div>
       <div className="footer-bottom">© 2026 CrumbUp. All rights reserved.</div>

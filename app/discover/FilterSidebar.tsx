@@ -82,7 +82,7 @@ export default function FilterSidebar({ categoryOptions }: { categoryOptions: Ca
   return (
     <aside className="rise rise-3" style={{
       background: "white", padding: 24, borderRadius: 20,
-      border: "1px solid var(--border)", position: "sticky", top: 130,
+      border: "1px solid var(--border)", position: "sticky", top: 89,
       display: "flex", flexDirection: "column", gap: 16,
     }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -157,7 +157,7 @@ export default function FilterSidebar({ categoryOptions }: { categoryOptions: Ca
 
       {/* Giờ nhận */}
       <FilterGroup
-        title="Giờ nhận"
+        title="Thời gian mở bán"
         options={PICKUP_OPTIONS}
         selected={pickups}
         onToggle={(v) => toggle("pickup", v)}
@@ -187,14 +187,14 @@ function FilterGroup({
 function CheckboxRow({ label, checked, onChange }: { label: string; checked: boolean; onChange: () => void }) {
   return (
     <label style={{
-      display: "flex", alignItems: "center", gap: 10,
+      display: "flex", alignItems: "flex-start", gap: 10,
       fontSize: 12, padding: "5px 0", cursor: "pointer",
     }}>
       <input
         type="checkbox"
         checked={checked}
         onChange={onChange}
-        style={{ width: 15, height: 15, accentColor: "var(--primary)", cursor: "pointer" }}
+        style={{ width: 15, height: 15, flexShrink: 0, marginTop: 1, accentColor: "var(--primary)", cursor: "pointer" }}
       />
       {label}
     </label>

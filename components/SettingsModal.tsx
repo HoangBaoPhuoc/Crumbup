@@ -110,7 +110,7 @@ export default function SettingsModal({ onClose }: Props) {
           ✕
         </button>
 
-        <h2 style={{ fontSize: 23, fontWeight: 900, marginBottom: 22 }}>⚙️ Cài đặt tài khoản</h2>
+        <h2 style={{ fontSize: 23, fontWeight: 900, marginBottom: 22 }}>Cài đặt tài khoản</h2>
 
         {step === "loading" && (
           <p style={{ fontSize: 16, color: "var(--text-muted)" }}>Đang tải...</p>

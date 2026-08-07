@@ -2,7 +2,7 @@ import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import AdminSidebar from "./AdminSidebar";
 
-export const metadata = { title: "Admin Portal — CrumbUp" };
+export const metadata = { title: "Admin Portal - CrumbUp" };
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = (await headers()).get("x-pathname") ?? "";

@@ -159,6 +159,7 @@ export default function SearchBar() {
       {mounted && showDropdown && pos && createPortal(
         <div
           id="search-dropdown"
+          className="user-menu-dropdown"
           style={{
             position: "fixed", top: pos.top, left: pos.left, width: pos.width,
             background: "white", borderRadius: 16, border: "1px solid var(--border)",

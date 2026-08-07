@@ -98,7 +98,7 @@ export default function EditBoxModal({ box, categories, onClose }: { box: BoxDat
     if (Number(form.quantityTotal) < sold)              { setError(`Số lượng không thể nhỏ hơn số đã bán (${sold})`); return; }
     if (form.pickupEnd <= form.pickupStart)             { setError("Giờ kết thúc phải sau giờ bắt đầu"); return; }
     if (form.date === vnToday() && form.pickupEnd <= vnNowHHMM()) {
-      setError("Giờ kết thúc nhận hàng đã qua — vui lòng cập nhật giờ"); return;
+      setError("Giờ kết thúc nhận hàng đã qua, vui lòng cập nhật giờ"); return;
     }
 
     setLoading(true);
@@ -134,7 +134,7 @@ export default function EditBoxModal({ box, categories, onClose }: { box: BoxDat
         </div>
         {sold > 0 && (
           <p style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 20 }}>
-            Đã bán <strong>{sold}</strong> box — số lượng tối thiểu là {sold}.
+            Đã bán <strong>{sold}</strong> box - số lượng tối thiểu là {sold}.
           </p>
         )}
         {sold === 0 && <div style={{ marginBottom: 20 }} />}

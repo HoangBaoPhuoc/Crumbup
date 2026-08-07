@@ -7,8 +7,8 @@ import CountUpNumber from "@/components/CountUpNumber";
 
 const facts = [
   { n: "01", q: "Lãng phí thực phẩm là gì?", p: "Những sản phẩm vẫn tốt nhưng chưa gặp đúng người vào đúng lúc." },
-  { n: "02", q: "Thực phẩm dư thừa là gì?", p: "Sản phẩm còn tốt, chưa kịp bán hết — đóng gói thành Surprise Box giá tốt." },
-  { n: "03", q: "Lãng phí có đáng lo?", p: "UNEP 2024: hơn 1,05 tỷ tấn thực phẩm lãng phí mỗi năm — 19% tổng lượng sẵn có.", featured: true },
+  { n: "02", q: "Thực phẩm dư thừa là gì?", p: "Sản phẩm còn tốt, chưa kịp bán hết, được đóng gói thành Surprise Box giá tốt." },
+  { n: "03", q: "Lãng phí có đáng lo?", p: "UNEP 2024: hơn 1,05 tỷ tấn thực phẩm lãng phí mỗi năm (19% tổng lượng sẵn có).", featured: true },
   { n: "04", q: "Food Waste → Food Rescue", p: "Cửa hàng đóng gói cuối ngày thành box ưu đãi, khách có lựa chọn ngon hơn, rẻ hơn." },
 ];
 
@@ -67,7 +67,7 @@ export default function HomePage() {
                   background: "var(--accent)",
                 }}
               />
-              Đang giải cứu 412 box hôm nay
+              Có thể giải cứu tới 400+ box mỗi ngày
             </div>
             <h1
               className="rise rise-2 hero-title"
@@ -103,8 +103,8 @@ export default function HomePage() {
                 maxWidth: 520,
               }}
             >
-              Thực phẩm và đồ uống cuối ngày từ các cửa hàng yêu thích — từ
-              tiệm bánh, siêu thị đến cửa hàng trái cây, đặc sản đóng gói —
+              Thực phẩm và đồ uống cuối ngày từ các cửa hàng yêu thích, từ
+              tiệm bánh, siêu thị đến cửa hàng trái cây, đặc sản đóng gói,
               giá siêu hời, giảm lãng phí thực phẩm.
             </p>
 
@@ -147,15 +147,15 @@ export default function HomePage() {
                     { text: "Giảm tới 70%", accent: "primary" },
                     { text: "Thanh toán an toàn", accent: "accent" },
                     { text: "Đa dạng hàng quán", accent: null },
-                    { text: "125k+ Box đã cứu", accent: "primary" },
-                    { text: "2.850 Đối tác", accent: null },
-                    { text: "Hôm nay +312 kg cứu khỏi rác", accent: "accent" },
+                    { text: "Cứu tới 125k+ Box", accent: "primary" },
+                    { text: "Tới 2.850+ Đối tác", accent: null },
+                    { text: "Giảm tới 312kg rác/ngày", accent: "accent" },
                     { text: "Giảm tới 70%", accent: "primary" },
                     { text: "Thanh toán an toàn", accent: "accent" },
                     { text: "Đa dạng hàng quán", accent: null },
-                    { text: "125k+ Box đã cứu", accent: "primary" },
-                    { text: "2.850 Đối tác", accent: null },
-                    { text: "Hôm nay +312 kg cứu khỏi rác", accent: "accent" },
+                    { text: "Cứu tới 125k+ Box", accent: "primary" },
+                    { text: "Tới 2.850+ Đối tác", accent: null },
+                    { text: "Giảm tới 312kg rác/ngày", accent: "accent" },
                   ].map((tag, i) => (
                     <span
                       key={i}
@@ -194,12 +194,12 @@ export default function HomePage() {
               src="/box-cake.png"
               alt="Surprise Box"
               style={{
-                width: "210%",
-                maxWidth: 920,
+                width: "230%",
+                maxWidth: 1080,
                 height: "auto",
                 objectFit: "contain",
                 filter: "drop-shadow(0 24px 48px rgba(232,119,34,0.22))",
-                marginLeft: "-10%",
+                marginLeft: "-15%",
               }}
             />
           </div>
@@ -222,10 +222,10 @@ export default function HomePage() {
     }}>
       <div>
         <h2 style={{ fontSize: 41, marginBottom: 16, lineHeight: 1.2, letterSpacing: "-0.01em" }}>
-          Về lãng phí thực phẩm — vì sao mỗi phần thực phẩm cuối ngày đều đáng cứu
+          Về lãng phí thực phẩm - vì sao mỗi phần thực phẩm cuối ngày đều đáng cứu
         </h2>
         <p style={{ fontSize: 16, color: "var(--text-muted)", lineHeight: 1.8, maxWidth: 480 }}>
-          Thực phẩm chưa kịp bán hết khi cửa hàng đóng cửa không đơn thuần là đồ bỏ đi —
+          Thực phẩm chưa kịp bán hết khi cửa hàng đóng cửa không đơn thuần là đồ bỏ đi,
           đằng sau đó là công sức, nguyên liệu và chi phí vận hành mỗi ngày.
         </p>
       </div>
@@ -243,7 +243,7 @@ export default function HomePage() {
       <p style={{ fontStyle: "italic", fontSize: 18, lineHeight: 1.7, color: "var(--text)", maxWidth: 640, margin: 0 }}>
         "Chúng tôi không giải cứu đồ hỏng. Chúng tôi kết nối lại những giá trị còn tốt."{" "}
         <span style={{ fontStyle: "normal", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
-          — CrumbUp
+          - CrumbUp
         </span>
       </p>
     </div>
@@ -307,16 +307,16 @@ export default function HomePage() {
                 margin: "0 auto",
               }}
             >
-              Cùng CrumbUp và cộng đồng giải cứu thực phẩm mỗi ngày — từng
-              box nhỏ, tác động lớn.
+              Mỗi box được giải cứu qua CrumbUp góp phần tạo tác động lớn
+              cho cộng đồng và môi trường.
             </p>
           </div>
 
           <div className="impact-grid" style={{ gap: 24 }}>
             {[
-              { end: 125430, decimals: 0, suffix: "",     label: "Box đã được cứu",          sub: "Cập nhật hôm nay",             color: "var(--accent)" },
-              { end: 312.6,  decimals: 1, suffix: " tấn",  label: "Thực phẩm giảm lãng phí", sub: "Tương đương 850 hộ gia đình", color: "var(--primary)" },
-              { end: 2850,   decimals: 0, suffix: "+",    label: "Cửa hàng đồng hành",       sub: "Trên 18 tỉnh thành",           color: "var(--text)" },
+              { end: 125430, decimals: 0, suffix: "",     label: "Box có thể được cứu",        sub: "Tiềm năng mỗi năm",                     color: "var(--accent)" },
+              { end: 312.6,  decimals: 1, suffix: " tấn",  label: "Thực phẩm có thể giảm lãng phí", sub: "Ước tính tương đương 850 hộ gia đình", color: "var(--primary)" },
+              { end: 2850,   decimals: 0, suffix: "+",    label: "Cửa hàng có thể đồng hành",  sub: "Mục tiêu 18 tỉnh thành",                color: "var(--text)" },
             ].map((s, i) => (
               <div
                 key={i}
@@ -393,7 +393,7 @@ export default function HomePage() {
                 }}
               >
                 Giải cứu hàng dư cuối ngày với Surprise Box, hoặc chủ động
-                kéo khách bất kỳ giờ nào với Chương trình khuyến mãi — không
+                kéo khách bất kỳ giờ nào với Chương trình khuyến mãi, không
                 phí khởi tạo, không ràng buộc.
               </p>
             </div>

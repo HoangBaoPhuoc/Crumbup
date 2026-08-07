@@ -93,6 +93,14 @@ export function formatVNDate(date: Date): string {
   return `${dow}, ${day}/${mon}`;
 }
 
+/** Formats a Date as "30/05" (no weekday) — for tight spaces where formatVNDate wraps. */
+export function formatVNDateShort(date: Date): string {
+  const d = new Date(date.getTime() + 7 * 60 * 60_000);
+  const day = String(d.getUTCDate()).padStart(2, "0");
+  const mon = String(d.getUTCMonth() + 1).padStart(2, "0");
+  return `${day}/${mon}`;
+}
+
 /** Returns start-of-day and end-of-day Date objects in Vietnam time (UTC+7). */
 export function getVietnamToday(): { from: Date; to: Date } {
   const now = new Date();

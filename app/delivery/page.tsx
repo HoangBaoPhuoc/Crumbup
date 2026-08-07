@@ -13,7 +13,7 @@ const rules = [
   { ic: "⏰", title: "Đến trễ giờ nhận", desc: "Đơn hàng sẽ được tự động hủy sau 15 phút quá giờ hẹn và không hoàn tiền. Vui lòng đến đúng giờ.", strong: true },
   { ic: "❌", title: "Không đến nhận hàng", desc: "Nếu bạn không đến nhận trong khung giờ, đơn sẽ tính là không hoàn thành và không được hoàn tiền.", strong: true },
   { ic: "🔄", title: "Đổi giờ nhận", desc: "Bạn có thể đổi giờ nhận miễn phí 1 lần trước khung giờ ban đầu ít nhất 1 tiếng." },
-  { ic: "💔", title: "Cửa hàng hết box", desc: "Trường hợp hiếm gặp do trùng đơn — bạn sẽ được hoàn 100% tiền hoặc đổi box tương đương." },
+  { ic: "💔", title: "Cửa hàng hết box", desc: "Trường hợp hiếm gặp do trùng đơn, bạn sẽ được hoàn 100% tiền hoặc đổi box tương đương." },
   { ic: "⚠️", title: "Sản phẩm không đạt chất lượng", desc: "Nếu phát hiện lỗi từ phía cửa hàng, vui lòng phản ánh trong 24h kèm hình ảnh để được hỗ trợ." },
 ];
 
@@ -31,7 +31,7 @@ export default function DeliveryPage() {
               Hướng dẫn nhận hàng
             </div>
             <h1 className="rise rise-2 delivery-hero-title" style={{ fontSize: 64, marginBottom: 16, lineHeight: 1.1 }}>
-              Đơn giản — chỉ <em style={{ color: "var(--primary)", fontStyle: "italic" }}>4 bước</em><br />
+              Đơn giản - chỉ <em style={{ color: "var(--primary)", fontStyle: "italic" }}>4 bước</em><br />
               để nhận Surprise Box
             </h1>
             <p className="rise rise-3" style={{ fontSize: 18, color: "var(--text-muted)", maxWidth: 560, margin: "0 auto" }}>
@@ -97,11 +97,11 @@ export default function DeliveryPage() {
                 Mã đơn hàng riêng
               </div>
               <h2 style={{ fontSize: 41, marginBottom: 16, lineHeight: 1.2 }}>
-                Một mã — một đơn hàng — một lần dùng.
+                Một mã - một đơn hàng - một lần dùng.
               </h2>
               <p style={{ fontSize: 17, color: "var(--text-muted)", lineHeight: 1.7, marginBottom: 24 }}>
                 Sau khi cửa hàng xác nhận chuyển khoản thành công, mã đơn hàng của bạn được kích hoạt
-                và lưu trong tab "Đơn hàng của tôi". Xuất trình mã cho nhân viên khi đến nhận —
+                và lưu trong tab "Đơn hàng của tôi". Xuất trình mã cho nhân viên khi đến nhận,
                 nhanh chóng, không nhầm lẫn.
               </p>
 
@@ -265,7 +265,7 @@ export default function DeliveryPage() {
                 Sắp ra mắt
               </div>
               <h2 style={{ fontSize: 37, marginBottom: 12 }}>
-                Giao tận nơi — sắp có!
+                Giao tận nơi - sắp có!
               </h2>
               <p style={{ fontSize: 17, color: "var(--text)", lineHeight: 1.6, maxWidth: 560 }}>
                 Chúng tôi đang phát triển mạng lưới shipper riêng để bạn có thể nhận Surprise Box mà không cần ra khỏi nhà.

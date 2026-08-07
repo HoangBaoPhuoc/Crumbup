@@ -53,7 +53,7 @@ function StatusNote({ order }: { order: HistoryOrder }) {
           Hết hạn
         </span>
         <div style={{ fontSize: 11, color: "#92400e", marginTop: 4, fontWeight: 600 }}>
-          Đã xác nhận — khách chưa nhận
+          Đã xác nhận - khách chưa nhận
         </div>
       </div>
     );

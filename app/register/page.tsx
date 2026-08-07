@@ -224,7 +224,7 @@ function RegisterForm() {
               </div>
               <h1 style={{ fontSize: 28, fontWeight: 900, marginBottom: 10 }}>Cho phép vị trí?</h1>
               <p style={{ fontSize: 16, color: "var(--text-muted)", lineHeight: 1.7, maxWidth: 320, margin: "0 auto 28px" }}>
-                Chúng tôi sẽ hiện các Surprise Box gần bạn nhất — tươi, nhanh, đúng tầm tay.
+                Chúng tôi sẽ hiện các Surprise Box gần bạn nhất, tươi, nhanh, đúng tầm tay.
               </p>
 
               <div style={{ background: "var(--cream)", borderRadius: 16, padding: "16px 20px", marginBottom: 28, textAlign: "left" }}>
