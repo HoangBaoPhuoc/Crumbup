@@ -59,7 +59,7 @@ export default function OrderCard({ order }: { order: OrderWithRelations }) {
             padding: "8px 20px", fontSize: 12, fontWeight: 700,
             display: "flex", alignItems: "center", gap: 8,
           }}>
-            ⏰ Đã quá giờ nhận hàng — đơn hàng hết hạn
+            ⏰ Đã quá giờ nhận hàng - đơn hàng hết hạn
           </div>
         )}
 
@@ -69,7 +69,7 @@ export default function OrderCard({ order }: { order: OrderWithRelations }) {
             padding: "8px 20px", fontSize: 12, fontWeight: 700,
             display: "flex", alignItems: "center", gap: 8,
           }}>
-            <span>Đơn đã được xác nhận — Mã nhận hàng:</span>
+            <span>Đơn đã được xác nhận - Mã nhận hàng:</span>
             <span style={{
               background: "rgba(255,255,255,0.25)", borderRadius: 6,
               padding: "2px 10px", letterSpacing: "0.12em", fontFamily: "monospace", fontSize: 16,

@@ -388,7 +388,7 @@ export default function BusinessRegisterPage() {
 
                 {/* Mandatory 2FA notice */}
                 <div style={{ background: "var(--cream)", borderRadius: 14, padding: "16px 18px", border: "1px solid var(--border)" }}>
-                  <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 4 }}>Xác thực 2 lớp (2FA) — Bắt buộc</div>
+                  <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 4 }}>Xác thực 2 lớp (2FA) - Bắt buộc</div>
                   <p style={{ fontSize: 12, color: "var(--text-muted)", lineHeight: 1.6, marginBottom: 10 }}>
                     Tài khoản cửa hàng bắt buộc bật 2FA để bảo vệ dữ liệu doanh thu và thông tin đơn hàng.
                   </p>
@@ -432,7 +432,7 @@ export default function BusinessRegisterPage() {
                 />
                 <UploadBox
                   label="Giấy chứng nhận ATTP"
-                  desc="An toàn thực phẩm — PDF hoặc ảnh, tối đa 10MB"
+                  desc="An toàn thực phẩm - PDF hoặc ảnh, tối đa 10MB"
                   required
                   icon="✅"
                   file={attFile}
@@ -601,7 +601,7 @@ export default function BusinessRegisterPage() {
                       onBlur={(e) => (e.target.style.borderColor = "var(--border)")} />
                     {discountPct !== null && (
                       <p style={{ fontSize: 12, color: "var(--accent)", fontWeight: 700, marginTop: 6 }}>
-                        ✅ Giảm {discountPct}% — hấp dẫn!
+                        ✅ Giảm {discountPct}% - hấp dẫn!
                       </p>
                     )}
                   </Field>

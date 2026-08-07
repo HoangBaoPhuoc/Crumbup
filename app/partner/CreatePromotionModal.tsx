@@ -122,7 +122,7 @@ export default function CreatePromotionModal() {
                       <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 2 }}>
                         {opt.value === "PLATFORM_VOUCHER"
                           ? "Khách lấy mã trên nền tảng, mang tới cửa hàng để đổi ưu đãi"
-                          : "Chỉ đăng thông tin quảng cáo — không có mã, không theo dõi sử dụng"}
+                          : "Chỉ đăng thông tin quảng cáo, không có mã, không theo dõi sử dụng"}
                       </div>
                     </div>
                   </button>
@@ -137,7 +137,7 @@ export default function CreatePromotionModal() {
                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                   <Field label="Tên chương trình" required>
                     <input value={form.title} onChange={(e) => set("title", e.target.value)}
-                      placeholder={kind === "PLATFORM_VOUCHER" ? "Giảm 20% cho đơn từ 100k" : "Black Friday — Giảm sốc 50%"} style={inp} />
+                      placeholder={kind === "PLATFORM_VOUCHER" ? "Giảm 20% cho đơn từ 100k" : "Black Friday - Giảm sốc 50%"} style={inp} />
                   </Field>
 
                   <Field label="Chi tiết">

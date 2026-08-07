@@ -7,7 +7,7 @@ const coreValues = [
   {
     title: "We Win Together",
     subtitle: "Hệ sinh thái cùng thắng",
-    desc: "Tối ưu lợi ích tổng thể thay vì lợi nhuận cá nhân — giúp chủ cửa hàng thu hồi vốn, khách tiết kiệm, môi trường giảm rác.",
+    desc: "Tối ưu lợi ích tổng thể thay vì lợi nhuận cá nhân, giúp chủ cửa hàng thu hồi vốn, khách tiết kiệm, môi trường giảm rác.",
   },
   {
     title: "We Keep It Simple",
@@ -17,7 +17,7 @@ const coreValues = [
   {
     title: "We Raise The Bar",
     subtitle: "Không ngừng nâng chuẩn",
-    desc: "Mỗi Surprise Box trao đi phải đảm bảo tuyệt đối an toàn vệ sinh và trọn vẹn vị ngon — không thỏa hiệp.",
+    desc: "Mỗi Surprise Box trao đi phải đảm bảo tuyệt đối an toàn vệ sinh và trọn vẹn vị ngon, không thỏa hiệp.",
   },
   {
     title: "We Care",
@@ -48,12 +48,12 @@ const journey = [
     tag: "Giải pháp",
     color: "#2d6a31",
     title: "Một nền tảng tác động xã hội",
-    desc: "Kết nối lợi ích kinh tế với giá trị nhân văn và bảo vệ môi trường — không chỉ là một ứng dụng thương mại.",
+    desc: "Kết nối lợi ích kinh tế với giá trị nhân văn và bảo vệ môi trường, không chỉ là một ứng dụng thương mại.",
   },
   {
     tag: "Mục tiêu tới",
     color: "var(--primary-dark)",
-    title: "Đà Nẵng — đô thị không rác thải thực phẩm",
+    title: "Đà Nẵng - đô thị không rác thải thực phẩm",
     desc: "Mục tiêu giải cứu 1.000+ phần thực phẩm dôi dư mỗi năm, đồng hành cùng lộ trình đô thị sinh thái.",
   },
 ];
@@ -61,10 +61,10 @@ const journey = [
 const esgPillars = [
   {
     initial: "E",
-    stat: "15.000+",
-    end: 15000, decimals: 0, suffix: "+",
+    stat: "1.000+",
+    end: 1000, decimals: 0, suffix: "+",
     title: "Môi trường",
-    desc: "Phần thực phẩm dôi dư được giải cứu mỗi năm, cắt giảm rác thải hữu cơ và khí nhà kính.",
+    desc: "Mục tiêu phần thực phẩm dôi dư có thể giải cứu mỗi năm, cắt giảm rác thải hữu cơ và khí nhà kính.",
     bg: "#dcefdf",
     badge: "#2d6a31",
     statColor: "#2d6a31",
@@ -100,7 +100,7 @@ const faqs = [
   },
   {
     q: "Hình thức tự đến lấy hoạt động như nào?",
-    a: "Sau khi cửa hàng xác nhận chuyển khoản, bạn nhận mã đơn hàng riêng. Đến trong khung giờ đã đặt, xuất trình mã cho nhân viên — xong!",
+    a: "Sau khi cửa hàng xác nhận chuyển khoản, bạn nhận mã đơn hàng riêng. Đến trong khung giờ đã đặt, xuất trình mã cho nhân viên là xong!",
   },
   {
     q: "Tôi có thể hủy đơn sau khi đã thanh toán không?",
@@ -162,7 +162,7 @@ export default function AboutPage() {
               </div>
               <h2 style={{ fontSize: 51, marginBottom: 16 }}>Giới thiệu chung</h2>
               <p style={{ fontSize: 18, color: "var(--text-muted)", maxWidth: 680, margin: "0 auto", lineHeight: 1.8 }}>
-                CrumbUp là nền tảng công nghệ tác động xã hội tiên phong tại miền Trung Việt Nam, kết nối cửa hàng thực phẩm với người tiêu dùng để giải cứu thực phẩm dư cuối ngày và mang ưu đãi đến mọi thời điểm trong ngày — biến lãng phí thành giá trị.
+                CrumbUp là nền tảng công nghệ tác động xã hội tiên phong tại miền Trung Việt Nam, kết nối cửa hàng thực phẩm với người tiêu dùng để giải cứu thực phẩm dư cuối ngày và mang ưu đãi đến mọi thời điểm trong ngày, biến lãng phí thành giá trị.
               </p>
             </div>
           </div>
@@ -183,7 +183,7 @@ export default function AboutPage() {
               <div style={{ fontSize: 12, fontWeight: 700, color: "var(--primary)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>Sứ mệnh</div>
               <h3 style={{ fontSize: 28, marginBottom: 12 }}>Our Mission</h3>
               <p style={{ fontSize: 17, color: "var(--text)", lineHeight: 1.8 }}>
-                Giải pháp công nghệ tinh gọn giúp cửa hàng — từ tiệm bánh, siêu thị đến hàng trái cây, đặc sản — tối ưu nguồn cung dôi dư giờ chót và chủ động thu hút khách bất kỳ lúc nào trong ngày, đồng thời giúp người trẻ tiếp cận thực phẩm chất lượng với chi phí tiết kiệm.
+                Giải pháp công nghệ tinh gọn giúp cửa hàng, từ tiệm bánh, siêu thị đến hàng trái cây, đặc sản, tối ưu nguồn cung dôi dư giờ chót và chủ động thu hút khách bất kỳ lúc nào trong ngày, đồng thời giúp người trẻ tiếp cận thực phẩm chất lượng với chi phí tiết kiệm.
               </p>
             </div>
             <div data-reveal className="card-hover" style={{ background: "#e1f0e2", borderRadius: 20, padding: "40px 36px" }}>
@@ -310,7 +310,7 @@ export default function AboutPage() {
             <div style={{ fontSize: 12, fontWeight: 700, color: "var(--primary)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 12 }}>
               Business Model
             </div>
-            <h2 style={{ fontSize: 51, marginBottom: 10 }}>Mô hình Win — Win — Win</h2>
+            <h2 style={{ fontSize: 51, marginBottom: 10 }}>Mô hình Win - Win - Win</h2>
             <p style={{ fontSize: 17, color: "var(--text-muted)" }}>Vì con người, lợi nhuận và hành tinh</p>
           </div>
 
@@ -340,7 +340,7 @@ export default function AboutPage() {
                 🎁 Hoa hồng Surprise Box
               </div>
               <p style={{ fontSize: 15, color: "var(--text-muted)", lineHeight: 1.7, margin: 0 }}>
-                CrumbUp trích % nhỏ trên mỗi đơn giải cứu thành công — chỉ thu khi cửa hàng có doanh thu thực tế.
+                CrumbUp trích % nhỏ trên mỗi đơn giải cứu thành công, chỉ thu khi cửa hàng có doanh thu thực tế.
               </p>
             </div>
             <div style={{ background: "white", padding: "22px 24px" }}>
@@ -348,7 +348,7 @@ export default function AboutPage() {
                 🎟️ Phí niêm yết khuyến mãi
               </div>
               <p style={{ fontSize: 15, color: "var(--text-muted)", lineHeight: 1.7, margin: 0 }}>
-                Cửa hàng trả phí như hình thức quảng cáo để đăng Chương trình khuyến mãi — chạy được bất kỳ lúc nào trong ngày, không chỉ cuối ngày.
+                Cửa hàng trả phí như hình thức quảng cáo để đăng Chương trình khuyến mãi, chạy được bất kỳ lúc nào trong ngày, không chỉ cuối ngày.
               </p>
             </div>
           </div>
@@ -358,9 +358,9 @@ export default function AboutPage() {
             background: "white", borderRadius: "0 16px 16px 0",
           }}>
             <p style={{ fontSize: 17, color: "var(--text)", lineHeight: 1.8, marginBottom: 8 }}>
-              <strong>Giảm thiểu rác thải thực phẩm</strong> là hành động thiết thực nhất để đẩy lùi khủng hoảng khí hậu — góp phần vào mục tiêu giới hạn nhiệt độ Trái Đất dưới 2°C vào 2100.
+              <strong>Giảm thiểu rác thải thực phẩm</strong> là hành động thiết thực nhất để đẩy lùi khủng hoảng khí hậu, góp phần vào mục tiêu giới hạn nhiệt độ Trái Đất dưới 2°C vào 2100.
             </p>
-            <p style={{ fontSize: 15, color: "var(--text-muted)", fontStyle: "italic" }}>— Theo Project Drawdown</p>
+            <p style={{ fontSize: 15, color: "var(--text-muted)", fontStyle: "italic" }}>- Theo Project Drawdown</p>
           </div>
         </div>
       </section>

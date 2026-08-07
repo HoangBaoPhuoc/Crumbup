@@ -3,15 +3,10 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { formatPrice } from "@/lib/utils";
 
 const BANK = { name: "MB Bank", number: "0987654321", owner: "CONG TY CO PHAN CRUMBUP" };
-
-const PICKUP_GUIDE = [
-  'Sau khi cửa hàng xác nhận chuyển khoản, mã đơn hàng của bạn sẽ được kích hoạt trong tab "Đơn hàng của tôi".',
-  "Đến cửa hàng trong khung giờ đã đặt, xuất trình mã đơn hàng cho nhân viên để nhận Surprise Box.",
-  "Điều tuyệt nhất là bạn sẽ không biết chính xác bên trong có gì cho đến khi mở hộp!",
-];
 
 type BoxInfo   = { id: string; name: string; priceSale: number; pickupStart: string; pickupEnd: string; quantityLeft: number };
 type StoreInfo = { name: string; phone: string | null; address: string; email: string | null };
@@ -30,11 +25,11 @@ function QtyButton({ onClick, disabled, children }: { onClick: () => void; disab
 }
 
 export default function OrderButton({ box, store, isLoggedIn, isExpired }: { box: BoxInfo; store: StoreInfo; isLoggedIn: boolean; isExpired?: boolean }) {
+  const router = useRouter();
   const [mounted, setMounted]   = useState(false);
   const [open, setOpen]         = useState(false);
-  const [step, setStep]         = useState<"confirm" | "payment" | "done">("confirm");
+  const [step, setStep]         = useState<"confirm" | "payment">("confirm");
   const [loading, setLoading]   = useState(false);
-  const [orderId, setOrderId]   = useState("");
   const [agreed, setAgreed]     = useState(false);
   const [error, setError]       = useState("");
   const [quantity, setQuantity] = useState(1);
@@ -43,7 +38,7 @@ export default function OrderButton({ box, store, isLoggedIn, isExpired }: { box
   useEffect(() => setMounted(true), []);
 
   function openModal() {
-    setStep("confirm"); setAgreed(false); setError(""); setOrderId(""); setQuantity(1); setPayRef("");
+    setStep("confirm"); setAgreed(false); setError(""); setQuantity(1); setPayRef("");
     setOpen(true);
   }
 
@@ -62,7 +57,9 @@ export default function OrderButton({ box, store, isLoggedIn, isExpired }: { box
 
   const total = box.priceSale * quantity;
 
-  // Called only when user clicks "Đã chuyển khoản" — THIS is when the order is created
+  // Called only when user clicks "Đã chuyển khoản" — THIS is when the order is created.
+  // Order lands in PENDING ("chờ cửa hàng xác nhận"); send the user straight to
+  // "Đơn hàng của tôi" so they can track it instead of showing an in-modal summary.
   async function confirmPayment() {
     setError(""); setLoading(true);
     try {
@@ -73,13 +70,13 @@ export default function OrderButton({ box, store, isLoggedIn, isExpired }: { box
       });
       const data = await res.json();
       if (!res.ok) { setError(data.error ?? "Lỗi tạo đơn. Vui lòng thử lại."); setLoading(false); return; }
-      setOrderId(data.orderId);
-      setStep("done");
+      setOpen(false);
+      router.push("/orders");
     } catch { setError("Lỗi kết nối. Vui lòng thử lại."); }
     setLoading(false);
   }
 
-  const shortId = orderId ? orderId.slice(0, 8).toUpperCase() : payRef;
+  const shortId = payRef;
 
   if (isExpired) {
     return (
@@ -114,7 +111,7 @@ export default function OrderButton({ box, store, isLoggedIn, isExpired }: { box
       {mounted && open && createPortal(
         <div
           style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)", WebkitBackdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}
-          onClick={() => { if (step !== "done") tryClose(); }}
+          onClick={tryClose}
         >
           <div onClick={(e) => e.stopPropagation()} style={{
             background: "white", borderRadius: 24, width: "100%", maxWidth: 480,
@@ -123,11 +120,9 @@ export default function OrderButton({ box, store, isLoggedIn, isExpired }: { box
             {/* Header */}
             <div style={{ padding: "22px 24px 0", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
-                {step === "confirm" ? "Xác nhận đơn" : step === "payment" ? "Thông tin thanh toán" : "Đặt hàng thành công"}
+                {step === "confirm" ? "Xác nhận đơn" : "Thông tin thanh toán"}
               </div>
-              {step !== "done" && (
-                <button onClick={tryClose} style={{ width: 30, height: 30, borderRadius: "50%", border: "1px solid var(--border)", background: "white", cursor: "pointer", display: "grid", placeItems: "center", fontSize: 15 }}>✕</button>
-              )}
+              <button onClick={tryClose} style={{ width: 30, height: 30, borderRadius: "50%", border: "1px solid var(--border)", background: "white", cursor: "pointer", display: "grid", placeItems: "center", fontSize: 15 }}>✕</button>
             </div>
 
             <div style={{ padding: "16px 24px 28px" }}>
@@ -243,74 +238,6 @@ export default function OrderButton({ box, store, isLoggedIn, isExpired }: { box
                   }}>
                     {loading ? "Đang xử lý..." : "Tôi đã chuyển khoản ✓"}
                   </button>
-                </>
-              )}
-
-              {/* ── STEP 3: DONE ── */}
-              {step === "done" && (
-                <>
-                  <div style={{ textAlign: "center", padding: "12px 0 24px" }}>
-                    <div style={{ width: 64, height: 64, borderRadius: "50%", background: "var(--accent-soft)", display: "grid", placeItems: "center", fontSize: 32, margin: "0 auto 14px", color: "var(--accent)" }}>✓</div>
-                    <h2 style={{ fontSize: 23, fontWeight: 900, color: "var(--accent)", marginBottom: 6 }}>Đặt hàng thành công!</h2>
-                    <p style={{ fontSize: 15, color: "var(--text-muted)" }}>Đơn đang chờ cửa hàng xác nhận</p>
-                  </div>
-
-                  {/* Order info */}
-                  <div style={{ background: "var(--cream)", borderRadius: 14, padding: 16, marginBottom: 14 }}>
-                    {[
-                      { lbl: "Mã đơn",     val: `#${shortId}`,                          mono: true  },
-                      { lbl: "Số lượng",   val: `${quantity} box`,                       mono: false },
-                      { lbl: "Tổng tiền",  val: formatPrice(total),                      mono: false },
-                      { lbl: "Tình trạng", val: "Chờ xác nhận",                          badge: true },
-                      { lbl: "Giờ nhận",   val: `${box.pickupStart} – ${box.pickupEnd}`, mono: false },
-                    ].map((r) => (
-                      <div key={r.lbl} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "7px 0", borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
-                        <span style={{ fontSize: 12, color: "var(--text-muted)" }}>{r.lbl}</span>
-                        {"badge" in r && r.badge ? (
-                          <span style={{ fontSize: 11, fontWeight: 700, color: "#92400e", background: "#fef3c7", padding: "3px 10px", borderRadius: 999 }}>{r.val}</span>
-                        ) : (
-                          <span style={{ fontSize: 15, fontWeight: 800, fontFamily: "mono" in r && r.mono ? "monospace" : "inherit" }}>{r.val}</span>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Store contact */}
-                  <div style={{ border: "1px solid var(--border)", borderRadius: 14, padding: 16, marginBottom: 14 }}>
-                    <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 8 }}>Thông tin liên hệ</div>
-                    <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 6 }}>{store.name}</div>
-                    {store.phone && (
-                      <div style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 4, display: "flex", alignItems: "center", gap: 6 }}>
-                        <span>📞</span>
-                        <a href={`tel:${store.phone}`} style={{ color: "var(--primary)", fontWeight: 600, textDecoration: "none" }}>{store.phone}</a>
-                      </div>
-                    )}
-                    {store.email && (
-                      <div style={{ fontSize: 12, color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 6 }}>
-                        <span>✉️</span>
-                        <a href={`mailto:${store.email}`} style={{ color: "var(--primary)", fontWeight: 600, textDecoration: "none" }}>{store.email}</a>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Pickup guide */}
-                  <div style={{ background: "var(--cream)", borderRadius: 14, padding: 16, marginBottom: 20 }}>
-                    <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 10 }}>Hướng dẫn lấy hàng</div>
-                    {PICKUP_GUIDE.map((t, i) => (
-                      <div key={i} style={{ display: "flex", gap: 8, marginBottom: i < PICKUP_GUIDE.length - 1 ? 8 : 0, fontSize: 12, color: "var(--text)", lineHeight: 1.6 }}>
-                        <span style={{ flexShrink: 0, fontWeight: 700, color: "var(--primary)" }}>{i + 1}.</span>
-                        <span>{t}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  <Link href="/orders" onClick={() => setOpen(false)} style={{
-                    display: "block", width: "100%", padding: 14, borderRadius: 12,
-                    background: "var(--text)", color: "white", textAlign: "center",
-                    textDecoration: "none", fontSize: 16, fontWeight: 700,
-                  }}>
-                    Xem đơn hàng của tôi →
-                  </Link>
                 </>
               )}
             </div>

@@ -13,7 +13,7 @@ const businessBenefits = [
     tag: "Khách hàng mới",
     tagColor: "var(--primary)",
     title: "Tiếp cận khách hàng tiềm năng",
-    desc: "Khách đến lấy box thường mua thêm đồ trong quán — tăng doanh thu mỗi lượt ghé thăm mà không tốn một đồng quảng cáo.",
+    desc: "Khách đến lấy box thường mua thêm đồ trong quán, tăng doanh thu mỗi lượt ghé thăm mà không tốn một đồng quảng cáo.",
   },
   {
     tag: "Thương hiệu xanh",
@@ -40,7 +40,7 @@ const storeCategories = [
 const partnerFaqs = [
   {
     q: "Phí dịch vụ tính như thế nào?",
-    a: "Không phí khởi tạo, không phí duy trì. Mức phí hợp tác cụ thể sẽ được tư vấn riêng theo hình thức và quy mô cửa hàng của bạn — liên hệ đội ngũ CrumbUp để nhận báo giá chi tiết.",
+    a: "Không phí khởi tạo, không phí duy trì. Mức phí hợp tác cụ thể sẽ được tư vấn riêng theo hình thức và quy mô cửa hàng của bạn, liên hệ đội ngũ CrumbUp để nhận báo giá chi tiết.",
   },
   {
     q: "Có cần đầu tư bao bì riêng không?",
@@ -48,7 +48,7 @@ const partnerFaqs = [
   },
   {
     q: "Khách đặt rồi không đến lấy thì sao?",
-    a: "Khách thanh toán 100% trước, đơn mới hoàn tất. Quá giờ không đến — đơn vẫn tính thành công, cửa hàng không thiệt.",
+    a: "Khách thanh toán 100% trước, đơn mới hoàn tất. Quá giờ không đến thì đơn vẫn tính thành công, cửa hàng không thiệt.",
   },
   {
     q: "Có thể thay đổi số lượng & giờ mỗi ngày không?",
@@ -56,7 +56,7 @@ const partnerFaqs = [
   },
   {
     q: "Chương trình khuyến mãi khác Surprise Box thế nào?",
-    a: "Surprise Box ẩn nội dung — khách không biết trước sẽ nhận được gì, phù hợp để xử lý hàng dư cuối ngày. Chương trình khuyến mãi thì ngược lại: bạn chủ động chọn đúng deal muốn đăng (giảm giá khung giờ, mua 1 tặng 1...), khách thấy rõ và chọn đúng ưu đãi đó — chạy được bất kỳ lúc nào trong ngày, không chỉ cuối ngày.",
+    a: "Surprise Box ẩn nội dung, khách không biết trước sẽ nhận được gì, phù hợp để xử lý hàng dư cuối ngày. Chương trình khuyến mãi thì ngược lại: bạn chủ động chọn đúng deal muốn đăng (giảm giá khung giờ, mua 1 tặng 1...), khách thấy rõ và chọn đúng ưu đãi đó, chạy được bất kỳ lúc nào trong ngày, không chỉ cuối ngày.",
   },
 ];
 
@@ -77,7 +77,7 @@ export default function ForStoresPage() {
               Kinh doanh <span style={{ color: "var(--primary)" }}>cả ngày</span>, không chỉ lúc sắp đóng cửa
             </h1>
             <p style={{ fontSize: 18, color: "var(--text-muted)", lineHeight: 1.8, maxWidth: 560, marginBottom: 32 }}>
-              Giải cứu hàng dư cuối ngày với Surprise Box, hoặc chủ động thu hút thêm khách hàng bất kỳ giờ nào với Chương trình khuyến mãi — CrumbUp kết nối cửa hàng của bạn với hàng ngàn khách hàng xung quanh.
+              Giải cứu hàng dư cuối ngày với Surprise Box, hoặc chủ động thu hút thêm khách hàng bất kỳ giờ nào với Chương trình khuyến mãi, CrumbUp kết nối cửa hàng của bạn với khách hàng xung quanh.
             </p>
             <a href="/register/business" className="btn btn-primary btn-lg">Đăng ký đối tác ngay →</a>
           </div>
@@ -99,7 +99,7 @@ export default function ForStoresPage() {
                 </div>
                 <h3 style={{ fontSize: 25, marginBottom: 12 }}>Giải cứu hàng dư, thu hồi chi phí</h3>
                 <p style={{ fontSize: 17, color: "var(--text)", lineHeight: 1.8 }}>
-                  Cuối ngày, gom sản phẩm chưa kịp bán vào Surprise Box — nội dung bí ẩn, giá giảm sâu tới 50%. Khách đặt trước trên app, đến nhận đúng giờ.
+                  Cuối ngày, gom sản phẩm chưa kịp bán vào Surprise Box, nội dung bí ẩn, giá giảm sâu tới 50%. Khách đặt trước trên app, đến nhận đúng giờ.
                 </p>
               </div>
               <div data-reveal style={{ background: "#ede9fe", borderRadius: 20, padding: "36px 32px" }}>
@@ -108,7 +108,7 @@ export default function ForStoresPage() {
                 </div>
                 <h3 style={{ fontSize: 25, marginBottom: 12 }}>Thu hút thêm khách hàng, kể cả ban ngày</h3>
                 <p style={{ fontSize: 17, color: "var(--text)", lineHeight: 1.8 }}>
-                  Đăng đúng deal bạn muốn chạy — giảm giá theo khung giờ, mua 1 tặng 1... Khách thấy rõ và chọn đúng ưu đãi, không có yếu tố bất ngờ.
+                  Đăng đúng deal bạn muốn chạy, giảm giá theo khung giờ, mua 1 tặng 1... Khách thấy rõ và chọn đúng ưu đãi, không có yếu tố bất ngờ.
                 </p>
               </div>
             </div>
@@ -154,7 +154,7 @@ export default function ForStoresPage() {
         <div className="container">
           <div data-reveal style={{ marginBottom: 44 }}>
             <div style={{ fontSize: 12, fontWeight: 700, color: "var(--primary)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 12 }}>
-              Đơn giản — 4 bước
+              Đơn giản - 4 bước
             </div>
             <h2 style={{ fontSize: 46 }}>Vận hành như thế nào?</h2>
           </div>
@@ -183,7 +183,7 @@ export default function ForStoresPage() {
               Ai phù hợp?
             </div>
             <h2 style={{ fontSize: 46, marginBottom: 10 }}>Danh mục cửa hàng</h2>
-            <p style={{ fontSize: 17, color: "var(--text-muted)" }}>Có hàng dư cuối ngày hay muốn chạy khuyến mãi ban ngày — cửa hàng nào cũng tham gia được.</p>
+            <p style={{ fontSize: 17, color: "var(--text-muted)" }}>Có hàng dư cuối ngày hay muốn chạy khuyến mãi ban ngày, cửa hàng nào cũng tham gia được.</p>
           </div>
 
           <div data-reveal style={{
@@ -248,7 +248,7 @@ export default function ForStoresPage() {
               Sẵn sàng tham gia CrumbUp?
             </h2>
             <p style={{ fontSize: 17, color: "rgba(253,245,230,0.75)", maxWidth: 440, margin: "0 auto 28px", lineHeight: 1.7 }}>
-              Hãy cho sản phẩm cuối ngày của bạn một cơ hội thứ hai — hoặc bắt đầu chạy Chương trình khuyến mãi ngay hôm nay. Không phí khởi tạo, không ràng buộc.
+              Hãy cho sản phẩm cuối ngày của bạn một cơ hội thứ hai, hoặc bắt đầu chạy Chương trình khuyến mãi ngay hôm nay. Không phí khởi tạo, không ràng buộc.
             </p>
             <a href="/register/business" className="btn btn-primary btn-lg">Đăng ký đối tác ngay →</a>
           </div>

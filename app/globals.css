@@ -250,6 +250,19 @@ h4 {
   border-color: var(--border-strong);
   background: var(--cream);
 }
+
+.header-icon-btn {
+  background: var(--cream);
+  border: 1px solid var(--border);
+  color: var(--text);
+  transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.15s;
+}
+.header-icon-btn:hover {
+  background: var(--primary-soft);
+  border-color: var(--primary);
+  color: var(--primary-dark);
+  transform: translateY(-1px);
+}
 .btn-dark {
   background: var(--text);
   color: white;
@@ -394,6 +407,21 @@ h4 {
 
 .store-address-link {
   transition: background 0.15s ease, color 0.15s ease;
+}
+
+/* Promotions strip on the "Tất cả" tab — horizontal swipe/scroll, snapping
+   per card, slim scrollbar so it reads as a carousel rather than a list. */
+.promo-carousel {
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+.promo-carousel::-webkit-scrollbar {
+  height: 6px;
+}
+.promo-carousel::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 999px;
 }
 .store-address-link:hover {
   background: var(--primary-soft);
@@ -566,6 +594,21 @@ h4 {
   }
 }
 
+@keyframes dropdown-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scaleY(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+  }
+}
+.user-menu-dropdown {
+  transform-origin: top right;
+  animation: dropdown-in 0.15s ease;
+}
+
 /* ============ MARQUEE ============ */
 .marquee-wrap {
   overflow: hidden;
@@ -726,11 +769,8 @@ h4 {
 }
 
 /* Discover page specific */
-.discover-tabs {
-  padding: 0 56px;
-}
 .discover-main {
-  padding: 32px 56px 48px;
+  padding: 105px 56px 48px;
   background-color: var(--ivory);
 }
 
@@ -845,11 +885,8 @@ h4 {
   .site-footer {
     padding: 48px 32px 24px;
   }
-  .discover-tabs {
-    padding: 0 32px;
-  }
   .discover-main {
-    padding: 24px 32px 40px;
+    padding: 97px 32px 40px;
   }
 
   .steps-grid {
@@ -965,15 +1002,8 @@ h4 {
   .discover-layout > div:last-child {
     display: none;
   }
-  .discover-tabs {
-    padding: 0 16px !important;
-    overflow-x: auto;
-  }
-  .discover-tabs-inner {
-    gap: 20px !important;
-  }
   .discover-main {
-    padding: 16px 16px 40px !important;
+    padding: 89px 16px 40px !important;
   }
 
   /* Box detail */

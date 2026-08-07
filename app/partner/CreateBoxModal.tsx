@@ -67,7 +67,7 @@ export default function CreateBoxModal({ storeAddress, categories }: { storeAddr
     if (!form.quantityTotal || Number(form.quantityTotal) < 1) { setError("Số lượng phải ít nhất 1"); return; }
     if (form.pickupEnd <= form.pickupStart) { setError("Giờ kết thúc phải sau giờ bắt đầu"); return; }
     if (form.date === vnToday() && form.pickupEnd <= vnNowHHMM()) {
-      setError("Giờ kết thúc nhận hàng đã qua — vui lòng cập nhật giờ"); return;
+      setError("Giờ kết thúc nhận hàng đã qua, vui lòng cập nhật giờ"); return;
     }
 
     setLoading(true);

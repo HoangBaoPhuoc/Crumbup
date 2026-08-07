@@ -187,7 +187,7 @@ export default async function BoxDetailPage({ params }: { params: Promise<{ id: 
                   padding: "8px 14px", fontSize: 15, fontWeight: 700, marginBottom: 14,
                   textAlign: "center",
                 }}>
-                  ⚡ Chỉ còn {box.quantityLeft} box — đặt ngay kẻo hết!
+                  ⚡ Chỉ còn {box.quantityLeft} box - đặt ngay kẻo hết!
                 </div>
               )}
 
