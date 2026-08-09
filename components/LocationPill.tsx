@@ -2,12 +2,12 @@
 
 import { useLocation } from "@/lib/location-context";
 
-export default function LocationPill({ bar = false }: { bar?: boolean } = {}) {
+export default function LocationPill({ bar = false, className = "" }: { bar?: boolean; className?: string } = {}) {
   const { coords, address, loading, requestLocation } = useLocation();
 
   return (
     <button
-      className="addr-pill"
+      className={`addr-pill ${className}`.trim()}
       onClick={requestLocation}
       title={coords ? "Cập nhật vị trí" : "Bật vị trí để tìm cửa hàng gần bạn"}
       style={{

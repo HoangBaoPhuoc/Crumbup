@@ -584,7 +584,7 @@ export default async function DiscoverPage({
               </div>
 
               {/* Location button — standalone, right below map for quick access */}
-              <LocationPill bar />
+              <LocationPill bar className="rise rise-4" />
 
               {/* Impact card (logged in) / Signup CTA (logged out) */}
               {impact ? <ImpactCard impact={impact} /> : <SignupCTA />}
