@@ -122,7 +122,15 @@ h4 {
 
 /* ============ SHARED HEADER ============ */
 .site-header {
-  background: var(--surface);
+  background: rgba(255, 255, 255, 0.95);
+  /* Độ trong suốt (opacity) của nền */
+  backdrop-filter: blur(12px);
+  /* Hiệu ứng làm mờ kính (glassmorphism) */
+  -webkit-backdrop-filter: blur(12px);
+  position: sticky;
+  /* Giúp header trượt theo màn hình nếu bạn muốn */
+  top: 0;
+  z-index: 100;
   border-bottom: 1px solid var(--border);
   padding: 18px 56px;
   display: flex;
@@ -266,7 +274,9 @@ h4 {
   transition:
     transform 0.15s,
     box-shadow 0.15s,
-    background 0.15s;
+    background 0.15s,
+    color 0.15s,
+    border-color 0.15s;
   cursor: pointer;
   white-space: nowrap;
 }
@@ -324,6 +334,16 @@ h4 {
 .btn-dark {
   background: var(--text);
   color: white;
+  border: 2px solid transparent;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.btn-dark:hover {
+  background: #d69e2e;
+  color: var(--text);
+  border-color: rgba(214, 158, 46, 0.4);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 10px 24px rgba(214, 158, 46, 0.3);
 }
 
 .btn-lg {

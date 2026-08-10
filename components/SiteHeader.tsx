@@ -64,10 +64,10 @@ export default async function SiteHeader() {
           </div>
         ) : (
           <div style={{ display: "flex", gap: 8 }}>
-            <Link href="/login" className="btn btn-ghost" style={{ padding: "9px 16px", fontSize: 15 }}>
+            <Link href="/login" className="btn btn-ghost" style={{ padding: "8px 14px", fontSize: 13 }}>
               Đăng nhập
             </Link>
-            <Link href="/register" className="btn btn-primary" style={{ padding: "9px 16px", fontSize: 15 }}>
+            <Link href="/register" className="btn btn-primary" style={{ padding: "8px 14px", fontSize: 13 }}>
               Đăng ký
             </Link>
           </div>
