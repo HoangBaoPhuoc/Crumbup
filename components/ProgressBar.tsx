@@ -68,19 +68,21 @@ export default function ProgressBar() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const isAuthPage = ["/login", "/register", "/forgot-password", "/update-password"].includes(pathname);
+
   return (
     <div
       aria-hidden
       style={{
         position: "fixed",
-        top: 73,
+        top: isAuthPage ? 0 : 73,
         left: 0,
-        height: 3,
+        height: 2,
         zIndex: 9999,
         pointerEvents: "none",
         width: `${width}%`,
-        background: "linear-gradient(90deg, var(--primary), #f5a55a)",
-        boxShadow: "0 0 10px rgba(232,119,34,0.55)",
+        background: "var(--primary)",
+        boxShadow: "0 0 4px var(--primary)",
         borderRadius: "0 2px 2px 0",
         opacity: show ? 1 : 0,
         transition: show
