@@ -22,7 +22,11 @@ export default function ForgotPasswordPage() {
     });
     setLoading(false);
     if (error) {
-      setError("Không thể gửi link khôi phục. Vui lòng thử lại.");
+      if (error.message?.toLowerCase().includes("rate limit")) {
+        setError("Không thể gửi link khôi phục lúc này. Vui lòng thử lại sau ít phút.");
+      } else {
+        setError("Không thể gửi link khôi phục. Vui lòng thử lại.");
+      }
       return;
     }
     setSuccess(true);
@@ -56,11 +60,11 @@ export default function ForgotPasswordPage() {
                 Chúng tôi đã gửi link khôi phục mật khẩu đến
               </p>
               <p style={{ fontSize: 17, fontWeight: 700, color: "var(--primary)", marginBottom: 12 }}>{email}</p>
-              
+
               <div style={{ fontSize: 14, color: "var(--text-muted)", marginTop: 24 }}>
                 Không nhận được email?{" "}
-                <button 
-                  onClick={handleResetPassword} 
+                <button
+                  onClick={handleResetPassword}
                   disabled={loading}
                   style={{ background: "none", border: "none", color: "var(--primary)", fontWeight: 700, cursor: loading ? "not-allowed" : "pointer", padding: 0 }}
                 >
