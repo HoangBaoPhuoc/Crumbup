@@ -194,8 +194,8 @@ export default function HomePage() {
               src="/box-cake.png"
               alt="Surprise Box"
               style={{
-                width: "230%",
-                maxWidth: 1080,
+                width: "200%",
+                maxWidth: 850,
                 height: "auto",
                 objectFit: "contain",
                 filter: "drop-shadow(0 24px 48px rgba(134,21,25,0.22))",
@@ -210,68 +210,68 @@ export default function HomePage() {
 
       {/* ABOUT FOOD WASTE */}
       <section id="how" style={{ padding: "96px 0", background: "var(--ivory)" }}>
-  <div className="container">
-    <div style={{
-      fontSize: 12, fontWeight: 700, color: "var(--text-muted)",
-      letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 8,
-    }}>Food waste fact</div>
-
-    <div data-reveal style={{
-      display: "grid", gridTemplateColumns: "1.1fr 1fr", gap: 56, alignItems: "end",
-      marginBottom: 56, paddingBottom: 40, borderBottom: "1px solid var(--border)",
-    }}>
-      <div>
-        <h2 style={{ fontSize: 41, marginBottom: 16, lineHeight: 1.2, letterSpacing: "-0.01em" }}>
-          Về lãng phí thực phẩm - vì sao mỗi phần thực phẩm cuối ngày đều đáng cứu
-        </h2>
-        <p style={{ fontSize: 16, color: "var(--text-muted)", lineHeight: 1.8, maxWidth: 480 }}>
-          Thực phẩm chưa kịp bán hết khi cửa hàng đóng cửa không đơn thuần là đồ bỏ đi,
-          đằng sau đó là công sức, nguyên liệu và chi phí vận hành mỗi ngày.
-        </p>
-      </div>
-      <div>
-        <div style={{ fontSize: 74, fontWeight: 800, color: "var(--primary)", letterSpacing: "-0.03em", lineHeight: 1 }}>
-          <CountUpNumber end={1.05} decimals={2} suffix=" tỷ" />
-        </div>
-        <div style={{ fontSize: 15, color: "var(--text)", fontWeight: 600, marginTop: 8 }}>tấn thực phẩm lãng phí toàn cầu mỗi năm</div>
-        <div style={{ fontSize: 11.5, color: "var(--text-muted)", marginTop: 4 }}>Nguồn: UNEP Food Waste Index 2024</div>
-      </div>
-    </div>
-
-    <div style={{ display: "flex", alignItems: "flex-start", gap: 16, marginBottom: 48 }}>
-      <div style={{ width: 32, height: 2, background: "var(--primary)", marginTop: 10, flexShrink: 0 }} />
-      <p style={{ fontStyle: "italic", fontSize: 18, lineHeight: 1.7, color: "var(--text)", maxWidth: 640, margin: 0 }}>
-        "Chúng tôi không giải cứu đồ hỏng. Chúng tôi kết nối lại những giá trị còn tốt."{" "}
-        <span style={{ fontStyle: "normal", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
-          - CrumbUp
-        </span>
-      </p>
-    </div>
-
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
-      {facts.map((f) => (
-        <div
-          key={f.n}
-          className="card-hover fact-card"
-          data-reveal
-          style={{
-            background: f.featured ? "var(--primary)" : "var(--cream)",
-            borderRadius: 14,
-            padding: "24px 22px",
-            transition: "transform .2s ease, box-shadow .2s ease",
-          }}
-        >
+        <div className="container">
           <div style={{
-            fontSize: 12, fontWeight: 800, fontVariantNumeric: "tabular-nums", marginBottom: 14,
-            color: f.featured ? "rgba(255,255,255,0.7)" : "var(--text-muted)",
-          }}>{f.n}</div>
-          <h3 style={{ fontSize: 17, marginBottom: 8, fontWeight: 700, color: f.featured ? "white" : "var(--text)" }}>{f.q}</h3>
-          <p style={{ fontSize: 12, lineHeight: 1.65, margin: 0, color: f.featured ? "rgba(255,255,255,0.85)" : "var(--text-muted)" }}>{f.p}</p>
+            fontSize: 12, fontWeight: 700, color: "var(--text-muted)",
+            letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 8,
+          }}>Food waste fact</div>
+
+          <div data-reveal style={{
+            display: "grid", gridTemplateColumns: "1.1fr 1fr", gap: 56, alignItems: "end",
+            marginBottom: 56, paddingBottom: 40, borderBottom: "1px solid var(--border)",
+          }}>
+            <div>
+              <h2 style={{ fontSize: 41, marginBottom: 16, lineHeight: 1.2, letterSpacing: "-0.01em" }}>
+                Về lãng phí thực phẩm - vì sao mỗi phần thực phẩm cuối ngày đều đáng cứu
+              </h2>
+              <p style={{ fontSize: 16, color: "var(--text-muted)", lineHeight: 1.8, maxWidth: 480 }}>
+                Thực phẩm chưa kịp bán hết khi cửa hàng đóng cửa không đơn thuần là đồ bỏ đi,
+                đằng sau đó là công sức, nguyên liệu và chi phí vận hành mỗi ngày.
+              </p>
+            </div>
+            <div>
+              <div style={{ fontSize: 74, fontWeight: 800, color: "var(--primary)", letterSpacing: "-0.03em", lineHeight: 1 }}>
+                <CountUpNumber end={1.05} decimals={2} suffix=" tỷ" />
+              </div>
+              <div style={{ fontSize: 15, color: "var(--text)", fontWeight: 600, marginTop: 8 }}>tấn thực phẩm lãng phí toàn cầu mỗi năm</div>
+              <div style={{ fontSize: 11.5, color: "var(--text-muted)", marginTop: 4 }}>Nguồn: UNEP Food Waste Index 2024</div>
+            </div>
+          </div>
+
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 16, marginBottom: 48 }}>
+            <div style={{ width: 32, height: 2, background: "var(--primary)", marginTop: 10, flexShrink: 0 }} />
+            <p style={{ fontStyle: "italic", fontSize: 18, lineHeight: 1.7, color: "var(--text)", maxWidth: 640, margin: 0 }}>
+              "Chúng tôi không giải cứu đồ hỏng. Chúng tôi kết nối lại những giá trị còn tốt."{" "}
+              <span style={{ fontStyle: "normal", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                - CrumbUp
+              </span>
+            </p>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
+            {facts.map((f) => (
+              <div
+                key={f.n}
+                className="card-hover fact-card"
+                data-reveal
+                style={{
+                  background: f.featured ? "var(--primary)" : "var(--cream)",
+                  borderRadius: 14,
+                  padding: "24px 22px",
+                  transition: "transform .2s ease, box-shadow .2s ease",
+                }}
+              >
+                <div style={{
+                  fontSize: 12, fontWeight: 800, fontVariantNumeric: "tabular-nums", marginBottom: 14,
+                  color: f.featured ? "rgba(255,255,255,0.7)" : "var(--text-muted)",
+                }}>{f.n}</div>
+                <h3 style={{ fontSize: 17, marginBottom: 8, fontWeight: 700, color: f.featured ? "white" : "var(--text)" }}>{f.q}</h3>
+                <p style={{ fontSize: 12, lineHeight: 1.65, margin: 0, color: f.featured ? "rgba(255,255,255,0.85)" : "var(--text-muted)" }}>{f.p}</p>
+              </div>
+            ))}
+          </div>
         </div>
-      ))}
-    </div>
-  </div>
-</section>
+      </section>
 
       {/* COMMUNITY IMPACT */}
       <section
@@ -314,9 +314,9 @@ export default function HomePage() {
 
           <div className="impact-grid" style={{ gap: 24 }}>
             {[
-              { end: 125430, decimals: 0, suffix: "",     label: "Box có thể được cứu",        sub: "Tiềm năng mỗi năm",                     color: "var(--accent)" },
-              { end: 312.6,  decimals: 1, suffix: " tấn",  label: "Thực phẩm có thể giảm lãng phí", sub: "Ước tính tương đương 850 hộ gia đình", color: "var(--primary)" },
-              { end: 2850,   decimals: 0, suffix: "+",    label: "Cửa hàng có thể đồng hành",  sub: "Mục tiêu 18 tỉnh thành",                color: "var(--text)" },
+              { end: 125430, decimals: 0, suffix: "", label: "Box có thể được cứu", sub: "Tiềm năng mỗi năm", color: "var(--accent)" },
+              { end: 312.6, decimals: 1, suffix: " tấn", label: "Thực phẩm có thể giảm lãng phí", sub: "Ước tính tương đương 850 hộ gia đình", color: "var(--primary)" },
+              { end: 2850, decimals: 0, suffix: "+", label: "Cửa hàng có thể đồng hành", sub: "Mục tiêu 18 tỉnh thành", color: "var(--text)" },
             ].map((s, i) => (
               <div
                 key={i}
