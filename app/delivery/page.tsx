@@ -3,10 +3,10 @@ import SiteFooter from "@/components/SiteFooter";
 import ScrollArrow from "@/components/ScrollArrow";
 
 const pickupSteps = [
-  { n: 1, ic: "📱", title: "Nhận mã đơn hàng", desc: "Sau khi cửa hàng xác nhận chuyển khoản, mã đơn hàng riêng của bạn sẽ được kích hoạt trong tab \"Đơn hàng của tôi\"." },
-  { n: 2, ic: "🕒", title: "Đến cửa hàng đúng giờ", desc: "Đến cửa hàng trong khung giờ nhận đã đặt. Bạn có thể xem địa chỉ và bản đồ trong chi tiết đơn." },
-  { n: 3, ic: "✨", title: "Xuất trình mã đơn hàng", desc: "Cho nhân viên xem mã đơn hàng để xác nhận và nhận Surprise Box của bạn." },
-  { n: 4, ic: "💚", title: "Đánh giá & tận hưởng", desc: "Đừng quên đánh giá cửa hàng và chia sẻ trải nghiệm để giúp cộng đồng nhé!" },
+  { n: 1, title: "Nhận mã đơn hàng", desc: "Sau khi cửa hàng xác nhận chuyển khoản, mã đơn hàng riêng của bạn sẽ được kích hoạt trong tab \"Đơn hàng của tôi\"." },
+  { n: 2, title: "Đến cửa hàng đúng giờ", desc: "Đến cửa hàng trong khung giờ nhận đã đặt. Bạn có thể xem địa chỉ và bản đồ trong chi tiết đơn." },
+  { n: 3, title: "Xuất trình mã đơn hàng", desc: "Cho nhân viên xem mã đơn hàng để xác nhận và nhận Surprise Box của bạn." },
+  { n: 4, title: "Đánh giá & tận hưởng", desc: "Đừng quên đánh giá cửa hàng và chia sẻ trải nghiệm để giúp cộng đồng nhé!" },
 ];
 
 const rules = [
@@ -85,15 +85,15 @@ export default function DeliveryPage() {
       <section id="order-code" style={{ padding: "72px 0", background: "var(--ivory)" }}>
         <div className="container">
           <div data-reveal className="right-auto-grid" style={{
-            background: "white",
+            background: "#fffaf1",
             borderRadius: 28,
             padding: "48px 56px",
             gap: 48,
-            border: "1px solid var(--border)",
-            boxShadow: "var(--shadow-md)",
+            border: "1px solid #ead7b7",
+            boxShadow: "0 16px 36px rgba(86, 58, 39, 0.1)",
           }}>
             <div>
-              <div style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 12 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: "var(--primary)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 12 }}>
                 Mã đơn hàng riêng
               </div>
               <h2 style={{ fontSize: 41, marginBottom: 16, lineHeight: 1.2 }}>
@@ -253,7 +253,7 @@ export default function DeliveryPage() {
       <section style={{ padding: "56px 0 96px", background: "var(--ivory)" }}>
         <div className="container">
           <div data-reveal className="right-auto-grid" style={{
-            background: "linear-gradient(120deg, var(--badge) 0%, #f7d27a 100%)",
+            background: "#faf0c8",
             borderRadius: 24,
             padding: "48px 56px",
             gap: 32,

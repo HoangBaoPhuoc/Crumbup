@@ -30,7 +30,7 @@ export default function PendingActions({ storeId, storeName }: { storeId: string
         disabled={loading !== null}
         style={{
           padding: "9px 20px", borderRadius: 10, border: "none",
-          background: loading === "approve" ? "#86efac" : "#b87c52",
+          background: loading === "approve" ? "#7dd3fc" : "#b87c52",
           color: "white", fontSize: 15, fontWeight: 700,
           cursor: loading ? "not-allowed" : "pointer", minWidth: 100,
         }}
@@ -54,3 +54,4 @@ export default function PendingActions({ storeId, storeName }: { storeId: string
     </div>
   );
 }
+

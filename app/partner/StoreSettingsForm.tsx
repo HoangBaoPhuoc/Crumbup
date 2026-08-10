@@ -84,7 +84,7 @@ export default function StoreSettingsForm({ store }: { store: StoreInfo }) {
         </div>
       )}
       {saved && !error && (
-        <div style={{ marginTop: 14, padding: "10px 14px", background: "#dcfce7", border: "1px solid #86efac", borderRadius: 10, fontSize: 15, color: "#15803d" }}>
+        <div style={{ marginTop: 14, padding: "10px 14px", background: "#e0f2fe", border: "1px solid #7dd3fc", borderRadius: 10, fontSize: 15, color: "#0369a1" }}>
           Đã lưu thông tin cửa hàng
         </div>
       )}
@@ -118,3 +118,4 @@ const inp: React.CSSProperties = {
   outline: "none", background: "var(--ivory)",
   boxSizing: "border-box", color: "var(--text)",
 };
+

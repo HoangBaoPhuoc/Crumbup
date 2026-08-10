@@ -21,7 +21,7 @@ const STATUS_LABEL: Record<string, string> = {
 const STATUS_COLOR: Record<string, React.CSSProperties> = {
   PENDING:   { background: "#fef3c7", color: "#92400e" },
   CONFIRMED: { background: "#dbeafe", color: "#1e40af" },
-  PICKED_UP: { background: "#dcfce7", color: "#15803d" },
+  PICKED_UP: { background: "#e0f2fe", color: "#0369a1" },
   CANCELLED: { background: "#f1f5f9", color: "#64748b" },
 };
 
@@ -238,8 +238,8 @@ export default async function PartnerDashboard({
                     <h1 style={{ fontSize: 25, fontWeight: 900, color: "var(--text)" }}>{store.name}</h1>
                     <span style={{
                       padding: "3px 10px", borderRadius: 999, fontSize: 11, fontWeight: 700,
-                      background: store.verified ? "#dcfce7" : "#fef3c7",
-                      color: store.verified ? "#15803d" : "#92400e",
+                      background: store.verified ? "#e0f2fe" : "#fef3c7",
+                      color: store.verified ? "#0369a1" : "#92400e",
                     }}>
                       {store.verified ? "Đã xác nhận" : "Chờ xét duyệt"}
                     </span>
@@ -339,3 +339,4 @@ export default async function PartnerDashboard({
     </div>
   );
 }
+

@@ -17,7 +17,7 @@ const businessBenefits = [
   },
   {
     tag: "Thương hiệu xanh",
-    tagColor: "#2d6a31",
+    tagColor: "#5e8fc5",
     title: "Thương hiệu xanh chạm đến giới trẻ",
     desc: "Gen Z và Millennials ưu tiên thương hiệu có trách nhiệm môi trường. Mỗi box giải cứu là một điểm cộng hình ảnh không mất phí.",
   },
@@ -32,9 +32,9 @@ const operationSteps = [
 
 const storeCategories = [
   { initial: "BK", color: "var(--primary)", label: "Bakery & Café", title: "Tiệm bánh & quán cà phê" },
-  { initial: "SM", color: "var(--accent)", label: "Siêu thị & tiện lợi", title: "Siêu thị mini, cửa hàng tiện lợi" },
+  { initial: "SM", color: "#d8b26bff", label: "Siêu thị & tiện lợi", title: "Siêu thị mini, cửa hàng tiện lợi" },
   { initial: "PR", color: "var(--primary-dark)", label: "Trái cây & rau củ", title: "Cửa hàng trái cây, rau củ quả tươi" },
-  { initial: "LS", color: "#2d6a31", label: "Đồ hộp & đặc sản", title: "Đồ hộp, đặc sản đóng gói" },
+  { initial: "LS", color: "#5e8fc5", label: "Đồ hộp & đặc sản", title: "Đồ hộp, đặc sản đóng gói" },
 ];
 
 const partnerFaqs = [
@@ -66,14 +66,14 @@ export default function ForStoresPage() {
       <SiteHeader />
 
       {/* HERO + Surprise Box cards fill the first screen together; rest sits below the fold */}
-      <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", position: "relative" }}>
+      <div className="for-stores-intro">
         {/* HERO — left-aligned, no floating stickers */}
-        <section style={{ background: "var(--ivory)", padding: "160px 0 64px" }}>
+        <section className="for-stores-hero" style={{ background: "var(--ivory)" }}>
           <div className="container" style={{ maxWidth: 760 }}>
             <div style={{ fontSize: 12, fontWeight: 700, color: "var(--primary)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 16 }}>
               Dành cho cửa hàng
             </div>
-            <h1 style={{ fontSize: 55, marginBottom: 20, lineHeight: 1.15, letterSpacing: "-0.02em", maxWidth: 620 }}>
+            <h1 className="for-stores-hero-title" style={{ marginBottom: 20, lineHeight: 1.15, letterSpacing: "-0.02em", maxWidth: 620 }}>
               Kinh doanh <span style={{ color: "var(--primary)" }}>cả ngày</span>, không chỉ lúc sắp đóng cửa
             </h1>
             <p style={{ fontSize: 18, color: "var(--text-muted)", lineHeight: 1.8, maxWidth: 560, marginBottom: 32 }}>
@@ -84,7 +84,7 @@ export default function ForStoresPage() {
         </section>
 
         {/* 2 HÌNH THỨC HỢP TÁC — Surprise Box vs Chương trình khuyến mãi, side by side */}
-        <section style={{ padding: "0 0 80px", background: "var(--ivory)", flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+        <section className="for-stores-partnership" style={{ background: "var(--ivory)" }}>
           <div className="container">
             <div data-reveal style={{ marginBottom: 24 }}>
               <div style={{ fontSize: 12, fontWeight: 700, color: "var(--primary)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>
@@ -92,19 +92,19 @@ export default function ForStoresPage() {
               </div>
               <h2 style={{ fontSize: 30 }}>Dù cuối ngày hay giữa trưa, luôn có cách để bán được hàng</h2>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
-              <div data-reveal style={{ background: "var(--primary-soft)", borderRadius: 20, padding: "36px 32px" }}>
+            <div className="for-stores-partnership-grid">
+              <div data-reveal className="for-stores-partnership-card" style={{ background: "var(--primary-soft)", borderRadius: 20 }}>
                 <div style={{ fontSize: 12, fontWeight: 700, color: "var(--primary-dark)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 12 }}>
-                  🎁 Surprise Box · Cuối ngày
+                  Surprise Box · Cuối ngày
                 </div>
                 <h3 style={{ fontSize: 25, marginBottom: 12 }}>Giải cứu hàng dư, thu hồi chi phí</h3>
                 <p style={{ fontSize: 17, color: "var(--text)", lineHeight: 1.8 }}>
                   Cuối ngày, gom sản phẩm chưa kịp bán vào Surprise Box, nội dung bí ẩn, giá giảm sâu tới 50%. Khách đặt trước trên app, đến nhận đúng giờ.
                 </p>
               </div>
-              <div data-reveal style={{ background: "#ede9fe", borderRadius: 20, padding: "36px 32px" }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: "#6d28d9", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 12 }}>
-                  🎟️ Chương trình khuyến mãi · Bất kỳ giờ nào
+              <div data-reveal className="for-stores-partnership-card" style={{ background: "#faf0c8", borderRadius: 20 }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#8a6a08", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 12 }}>
+                  Chương trình khuyến mãi · Bất kỳ giờ nào
                 </div>
                 <h3 style={{ fontSize: 25, marginBottom: 12 }}>Thu hút thêm khách hàng, kể cả ban ngày</h3>
                 <p style={{ fontSize: 17, color: "var(--text)", lineHeight: 1.8 }}>
@@ -166,7 +166,7 @@ export default function ForStoresPage() {
                 paddingRight: i === operationSteps.length - 1 ? 0 : 24,
                 borderRight: i === operationSteps.length - 1 ? "none" : "1px solid var(--border)",
               }}>
-                <div style={{ fontSize: 30, fontWeight: 800, color: "var(--border)", marginBottom: 12 }}>{item.step}</div>
+                <div style={{ fontSize: 30, fontWeight: 800, color: "#be8a3cff", marginBottom: 12 }}>{item.step}</div>
                 <h3 style={{ fontSize: 18, marginBottom: 10, fontWeight: 700 }}>{item.title}</h3>
                 <p style={{ fontSize: 15, color: "var(--text-muted)", lineHeight: 1.7 }}>{item.desc}</p>
               </div>
@@ -241,7 +241,7 @@ export default function ForStoresPage() {
       {/* CTA */}
       <section style={{ padding: "0 0 96px", background: "var(--ivory)" }}>
         <div className="container">
-          <div data-reveal style={{
+          <div data-reveal className="dark-editorial-cta" style={{
             background: "var(--text)", borderRadius: 24, padding: "56px 64px", textAlign: "center",
           }}>
             <h2 style={{ color: "white", fontSize: 41, marginBottom: 16, lineHeight: 1.15 }}>

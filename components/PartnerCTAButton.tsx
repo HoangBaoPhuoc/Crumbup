@@ -9,7 +9,7 @@ export default function PartnerCTAButton() {
   return (
     <>
       <button
-        className="btn btn-primary btn-lg"
+        className="btn btn-dark btn-lg"
         onClick={() => setOpen(true)}
         style={{ position: "relative", zIndex: 1 }}
       >

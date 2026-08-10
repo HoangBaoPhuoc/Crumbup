@@ -22,11 +22,12 @@ export default function PromotionToggle({ promotionId, active }: { promotionId: 
     <button onClick={toggle} disabled={busy} style={{
       padding: "4px 12px", borderRadius: 8, fontSize: 12, fontWeight: 700,
       cursor: busy ? "not-allowed" : "pointer", border: "none",
-      background: active ? "#fef3c7" : "#dcfce7",
-      color: active ? "#92400e" : "#15803d",
+      background: active ? "#fef3c7" : "#e0f2fe",
+      color: active ? "#92400e" : "#0369a1",
       opacity: busy ? 0.6 : 1,
     }}>
       {busy ? "..." : active ? "Tắt" : "Bật"}
     </button>
   );
 }
+

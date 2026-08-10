@@ -64,7 +64,7 @@ export default function HomePage() {
                   width: 8,
                   height: 8,
                   borderRadius: 999,
-                  background: "var(--accent)",
+                  background: "var(--primary)",
                 }}
               />
               Có thể giải cứu tới 400+ box mỗi ngày
@@ -168,7 +168,7 @@ export default function HomePage() {
                             tag.accent === "primary"
                               ? "var(--primary)"
                               : tag.accent === "accent"
-                                ? "var(--accent)"
+                                ? "var(--primary)"
                                 : "inherit",
                         }}
                       >
@@ -198,7 +198,7 @@ export default function HomePage() {
                 maxWidth: 1080,
                 height: "auto",
                 objectFit: "contain",
-                filter: "drop-shadow(0 24px 48px rgba(232,119,34,0.22))",
+                filter: "drop-shadow(0 24px 48px rgba(134,21,25,0.22))",
                 marginLeft: "-15%",
               }}
             />
@@ -277,7 +277,7 @@ export default function HomePage() {
       <section
         style={{
           padding: "96px 0",
-          background: "var(--cream)",
+          background: "var(--ivory)",
           position: "relative",
           overflow: "hidden",
         }}
@@ -288,7 +288,7 @@ export default function HomePage() {
               style={{
                 fontSize: 12,
                 fontWeight: 700,
-                color: "var(--accent)",
+                color: "var(--primary)",
                 letterSpacing: "0.15em",
                 textTransform: "uppercase",
                 marginBottom: 12,
@@ -324,7 +324,7 @@ export default function HomePage() {
                 data-reveal
                 data-reveal-delay={String(i + 1)}
                 style={{
-                  background: "white",
+                  background: i === 0 ? "var(--accent-soft)" : i === 1 ? "var(--primary)" : "white",
                   padding: "36px 32px",
                   borderRadius: 24,
                   textAlign: "center",
@@ -336,15 +336,15 @@ export default function HomePage() {
                     fontSize: 46,
                     fontWeight: 800,
                     fontFamily: "var(--font-display)",
-                    color: s.color,
+                    color: i === 1 ? "white" : i === 0 ? "var(--text)" : s.color,
                     marginBottom: 8,
                     letterSpacing: "-0.03em",
                   }}
                 >
                   <CountUpNumber end={s.end} decimals={s.decimals} suffix={s.suffix} />
                 </div>
-                <div style={{ fontSize: 17, fontWeight: 600, color: "var(--text)", marginBottom: 4 }}>{s.label}</div>
-                <div style={{ fontSize: 12, color: "var(--text-muted)" }}>{s.sub}</div>
+                <div style={{ fontSize: 17, fontWeight: 600, color: i === 1 ? "white" : "var(--text)", marginBottom: 4 }}>{s.label}</div>
+                <div style={{ fontSize: 12, color: i === 1 ? "rgba(255,255,255,0.75)" : "var(--text-muted)" }}>{s.sub}</div>
               </div>
             ))}
           </div>
@@ -358,8 +358,7 @@ export default function HomePage() {
             data-reveal
             className="partner-cta-grid"
             style={{
-              background:
-                "linear-gradient(120deg, var(--badge) 0%, #f7d27a 100%)",
+              background: "#faf0c8",
               borderRadius: 28,
               padding: "48px 56px",
               gap: 32,
