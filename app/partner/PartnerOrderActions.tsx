@@ -11,7 +11,7 @@ const NEXT: Partial<Record<Status, { label: string; next: string; style: React.C
     { label: "Hủy", next: "CANCELLED", style: { border: "1px solid #fca5a5", color: "#ef4444", background: "white" } },
   ],
   CONFIRMED: [
-    { label: "Đã nhận hàng", next: "PICKED_UP", style: { background: "#22c55e", color: "white" } },
+    { label: "Đã nhận hàng", next: "PICKED_UP", style: { background: "#38bdf8", color: "white" } },
     { label: "Hủy", next: "CANCELLED", style: { border: "1px solid #fca5a5", color: "#ef4444", background: "white" } },
   ],
 };
@@ -44,3 +44,4 @@ export default function PartnerOrderActions({ orderId, status }: { orderId: stri
     </div>
   );
 }
+

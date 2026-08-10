@@ -40,19 +40,19 @@ const journey = [
   },
   {
     tag: "Nghịch lý",
-    color: "var(--accent)",
+    color: "#c0a13bff",
     title: "Ba vấn đề, một thời điểm",
     desc: "Thực phẩm tươi bị hủy cuối ngày, người trẻ thắt chặt chi tiêu, cửa hàng mất biên lợi nhuận vận hành.",
   },
   {
     tag: "Giải pháp",
-    color: "#2d6a31",
+    color: "#5e8fc5",
     title: "Một nền tảng tác động xã hội",
     desc: "Kết nối lợi ích kinh tế với giá trị nhân văn và bảo vệ môi trường, không chỉ là một ứng dụng thương mại.",
   },
   {
     tag: "Mục tiêu tới",
-    color: "var(--primary-dark)",
+    color: "#8a5c31ff",
     title: "Đà Nẵng - đô thị không rác thải thực phẩm",
     desc: "Mục tiêu giải cứu 1.000+ phần thực phẩm dôi dư mỗi năm, đồng hành cùng lộ trình đô thị sinh thái.",
   },
@@ -65,20 +65,20 @@ const esgPillars = [
     end: 1000, decimals: 0, suffix: "+",
     title: "Môi trường",
     desc: "Mục tiêu phần thực phẩm dôi dư có thể giải cứu mỗi năm, cắt giảm rác thải hữu cơ và khí nhà kính.",
-    bg: "#dcefdf",
-    badge: "#2d6a31",
-    statColor: "#2d6a31",
-    textColor: "#3d5c40",
+    bg: "#5e8fc5",
+    badge: "#366394ff",
+    statColor: "#ffffffff",
+    textColor: "#ffffffff",
   },
   {
     initial: "S",
     stat: "50–70%",
     title: "Xã hội",
     desc: "Chi phí thực phẩm người trẻ tiết kiệm được, hỗ trợ cửa hàng đối tác thu hồi biên lợi nhuận.",
-    bg: "#f7e6c4",
-    badge: "var(--primary)",
-    statColor: "#8a5327",
-    textColor: "#6b4a2c",
+    bg: "var(--primary)",
+    badge: "#5e0d12",
+    statColor: "white",
+    textColor: "rgba(255,255,255,0.8)",
   },
   {
     initial: "G",
@@ -186,12 +186,12 @@ export default function AboutPage() {
                 Giải pháp công nghệ tinh gọn giúp cửa hàng, từ tiệm bánh, siêu thị đến hàng trái cây, đặc sản, tối ưu nguồn cung dôi dư giờ chót và chủ động thu hút khách bất kỳ lúc nào trong ngày, đồng thời giúp người trẻ tiếp cận thực phẩm chất lượng với chi phí tiết kiệm.
               </p>
             </div>
-            <div data-reveal className="card-hover" style={{ background: "#e1f0e2", borderRadius: 20, padding: "40px 36px" }}>
+            <div data-reveal className="card-hover" style={{ background: "#d6eaffff", borderRadius: 20, padding: "40px 36px" }}>
               <div style={{
-                width: 48, height: 48, borderRadius: 14, background: "#2d6a31", color: "white",
+                width: 48, height: 48, borderRadius: 14, background: "#2e6096ff", color: "white",
                 display: "grid", placeItems: "center", fontSize: 23, fontWeight: 800, marginBottom: 20,
               }}>V</div>
-              <div style={{ fontSize: 12, fontWeight: 700, color: "#2d6a31", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>Tầm nhìn</div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: "#0f3f66ff", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>Tầm nhìn</div>
               <h3 style={{ fontSize: 28, marginBottom: 12 }}>Our Vision</h3>
               <p style={{ fontSize: 17, color: "var(--text)", lineHeight: 1.8 }}>
                 Trở thành hệ sinh thái giải cứu thực phẩm dẫn dắt thị trường, định hình lối sống xanh và tiêu dùng có trách nhiệm tại các đô thị thông minh Việt Nam.

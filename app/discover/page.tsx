@@ -43,8 +43,8 @@ function vnTimeHHMM(offsetMinutes = 0): string {
 }
 
 const PRICE_RANGES: Record<string, { gte?: number; lt?: number; lte?: number }> = {
-  low:  { lt: 50_000 },
-  mid:  { gte: 50_000, lt: 100_000 },
+  low: { lt: 50_000 },
+  mid: { gte: 50_000, lt: 100_000 },
   high: { gte: 100_000, lte: 150_000 },
 };
 
@@ -59,8 +59,8 @@ async function getBoxes(sort: string, prices: string[], pickups: string[], categ
     .filter((p) => PRICE_RANGES[p])
     .map((p) => ({ priceSale: PRICE_RANGES[p] }));
 
-  const hasSoon      = pickups.includes("soon");
-  const nowHHMM      = vnTimeHHMM(0);
+  const hasSoon = pickups.includes("soon");
+  const nowHHMM = vnTimeHHMM(0);
   const twoHoursHHMM = hasSoon ? vnTimeHHMM(120) : "";
 
   return prisma.box.findMany({
@@ -73,7 +73,7 @@ async function getBoxes(sort: string, prices: string[], pickups: string[], categ
         { OR: [{ date: { gte: from }, quantityLeft: { gt: 0 } }, { date: { lt: from } }] },
         ...(q.trim().length >= 1 ? [{
           OR: [
-            { name:  { contains: q.trim(), mode: "insensitive" as const } },
+            { name: { contains: q.trim(), mode: "insensitive" as const } },
             { store: { name: { contains: q.trim(), mode: "insensitive" as const } } },
           ],
         }] : []),
@@ -84,9 +84,9 @@ async function getBoxes(sort: string, prices: string[], pickups: string[], categ
     include: { store: true, category: true },
     orderBy: [
       { date: "desc" },
-      sort === "price_asc"  ? { priceSale: "asc" } :
-      sort === "price_desc" ? { priceSale: "desc" } :
-      { quantityLeft: "asc" },
+      sort === "price_asc" ? { priceSale: "asc" } :
+        sort === "price_desc" ? { priceSale: "desc" } :
+          { quantityLeft: "asc" },
     ],
   });
 }
@@ -190,11 +190,11 @@ async function BoxList({ sort, prices, pickups, categories, q }: { sort: string;
         </div>
       )}
       {boxes.map((box, i) => {
-        const disc      = discountPercent(box.priceOriginal, box.priceSale);
-        const isLow     = box.quantityLeft <= 2;
+        const disc = discountPercent(box.priceOriginal, box.priceSale);
+        const isLow = box.quantityLeft <= 2;
         const isPastDay = box.date.getTime() < todayStart.getTime();
         const isExpired = isPastDay || box.pickupEnd < nowHHMM;
-        const tone      = i % 2 === 0 ? "warm" : "cream";
+        const tone = i % 2 === 0 ? "warm" : "cream";
 
         const card = (
           <div
@@ -434,12 +434,12 @@ export default async function DiscoverPage({
 }: {
   searchParams: Promise<{ sort?: string; price?: string | string[]; pickup?: string | string[]; category?: string | string[]; q?: string; type?: string }>;
 }) {
-  const sp         = await searchParams;
-  const sort       = sp.sort ?? "default";
-  const prices     = sp.price    ? (Array.isArray(sp.price)    ? sp.price    : [sp.price])    : [];
-  const pickups    = sp.pickup   ? (Array.isArray(sp.pickup)   ? sp.pickup   : [sp.pickup])   : [];
+  const sp = await searchParams;
+  const sort = sp.sort ?? "default";
+  const prices = sp.price ? (Array.isArray(sp.price) ? sp.price : [sp.price]) : [];
+  const pickups = sp.pickup ? (Array.isArray(sp.pickup) ? sp.pickup : [sp.pickup]) : [];
   const categories = sp.category ? (Array.isArray(sp.category) ? sp.category : [sp.category]) : [];
-  const q          = sp.q ?? "";
+  const q = sp.q ?? "";
   const productType = sp.type ?? "";
 
   const supabase = await createClient();
@@ -474,123 +474,123 @@ export default async function DiscoverPage({
 
       <main className="discover-main">
         <DiscoverNavProvider>
-        <div className="discover-layout" style={{ gap: 48, ...(productType === "PROMOTION" && { gridTemplateColumns: "1fr 260px" }) }}>
-          {/* Filters sidebar — only meaningful for boxes (Ngành hàng/Khoảng giá/Giờ nhận
+          <div className="discover-layout" style={{ gap: 48, ...(productType === "PROMOTION" && { gridTemplateColumns: "1fr 260px" }) }}>
+            {/* Filters sidebar — only meaningful for boxes (Ngành hàng/Khoảng giá/Giờ nhận
               don't filter promotions), so skip the query and the sidebar on that tab */}
-          {productType !== "PROMOTION" && (
-            <div>
-              <Suspense fallback={<div style={{ width: 200, height: 200 }} />}>
-                <FilterSidebar categoryOptions={categoryOptions} />
-              </Suspense>
-            </div>
-          )}
-
-          {/* Results — editorial list */}
-          <div className="rise rise-4">
-            {/* Product type tabs — Surprise Box vs Voucher */}
-            <div style={{ marginBottom: 16 }}>
-              <Suspense fallback={null}>
-                <ProductTypeTabs current={productType} />
-              </Suspense>
-            </div>
-
-            {/* Promotions — full row list on the dedicated "Chương trình khuyến mãi" tab */}
-            {productType === "PROMOTION" && (
-              <>
-                <div style={{
-                  display: "flex", alignItems: "baseline", gap: 12,
-                  borderBottom: "2px solid var(--text)", paddingBottom: 14, marginBottom: 12,
-                }}>
-                  <h2 style={{ fontSize: 30, margin: 0, color: "var(--text)", letterSpacing: "-0.02em" }}>
-                    Ưu đãi & khuyến mãi
-                  </h2>
-                  {q && <span style={{ fontSize: 15, color: "var(--text-muted)" }}>&ldquo;{q}&rdquo;</span>}
-                  {q && <ClearSearchButton q={q} />}
-                </div>
-                <div style={{ position: "relative" }}>
-                  <Suspense fallback={<BoxSkeleton />}>
-                    <PromotionList q={q} isLoggedIn={!!user} />
-                  </Suspense>
-                </div>
-              </>
-            )}
-
-            {/* Promotions — condensed scroll strip alongside the box list on "Tất cả" */}
-            {productType === "" && promotionsCount > 0 && (
-              <>
-                <div style={{
-                  display: "flex", alignItems: "baseline", gap: 12,
-                  borderBottom: "2px solid var(--text)", paddingBottom: 14, marginBottom: 12,
-                }}>
-                  <h2 style={{ fontSize: 21, margin: 0, color: "var(--text)", letterSpacing: "-0.02em" }}>
-                    Ưu đãi & khuyến mãi
-                  </h2>
-                  {q && <span style={{ fontSize: 15, color: "var(--text-muted)" }}>&ldquo;{q}&rdquo;</span>}
-                  {q && <ClearSearchButton q={q} />}
-                  <Link href="/discover?type=PROMOTION" style={{ marginLeft: "auto", fontSize: 13, fontWeight: 700, color: "var(--primary)", textDecoration: "none", whiteSpace: "nowrap" }}>
-                    Xem tất cả →
-                  </Link>
-                </div>
-                <div style={{ position: "relative", marginBottom: 8 }}>
-                  <Suspense fallback={<BoxSkeleton />}>
-                    <PromotionCarousel q={q} isLoggedIn={!!user} />
-                  </Suspense>
-                </div>
-              </>
-            )}
-
-            {/* List header with hairline */}
             {productType !== "PROMOTION" && (
-              <>
-                <div style={{
-                  display: "flex", alignItems: "baseline", gap: 12,
-                  borderBottom: "2px solid var(--text)", paddingBottom: 14, marginBottom: 12,
-                }}>
-                  <h2 style={{ fontSize: 30, margin: 0, color: "var(--text)", letterSpacing: "-0.02em" }}>
-                    Hôm nay
-                  </h2>
-                  <span style={{ fontSize: 15, color: "var(--text-muted)" }}>
-                    {totalBoxes} box
-                    {q && <> · &ldquo;{q}&rdquo;</>}
-                  </span>
-                  {q && <ClearSearchButton q={q} />}
-                  <div style={{ marginLeft: "auto" }}>
-                    <Suspense fallback={null}>
-                      <SortButtons current={sort} />
-                    </Suspense>
-                  </div>
-                </div>
-
-                {/* Box list */}
-                <div style={{ position: "relative" }}>
-                  <DiscoverLoadingOverlay />
-                  <Suspense fallback={<BoxSkeleton />}>
-                    <BoxList sort={sort} prices={prices} pickups={pickups} categories={categories} q={q} />
-                  </Suspense>
-                </div>
-              </>
+              <div>
+                <Suspense fallback={<div style={{ width: 200, height: 200 }} />}>
+                  <FilterSidebar categoryOptions={categoryOptions} />
+                </Suspense>
+              </div>
             )}
-          </div>
 
-          {/* Right rail: map + signup */}
-          <div>
-            <aside style={{ display: "flex", flexDirection: "column", gap: 20, position: "sticky", top: 89 }}>
-              {/* Map */}
-              <div className="rise rise-4" style={{
-                border: "1px solid var(--border)", borderRadius: 10,
-                overflow: "hidden", background: "white",
-              }}>
-                <MapView stores={storePins} height={200} />
+            {/* Results — editorial list */}
+            <div className="rise rise-4">
+              {/* Product type tabs — Surprise Box vs Voucher */}
+              <div style={{ marginBottom: 16 }}>
+                <Suspense fallback={null}>
+                  <ProductTypeTabs current={productType} />
+                </Suspense>
               </div>
 
-              {/* Location button — standalone, right below map for quick access */}
-              <LocationPill bar />
+              {/* Promotions — full row list on the dedicated "Chương trình khuyến mãi" tab */}
+              {productType === "PROMOTION" && (
+                <>
+                  <div style={{
+                    display: "flex", alignItems: "baseline", gap: 12,
+                    borderBottom: "2px solid var(--text)", paddingBottom: 14, marginBottom: 12,
+                  }}>
+                    <h2 style={{ fontSize: 30, margin: 0, color: "var(--text)", letterSpacing: "-0.02em" }}>
+                      Ưu đãi & khuyến mãi
+                    </h2>
+                    {q && <span style={{ fontSize: 15, color: "var(--text-muted)" }}>&ldquo;{q}&rdquo;</span>}
+                    {q && <ClearSearchButton q={q} />}
+                  </div>
+                  <div style={{ position: "relative" }}>
+                    <Suspense fallback={<BoxSkeleton />}>
+                      <PromotionList q={q} isLoggedIn={!!user} />
+                    </Suspense>
+                  </div>
+                </>
+              )}
 
-              {/* Impact card (logged in) / Signup CTA (logged out) */}
-              {impact ? <ImpactCard impact={impact} /> : <SignupCTA />}
-            </aside>
+              {/* Promotions — condensed scroll strip alongside the box list on "Tất cả" */}
+              {productType === "" && promotionsCount > 0 && (
+                <>
+                  <div style={{
+                    display: "flex", alignItems: "baseline", gap: 12,
+                    borderBottom: "2px solid var(--text)", paddingBottom: 14, marginBottom: 12,
+                  }}>
+                    <h2 style={{ fontSize: 21, margin: 0, color: "var(--text)", letterSpacing: "-0.02em" }}>
+                      Ưu đãi & khuyến mãi
+                    </h2>
+                    {q && <span style={{ fontSize: 15, color: "var(--text-muted)" }}>&ldquo;{q}&rdquo;</span>}
+                    {q && <ClearSearchButton q={q} />}
+                    <Link href="/discover?type=PROMOTION" style={{ marginLeft: "auto", fontSize: 13, fontWeight: 700, color: "var(--primary)", textDecoration: "none", whiteSpace: "nowrap" }}>
+                      Xem tất cả →
+                    </Link>
+                  </div>
+                  <div style={{ position: "relative", marginBottom: 8 }}>
+                    <Suspense fallback={<BoxSkeleton />}>
+                      <PromotionCarousel q={q} isLoggedIn={!!user} />
+                    </Suspense>
+                  </div>
+                </>
+              )}
+
+              {/* List header with hairline */}
+              {productType !== "PROMOTION" && (
+                <>
+                  <div style={{
+                    display: "flex", alignItems: "baseline", gap: 12,
+                    borderBottom: "2px solid var(--text)", paddingBottom: 14, marginBottom: 12,
+                  }}>
+                    <h2 style={{ fontSize: 30, margin: 0, color: "var(--text)", letterSpacing: "-0.02em" }}>
+                      Hôm nay
+                    </h2>
+                    <span style={{ fontSize: 15, color: "var(--text-muted)" }}>
+                      {totalBoxes} box
+                      {q && <> · &ldquo;{q}&rdquo;</>}
+                    </span>
+                    {q && <ClearSearchButton q={q} />}
+                    <div style={{ marginLeft: "auto" }}>
+                      <Suspense fallback={null}>
+                        <SortButtons current={sort} />
+                      </Suspense>
+                    </div>
+                  </div>
+
+                  {/* Box list */}
+                  <div style={{ position: "relative" }}>
+                    <DiscoverLoadingOverlay />
+                    <Suspense fallback={<BoxSkeleton />}>
+                      <BoxList sort={sort} prices={prices} pickups={pickups} categories={categories} q={q} />
+                    </Suspense>
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Right rail: map + signup */}
+            <div>
+              <aside style={{ display: "flex", flexDirection: "column", gap: 20, position: "sticky", top: 89 }}>
+                {/* Map */}
+                <div className="rise rise-4" style={{
+                  border: "1px solid var(--border)", borderRadius: 10,
+                  overflow: "hidden", background: "white",
+                }}>
+                  <MapView stores={storePins} height={200} />
+                </div>
+
+                {/* Location button — standalone, right below map for quick access */}
+                <LocationPill bar />
+
+                {/* Impact card (logged in) / Signup CTA (logged out) */}
+                {impact ? <ImpactCard impact={impact} /> : <SignupCTA />}
+              </aside>
+            </div>
           </div>
-        </div>
         </DiscoverNavProvider>
       </main>
 
@@ -635,7 +635,7 @@ function ImpactCard({ impact }: { impact: { orderCount: number; boxCount: number
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         <ImpactRow label="Đơn hàng đã giải cứu" value={String(impact.orderCount)} color="var(--text)" />
         <ImpactRow label="Tiết kiệm được" value={formatPrice(impact.moneySaved)} color="var(--primary)" />
-        <ImpactRow label="CO₂ giảm ước tính" value={`${impact.carbonSavedKg.toFixed(1)} kg`} color="#2d6a31" />
+        <ImpactRow label="CO₂ giảm ước tính" value={`${impact.carbonSavedKg.toFixed(1)} kg`} color="#3986aaff" />
       </div>
 
       <Link href="/orders" className="btn btn-ghost" style={{

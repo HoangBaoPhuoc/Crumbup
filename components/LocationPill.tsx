@@ -7,11 +7,13 @@ export default function LocationPill({ bar = false }: { bar?: boolean } = {}) {
 
   return (
     <button
-      className="addr-pill"
+      className={`addr-pill${bar ? " location-pill-bar" : ""}`}
+      data-reveal={bar || undefined}
+      data-reveal-delay={bar ? "2" : undefined}
       onClick={requestLocation}
       title={coords ? "Cập nhật vị trí" : "Bật vị trí để tìm cửa hàng gần bạn"}
       style={{
-        cursor: "pointer", border: "none", transition: "background 0.2s",
+        cursor: "pointer", border: "none", transition: bar ? undefined : "background 0.2s",
         ...(bar && {
           width: "100%", justifyContent: "center",
           background: "white", color: "var(--primary-dark)", fontWeight: 700,
@@ -22,7 +24,6 @@ export default function LocationPill({ bar = false }: { bar?: boolean } = {}) {
     >
       {loading ? (
         <>
-          <span style={{ display: "inline-block", animation: "spin 0.8s linear infinite" }}>⌛</span>
           <span>Đang xác định...</span>
         </>
       ) : coords ? (

@@ -16,7 +16,7 @@ const STATUS_LABEL: Record<string, string> = {
 const STATUS_STYLE: Record<string, React.CSSProperties> = {
   PENDING:   { background: "#fef3c7", color: "#92400e" },
   CONFIRMED: { background: "#dbeafe", color: "#1e40af" },
-  PICKED_UP: { background: "#dcfce7", color: "#15803d" },
+  PICKED_UP: { background: "#e0f2fe", color: "#0369a1" },
   CANCELLED: { background: "#f1f5f9", color: "#94a3b8" },
 };
 
@@ -240,3 +240,4 @@ export default function OrderCard({ order }: { order: OrderWithRelations }) {
     </>
   );
 }
+

@@ -56,9 +56,9 @@ export default function RedeemCodeWidget() {
       {result && (
         <div style={{
           marginTop: 12, padding: "10px 14px", borderRadius: 10, fontSize: 15,
-          background: result.ok ? "#dcfce7" : "#fef2f2",
-          border: `1px solid ${result.ok ? "#86efac" : "#fecaca"}`,
-          color: result.ok ? "#15803d" : "#b91c1c",
+          background: result.ok ? "#e0f2fe" : "#fef2f2",
+          border: `1px solid ${result.ok ? "#7dd3fc" : "#fecaca"}`,
+          color: result.ok ? "#0369a1" : "#b91c1c",
         }}>
           {result.ok ? "✅ " : "⚠️ "}{result.message}
         </div>
@@ -66,3 +66,4 @@ export default function RedeemCodeWidget() {
     </section>
   );
 }
+

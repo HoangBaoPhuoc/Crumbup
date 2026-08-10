@@ -84,8 +84,8 @@ export default async function BusinessesPage({
                     {store ? (
                       <span style={{
                         padding: "3px 10px", borderRadius: 999, fontSize: 11, fontWeight: 700,
-                        background: store.verified ? "#dcfce7" : "#fef3c7",
-                        color: store.verified ? "#15803d" : "#92400e",
+                        background: store.verified ? "#e0f2fe" : "#fef3c7",
+                        color: store.verified ? "#0369a1" : "#92400e",
                       }}>
                         {store.verified ? "Đã duyệt" : "Chờ duyệt"}
                       </span>
@@ -134,3 +134,4 @@ const pgBtn: React.CSSProperties = {
   border: "1px solid #e5d5c8", fontSize: 15, fontWeight: 600,
   color: "#3d2f1f", textDecoration: "none",
 };
+

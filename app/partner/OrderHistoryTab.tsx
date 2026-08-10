@@ -28,7 +28,7 @@ function StatusNote({ order }: { order: HistoryOrder }) {
   if (order.status === "PICKED_UP") {
     return (
       <div>
-        <span style={{ padding: "3px 10px", borderRadius: 999, fontSize: 11, fontWeight: 700, background: "#dcfce7", color: "#15803d" }}>
+        <span style={{ padding: "3px 10px", borderRadius: 999, fontSize: 11, fontWeight: 700, background: "#e0f2fe", color: "#0369a1" }}>
           Đã nhận hàng
         </span>
         {order.pickedUpAt && (
@@ -145,3 +145,4 @@ export default function OrderHistoryTab({ orders }: { orders: HistoryOrder[] }) 
     </section>
   );
 }
+

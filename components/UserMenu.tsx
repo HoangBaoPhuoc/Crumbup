@@ -44,12 +44,12 @@ export default function UserMenu({ email, name, avatarUrl }: Props) {
     <div ref={ref} style={{ position: "relative" }}>
       {/* Avatar button */}
       <button
+        className="header-icon-btn"
         onClick={() => setOpen((v) => !v)}
         style={{
           boxSizing: "border-box",
-          width: 36, height: 36, borderRadius: "50%",
-          border: `2px solid ${open ? "var(--primary)" : "var(--border)"}`,
-          cursor: "pointer", transition: "border-color 0.15s",
+          width: 38, height: 38, borderRadius: "50%",
+          borderColor: open ? "var(--primary)" : undefined,
           overflow: "hidden", padding: 0,
         }}
       >
@@ -71,11 +71,11 @@ export default function UserMenu({ email, name, avatarUrl }: Props) {
             <div style={{ width: 40, height: 40, borderRadius: "50%", overflow: "hidden", flexShrink: 0 }}>
               <Avatar avatarUrl={avatarUrl} initials={initials} />
             </div>
-            <div style={{ minWidth: 0 }}>
-              <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 2, color: "var(--text)" }}>
+            <div style={{ minWidth: 0, overflow: "hidden" }}>
+              <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 2, color: "var(--text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {name || "Người dùng"}
               </div>
-              <div style={{ fontSize: 12, color: "var(--text-muted)", wordBreak: "break-all" }}>
+              <div style={{ fontSize: 12, color: "var(--text-muted)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {email}
               </div>
             </div>
