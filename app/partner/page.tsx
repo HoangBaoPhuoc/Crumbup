@@ -3,10 +3,14 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
 import CreateBoxModal from "./CreateBoxModal";
-import PartnerLogoutButton from "./PartnerLogoutButton";
+import RevenueDatePicker from "./RevenueDatePicker";
+import LiveClock from "./LiveClock";
+import RefreshButton from "./RefreshButton";
+import Sidebar from "./Sidebar";
 import PartnerTables from "./PartnerTables";
 import BoxHistoryTab from "./BoxHistoryTab";
 import OrderHistoryTab from "./OrderHistoryTab";
+import MessagesTab from "./MessagesTab";
 import StoreSettingsForm from "./StoreSettingsForm";
 import PromotionsTab from "./PromotionsTab";
 
@@ -39,9 +43,9 @@ const td: React.CSSProperties = { padding: "13px 20px", fontSize: 15, color: "va
 export default async function PartnerDashboard({
   searchParams,
 }: {
-  searchParams: Promise<{ tab?: string }>;
+  searchParams: Promise<{ tab?: string; revenueDate?: string }>;
 }) {
-  const { tab = "overview" } = await searchParams;
+  const { tab = "overview", revenueDate } = await searchParams;
 
   /* ── Auth ── */
   const supabase = await createClient();
@@ -78,11 +82,16 @@ export default async function PartnerDashboard({
   // UTC midnight of VN date — used for box date comparisons (date field stored as UTC midnight)
   const todayVN  = new Date(Date.UTC(nowVN.getUTCFullYear(), nowVN.getUTCMonth(), nowVN.getUTCDate()));
   const tomorrow = new Date(todayVN.getTime() + 24 * 60 * 60_000);
-  // VN midnight in UTC — used for order createdAt comparisons (full datetime)
-  const vnDayStart = new Date(todayVN.getTime() - 7 * 60 * 60_000);
-  const vnDayEnd   = new Date(tomorrow.getTime() - 7 * 60 * 60_000);
+  // Revenue card date selection — defaults to today, clamped to not go past today.
+  const todayStr = todayVN.toISOString().slice(0, 10);
+  const isValidDateStr = !!revenueDate && /^\d{4}-\d{2}-\d{2}$/.test(revenueDate);
+  const selectedDateStr = isValidDateStr && revenueDate! <= todayStr ? revenueDate! : todayStr;
+  const [selY, selM, selD] = selectedDateStr.split("-").map(Number);
+  const selectedDayVN    = new Date(Date.UTC(selY, selM - 1, selD));
+  const revenueDayStart  = new Date(selectedDayVN.getTime() - 7 * 60 * 60_000);
+  const revenueDayEnd    = new Date(revenueDayStart.getTime() + 24 * 60 * 60_000);
 
-  const [todayBoxes, futureBoxes, pastBoxes, pendingConfirmedOrders, reviews, allOrdersCount, pendingCount, todayRevenueAgg, completedOrders, categoryOptions, promotions] = await Promise.all([
+  const [todayBoxes, futureBoxes, pastBoxes, pendingConfirmedOrders, reviews, allOrdersCount, revenueAgg, completedOrders, categoryOptions, promotions] = await Promise.all([
     prisma.box.findMany({
       where: { storeId: store.id, date: { gte: todayVN, lt: tomorrow } },
       orderBy: { createdAt: "desc" },
@@ -104,18 +113,17 @@ export default async function PartnerDashboard({
       orderBy: { createdAt: "desc" },
       select: {
         id: true, total: true, status: true, pickupCode: true, createdAt: true, pickedUpAt: true,
-        user: { select: { name: true } },
+        user: { select: { id: true, name: true } },
         items: { take: 1, select: { quantity: true, box: { select: { name: true, date: true, pickupEnd: true } } } },
       },
     }),
     prisma.review.findMany({ where: { storeId: store.id }, select: { rating: true } }),
     prisma.order.count({ where: { storeId: store.id } }),
-    prisma.order.count({ where: { storeId: store.id, status: "PENDING" } }),
     prisma.order.aggregate({
       where: {
         storeId: store.id,
         status: { in: ["CONFIRMED", "PICKED_UP"] },
-        createdAt: { gte: vnDayStart, lt: vnDayEnd },
+        createdAt: { gte: revenueDayStart, lt: revenueDayEnd },
       },
       _sum: { total: true },
     }),
@@ -125,7 +133,7 @@ export default async function PartnerDashboard({
       take: 100,
       select: {
         id: true, total: true, status: true, pickupCode: true, createdAt: true, pickedUpAt: true,
-        user: { select: { name: true } },
+        user: { select: { id: true, name: true } },
         items: { take: 1, select: { quantity: true, box: { select: { name: true, date: true, pickupEnd: true } } } },
       },
     }),
@@ -137,7 +145,15 @@ export default async function PartnerDashboard({
     prisma.promotion.findMany({
       where: { storeId: store.id },
       orderBy: { createdAt: "desc" },
-      include: { claims: { select: { status: true } } },
+      include: {
+        claims: {
+          select: {
+            code: true, status: true, claimedAt: true, redeemedAt: true,
+            user: { select: { name: true, phone: true } },
+          },
+          orderBy: { claimedAt: "desc" },
+        },
+      },
     }),
   ]);
 
@@ -147,7 +163,6 @@ export default async function PartnerDashboard({
   const historyBoxes      = [...expiredTodayBoxes, ...pastBoxes];
 
   /* ── Split pending/confirmed orders by pickup expiry ── */
-  const todayStr = nowVN.toISOString().slice(0, 10);
   function isOrderExpired(o: typeof pendingConfirmedOrders[number]) {
     const box = o.items[0]?.box;
     if (!box) return false;
@@ -164,17 +179,19 @@ export default async function PartnerDashboard({
   const sellingBoxes = activeTodayBoxes
     .filter((b) => b.active && b.quantityLeft > 0)
     .reduce((sum, b) => sum + b.quantityLeft, 0);
-  const todayRevenue = todayRevenueAgg._sum.total ?? 0;
+  const pendingCount = activeOrders.filter((o) => o.status === "PENDING").length;
+  const revenue = revenueAgg._sum.total ?? 0;
+  const isRevenueToday = selectedDateStr === todayStr;
+  const revenueDateLabel = new Date(selectedDayVN.getTime()).toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit" });
   const avgRating      = reviews.length > 0
     ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
     : null;
-
-  const displayDate = todayVN.toLocaleDateString("vi-VN", { weekday: "long", day: "2-digit", month: "2-digit", year: "numeric" });
 
   const navItems = [
     { label: "Tổng quan",          href: "/partner",                    key: "overview"      },
     { label: "Lịch sử box",        href: "/partner?tab=box-history",    key: "box-history"   },
     { label: "Lịch sử đơn hàng",   href: "/partner?tab=order-history",  key: "order-history" },
+    { label: "Tin nhắn",           href: "/partner?tab=messages",       key: "messages"      },
     { label: "Chương trình khuyến mãi", href: "/partner?tab=promotions", key: "promotions"    },
     { label: "Cài đặt cửa hàng",   href: "/partner?tab=settings",       key: "settings"      },
   ];
@@ -182,51 +199,10 @@ export default async function PartnerDashboard({
   return (
     <div style={{ display: "flex", minHeight: "100vh", background: "var(--ivory)", fontFamily: "var(--font-body)" }}>
 
-      {/* ── Sidebar ── */}
-      <aside style={{
-        width: 220, background: "white", borderRight: "1px solid var(--border)",
-        display: "flex", flexDirection: "column", padding: "24px 12px",
-        position: "sticky", top: 0, height: "100vh", flexShrink: 0,
-      }}>
-        <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none", marginBottom: 28, paddingLeft: 10 }}>
-          <div style={{ width: 32, height: 32, borderRadius: 10, background: "var(--primary)", display: "grid", placeItems: "center" }}>
-            <div style={{ width: 28, height: 28, backgroundImage: "url('/crumbup-logo-nocap.jpg')", backgroundSize: "contain", backgroundPosition: "center", backgroundRepeat: "no-repeat" }} />
-          </div>
-          <div>
-            <div style={{ fontSize: 16, fontWeight: 900, color: "var(--text)", letterSpacing: "-0.02em" }}>CrumbUp</div>
-            <div style={{ fontSize: 9, fontWeight: 700, color: "var(--primary)", letterSpacing: "0.1em", textTransform: "uppercase" }}>Cửa hàng</div>
-          </div>
-        </Link>
-
-        <nav style={{ flex: 1, display: "flex", flexDirection: "column", gap: 4 }}>
-          {navItems.map((item) => {
-            const isActive = item.key === tab || (item.key === "overview" && tab === "overview");
-            return (
-              <a
-                key={item.key}
-                href={item.href}
-                style={{
-                  display: "block", padding: "9px 12px", borderRadius: 10,
-                  fontSize: 16, fontWeight: 600, color: isActive ? "var(--primary)" : "var(--text)",
-                  textDecoration: "none",
-                  background: isActive ? "var(--primary-soft)" : "transparent",
-                }}
-              >
-                {item.label}
-              </a>
-            );
-          })}
-        </nav>
-
-        <div style={{ borderTop: "1px solid var(--border)", paddingTop: 14, paddingLeft: 10 }}>
-          <div style={{ fontSize: 12, fontWeight: 600, color: "var(--text-muted)", marginBottom: 2 }}>{prismaUser.name}</div>
-          <div style={{ fontSize: 11, color: "#94a3b8", marginBottom: 12 }}>Chủ cửa hàng</div>
-          <PartnerLogoutButton />
-        </div>
-      </aside>
+      <Sidebar navItems={navItems} activeTab={tab} userName={prismaUser.name} />
 
       {/* ── Main ── */}
-      <main style={{ flex: 1, padding: "28px 36px 48px", maxWidth: "calc(100vw - 220px)" }}>
+      <main style={{ flex: 1, minWidth: 0, padding: "28px 36px 48px" }}>
 
         {tab === "overview" && (
           <>
@@ -244,9 +220,10 @@ export default async function PartnerDashboard({
                       {store.verified ? "Đã xác nhận" : "Chờ xét duyệt"}
                     </span>
                   </div>
-                  <p style={{ fontSize: 15, color: "var(--text-muted)" }}>{displayDate}</p>
+                  <LiveClock />
                 </div>
                 <div style={{ display: "flex", gap: 10 }}>
+                  <RefreshButton />
                   <CreateBoxModal storeAddress={store.address} categories={categoryOptions} />
                 </div>
               </div>
@@ -261,18 +238,36 @@ export default async function PartnerDashboard({
             {/* Stat cards */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginBottom: 28 }}>
               {[
-                { label: "Box đang bán",     value: sellingBoxes,                               sub: `${activeTodayBoxes.length} loại hôm nay` },
-                { label: "Chờ xác nhận",     value: pendingCount,                               sub: `${allOrdersCount} đơn tổng cộng`, alert: pendingCount > 0 },
-                { label: "Doanh thu hôm nay", value: todayRevenue.toLocaleString("vi-VN") + "đ", sub: "Sau 15% phí nền tảng: " + Math.round(todayRevenue * 0.85).toLocaleString("vi-VN") + "đ" },
-                { label: "Đánh giá TB",      value: avgRating ? `${avgRating} ★` : "—",         sub: `${reviews.length} đánh giá` },
+                {
+                  id: "boxes", label: "Box đang bán", value: sellingBoxes,
+                  sub: `${activeTodayBoxes.length} loại hôm nay`,
+                },
+                {
+                  id: "pending", label: "Chờ xác nhận", value: pendingCount,
+                  alert: pendingCount > 0,
+                },
+                {
+                  id: "revenue",
+                  label: isRevenueToday ? "Doanh thu hôm nay" : `Doanh thu ${revenueDateLabel}`,
+                  value: revenue.toLocaleString("vi-VN") + "đ",
+                  sub: "Sau 15% phí nền tảng: " + Math.round(revenue * 0.85).toLocaleString("vi-VN") + "đ",
+                  control: <RevenueDatePicker value={selectedDateStr} max={todayStr} />,
+                },
+                {
+                  id: "rating", label: "Đánh giá TB", value: avgRating ? `${avgRating} / 5` : "—",
+                  sub: `${reviews.length} đánh giá`,
+                },
               ].map((s) => (
-                <div key={s.label} style={{
+                <div key={s.id} style={{
                   background: "white", borderRadius: 14, padding: "18px 20px",
                   border: (s as { alert?: boolean }).alert ? "2px solid var(--primary)" : "1px solid var(--border)",
                 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>{s.label}</div>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 8 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>{s.label}</div>
+                    {(s as { control?: React.ReactNode }).control}
+                  </div>
                   <div style={{ fontSize: 30, fontWeight: 900, color: (s as { alert?: boolean }).alert ? "var(--primary)" : "var(--text)", lineHeight: 1 }}>{s.value}</div>
-                  <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 6 }}>{s.sub}</div>
+                  {"sub" in s && <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 6 }}>{s.sub}</div>}
                 </div>
               ))}
             </div>
@@ -281,8 +276,8 @@ export default async function PartnerDashboard({
               activeBoxes={activeTodayBoxes}
               futureBoxes={futureBoxes}
               recentOrders={activeOrders}
-              totalOrders={activeOrders.length}
-              storeAddress={store.address}
+              totalOrders={allOrdersCount}
+              hasBoxHistory={historyBoxes.length > 0}
               categories={categoryOptions}
             />
           </>
@@ -305,6 +300,16 @@ export default async function PartnerDashboard({
               <p style={{ fontSize: 15, color: "var(--text-muted)" }}>Đơn đã hoàn thành, hủy, hoặc hết giờ nhận</p>
             </div>
             <OrderHistoryTab orders={orderHistory} />
+          </>
+        )}
+
+        {tab === "messages" && (
+          <>
+            <div style={{ marginBottom: 24 }}>
+              <h1 style={{ fontSize: 25, fontWeight: 900, color: "var(--text)", marginBottom: 4 }}>Tin nhắn</h1>
+              <p style={{ fontSize: 15, color: "var(--text-muted)" }}>Trao đổi với khách hàng</p>
+            </div>
+            <MessagesTab />
           </>
         )}
 

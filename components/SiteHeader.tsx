@@ -5,6 +5,7 @@ import NavLinks from "./NavLinks";
 import SearchBar from "./SearchBar";
 import MobileMenuToggle from "./MobileMenuToggle";
 import UserMenu from "./UserMenu";
+import OrdersNavLink from "./OrdersNavLink";
 
 export default async function SiteHeader() {
   const supabase = await createClient();
@@ -45,17 +46,7 @@ export default async function SiteHeader() {
       <div className="header-auth">
         {user ? (
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <Link href="/orders" className="header-icon-btn" style={{
-              width: 38, height: 38, borderRadius: 10,
-              display: "grid", placeItems: "center",
-              textDecoration: "none", flexShrink: 0,
-            }} title="Đơn hàng của tôi">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="9" cy="20" r="1.5"/>
-                <circle cx="18" cy="20" r="1.5"/>
-                <path d="M2 3h2l2.4 12.2a2 2 0 002 1.8h9.2a2 2 0 002-1.8L21 7H6"/>
-              </svg>
-            </Link>
+            <OrdersNavLink />
             <UserMenu
               email={user.email ?? ""}
               name={user.user_metadata?.name ?? user.user_metadata?.full_name ?? ""}

@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { openChat } from "@/components/chat/chatBus";
 
 type Status = "PENDING" | "CONFIRMED" | "PICKED_UP" | "CANCELLED";
 
@@ -16,11 +17,10 @@ const NEXT: Partial<Record<Status, { label: string; next: string; style: React.C
   ],
 };
 
-export default function PartnerOrderActions({ orderId, status }: { orderId: string; status: Status }) {
+export default function PartnerOrderActions({ orderId, customerId, status }: { orderId: string; customerId: string; status: Status }) {
   const router  = useRouter();
   const [busy, setBusy] = useState(false);
   const actions = NEXT[status];
-  if (!actions) return null;
 
   async function act(next: string) {
     setBusy(true);
@@ -35,13 +35,16 @@ export default function PartnerOrderActions({ orderId, status }: { orderId: stri
 
   return (
     <div style={{ display: "flex", gap: 6 }}>
-      {actions.map((a) => (
+      {actions?.map((a) => (
         <button key={a.next} onClick={() => act(a.next)} disabled={busy}
           style={{ padding: "5px 12px", borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: busy ? "not-allowed" : "pointer", border: "none", opacity: busy ? 0.6 : 1, ...a.style }}>
           {a.label}
         </button>
       ))}
+      <button onClick={() => openChat({ customerId })}
+        style={{ padding: "5px 12px", borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: "pointer", border: "1px solid var(--border)", background: "white", color: "var(--text-muted)" }}>
+        Nhắn tin
+      </button>
     </div>
   );
 }
-

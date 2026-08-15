@@ -19,9 +19,17 @@ export async function POST(request: Request) {
 
   if (!KINDS.has(kind)) return NextResponse.json({ error: "Loại chương trình không hợp lệ" }, { status: 400 });
   if (!title || !String(title).trim()) return NextResponse.json({ error: "Vui lòng nhập tên chương trình" }, { status: 400 });
+  if (kind === "STORE_ANNOUNCEMENT" && (!image || !String(image).trim())) {
+    return NextResponse.json({ error: "Vui lòng chọn ảnh minh họa" }, { status: 400 });
+  }
   if (!validFrom || !validUntil) return NextResponse.json({ error: "Vui lòng nhập thời gian hiệu lực" }, { status: 400 });
   if (new Date(validUntil) <= new Date(validFrom)) {
     return NextResponse.json({ error: "Ngày kết thúc phải sau ngày bắt đầu" }, { status: 400 });
+  }
+  const vnNow  = new Date(Date.now() + 7 * 60 * 60_000);
+  const todayVN = new Date(Date.UTC(vnNow.getUTCFullYear(), vnNow.getUTCMonth(), vnNow.getUTCDate()));
+  if (new Date(validFrom) < todayVN) {
+    return NextResponse.json({ error: "Ngày bắt đầu không được ở quá khứ — chọn hôm nay để đăng ngay hoặc một ngày trong tương lai để lên lịch" }, { status: 400 });
   }
 
   let resolvedDealType: DealType | null = null;

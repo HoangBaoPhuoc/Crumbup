@@ -8,7 +8,11 @@ import { useDiscoverNav } from "./DiscoverNavContext";
 const TYPES = [
   { label: "Tất cả",         value: "" },
   { label: "Surprise Box", value: "SURPRISE_BOX" },
-  { label: "Chương trình khuyến mãi", value: "PROMOTION" },
+  // Store announcements and platform vouchers used to share one "Chương
+  // trình khuyến mãi" tab — different enough (informational vs claimable)
+  // that lumping them together read as one type was confusing. Split.
+  { label: "Chương trình khuyến mãi", value: "ANNOUNCEMENT" },
+  { label: "Mã giảm giá",             value: "VOUCHER" },
 ];
 
 // Not a real filter — clicking it just opens the "coming soon" popup below.
@@ -36,6 +40,7 @@ export default function ProductTypeTabs({ current }: { current: string }) {
     const next = new URLSearchParams(params.toString());
     if (value) next.set("type", value);
     else next.delete("type");
+    next.delete("page");
     navigate(`${pathname}?${next.toString()}`);
   }
 

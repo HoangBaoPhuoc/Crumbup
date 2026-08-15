@@ -19,9 +19,10 @@ export default function PartnerLogoutButton() {
     <button
       onClick={logout}
       disabled={busy}
+      className="partner-logout-btn"
       style={{
         width: "100%", padding: "8px 0", borderRadius: 8,
-        border: "1px solid var(--border)", background: "white",
+        border: "1px solid var(--border)",
         fontSize: 12, fontWeight: 600, color: "var(--text-muted)",
         cursor: busy ? "not-allowed" : "pointer",
         opacity: busy ? 0.6 : 1,

@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { ViewTransitions } from "next-view-transitions";
 import ScrollRevealProvider from "@/components/ScrollRevealProvider";
-import ScrollToTop from "@/components/ScrollToTop";
 import ProgressBar from "@/components/ProgressBar";
+import NotificationListener from "@/components/notifications/NotificationListener";
+import NotificationsProvider from "@/components/notifications/NotificationsProvider";
+import ChatBubble from "@/components/chat/ChatBubble";
 import { LocationProvider } from "@/lib/location-context";
 import "./globals.css";
 
@@ -26,10 +28,13 @@ export default function RootLayout({
       <html lang="vi">
         <body>
           <LocationProvider>
-            <ProgressBar />
-            <Suspense fallback={null}><ScrollRevealProvider /></Suspense>
-            {children}
-            <ScrollToTop />
+            <NotificationsProvider>
+              <Suspense fallback={null}><ProgressBar /></Suspense>
+              <Suspense fallback={null}><ScrollRevealProvider /></Suspense>
+              {children}
+              <NotificationListener />
+              <Suspense fallback={null}><ChatBubble /></Suspense>
+            </NotificationsProvider>
           </LocationProvider>
         </body>
       </html>

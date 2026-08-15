@@ -28,6 +28,7 @@ export default function SortButtons({ current }: { current: string }) {
     setActive(value);
     const next = new URLSearchParams(params.toString());
     next.set("sort", value);
+    next.delete("page");
     navigate(`${pathname}?${next.toString()}`);
   }
 

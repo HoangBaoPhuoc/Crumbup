@@ -63,6 +63,36 @@ export function promotionKindEmoji(kind: string | null | undefined): string {
   return PROMOTION_KIND_OPTIONS.find((k) => k.value === kind)?.emoji ?? "🎟️";
 }
 
+// Map/geocoding-sourced addresses in this app are formatted as
+// "<place name>, <street>, <ward>, <city>, <postal>, <country>", so the
+// store's own name is often literally the first comma-segment — showing it
+// next to the name verbatim reads as the name being printed twice. Drop that
+// segment if it's just a repeat, then keep the street (the part that tells
+// branches apart) AND the city — viewers browsing from outside the store's
+// city have no way to judge distance/relevance without it — while dropping
+// the postal code and country, which don't help anyone decide anything.
+export function shortAddress(address: string, storeName: string): string {
+  const parts = address.split(",").map((s) => s.trim()).filter(Boolean);
+  if (parts[0] && parts[0].toLowerCase() === storeName.trim().toLowerCase()) parts.shift();
+  if (parts.length === 0) return "";
+
+  let end = parts.length;
+  while (end > 1 && (/^\d+$/.test(parts[end - 1]) || /^(việt ?nam|vietnam)$/i.test(parts[end - 1]))) end--;
+  const trimmed = parts.slice(0, end);
+
+  const street = trimmed.slice(0, 2).join(", ");
+  const city = trimmed[trimmed.length - 1];
+  if (!city || trimmed.length <= 2 || street.includes(city)) return street;
+  return `${street}, ${city}`;
+}
+
+// Single source of truth for the promo image crop ratio — used by the
+// partner upload/crop UI AND every discover-page display (card, row list,
+// detail popup) so an image is cropped once at upload and every context
+// just scales that same framing via object-fit: cover, instead of each
+// display cropping it differently on top of an already-cropped source.
+export const PROMO_IMAGE_ASPECT = 4 / 3;
+
 export const PRODUCT_TYPES = [
   { value: "SURPRISE_BOX", label: "Surprise Box", emoji: "🎁" },
   { value: "VOUCHER",      label: "Chương trình khuyến mãi", emoji: "🎟️" },
@@ -109,4 +139,23 @@ export function getVietnamToday(): { from: Date; to: Date } {
   const from = new Date(Date.UTC(vnNow.getUTCFullYear(), vnNow.getUTCMonth(), vnNow.getUTCDate()));
   const to = new Date(from.getTime() + 24 * 60 * 60 * 1000);
   return { from, to };
+}
+
+export type TimeFilter = "all" | "today" | "week" | "month";
+
+export const TIME_FILTER_OPTIONS: { value: TimeFilter; label: string }[] = [
+  { value: "all",   label: "Mọi thời điểm" },
+  { value: "today", label: "Hôm nay" },
+  { value: "week",  label: "Tuần này" },
+  { value: "month", label: "Tháng này" },
+];
+
+/** Start of the filter window (browser-local time) for "today" / "week" (Mon-based) / "month". */
+export function timeFilterStart(filter: Exclude<TimeFilter, "all">, now: Date): Date {
+  const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  if (filter === "today") return startOfDay;
+  if (filter === "month") return new Date(now.getFullYear(), now.getMonth(), 1);
+  const day = now.getDay(); // 0 = Sunday
+  const diffToMonday = day === 0 ? -6 : 1 - day;
+  return new Date(startOfDay.getFullYear(), startOfDay.getMonth(), startOfDay.getDate() + diffToMonday);
 }

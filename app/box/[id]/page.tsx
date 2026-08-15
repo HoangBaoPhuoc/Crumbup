@@ -9,6 +9,7 @@ import ProductPlaceholderIcon from "@/components/ProductPlaceholderIcon";
 import BoxCountdown from "./BoxCountdown";
 import StoreMapClient from "./StoreMapClient";
 import OrderButton from "./OrderButton";
+import ChatWithStoreButton from "./ChatWithStoreButton";
 
 function timeAgo(date: Date): string {
   const diff = Date.now() - date.getTime();
@@ -228,6 +229,8 @@ export default async function BoxDetailPage({ params }: { params: Promise<{ id: 
                 isLoggedIn={isLoggedIn}
                 isExpired={isExpired}
               />
+
+              <ChatWithStoreButton storeId={store.id} boxId={box.id} isLoggedIn={isLoggedIn} />
             </div>
 
             <div style={{ background: "var(--cream)", borderRadius: 14, padding: "12px 16px", display: "flex", alignItems: "center", gap: 10 }}>

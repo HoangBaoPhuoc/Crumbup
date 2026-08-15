@@ -36,6 +36,11 @@ enum DealType {
   OTHER
 }
 
+enum NotificationType {
+  NEW_ORDER
+  NEW_MESSAGE
+}
+
 model ProductCategory {
   id        String   @id @default(cuid())
   key       String   @unique
@@ -62,6 +67,9 @@ model User {
   reviews       Review[]
   stores        Store[]
   voucherClaims VoucherClaim[]
+  messages      Message[]
+  notifications Notification[]
+  conversations Conversation[]
 }
 
 model Store {
@@ -84,6 +92,7 @@ model Store {
   orders     Order[]
   reviews    Review[]
   promotions Promotion[]
+  conversations Conversation[]
 
   @@unique([name, address])
 }
@@ -125,6 +134,7 @@ model Order {
   store Store       @relation(fields: [storeId], references: [id])
   items OrderItem[]
   review Review?
+  notifications Notification[]
 }
 
 model OrderItem {
@@ -192,4 +202,52 @@ model VoucherClaim {
   user      User      @relation(fields: [userId], references: [id])
 
   @@unique([promotionId, userId])
+}
+
+model Conversation {
+  id        String   @id @default(cuid())
+  userId    String
+  storeId   String
+  createdAt DateTime @default(now())
+
+  user     User      @relation(fields: [userId], references: [id])
+  store    Store     @relation(fields: [storeId], references: [id])
+  messages Message[]
+
+  @@unique([userId, storeId])
+}
+
+model Message {
+  id              String    @id @default(cuid())
+  conversationId  String
+  senderId        String
+  body            String    @default("")
+  attachmentUrl   String?   // legacy single-attachment field, kept for messages sent before multi-attachment support
+  attachmentType  String?   // "image" | "file"
+  attachmentName  String?
+  attachments     Json?     // ChatAttachment[] (see lib/chatAttachments.ts) — multi-file sends
+  readAt          DateTime?
+  createdAt       DateTime  @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id])
+  sender       User          @relation(fields: [senderId], references: [id])
+
+  @@index([conversationId, createdAt])
+}
+
+model Notification {
+  id             String           @id @default(cuid())
+  userId         String
+  type           NotificationType
+  orderId        String?
+  conversationId String?
+  title          String
+  body           String?
+  readAt         DateTime?
+  createdAt      DateTime         @default(now())
+
+  user  User   @relation(fields: [userId], references: [id])
+  order Order? @relation(fields: [orderId], references: [id])
+
+  @@index([userId, readAt])
 }
