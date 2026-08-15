@@ -131,7 +131,7 @@ export default function HomePage() {
               style={{ fontSize: 15, color: "var(--text-muted)", marginBottom: 24 }}
             >
               Không thích bất ngờ?{" "}
-              <Link href="/discover?type=PROMOTION" style={{ color: "var(--primary)", fontWeight: 700 }}>
+              <Link href="/discover?type=ANNOUNCEMENT" style={{ color: "var(--primary)", fontWeight: 700 }}>
                 Xem ưu đãi rõ ràng từ Chương trình khuyến mãi →
               </Link>
             </p>

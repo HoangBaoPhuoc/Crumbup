@@ -13,7 +13,10 @@ export async function POST(request: Request) {
 
   const box = await prisma.box.findUnique({
     where: { id: boxId },
-    select: { id: true, storeId: true, priceSale: true, quantityLeft: true, active: true, pickupEnd: true, date: true },
+    select: {
+      id: true, storeId: true, priceSale: true, quantityLeft: true, active: true, pickupEnd: true, date: true, name: true,
+      store: { select: { ownerId: true } },
+    },
   });
   if (!box || !box.active) return NextResponse.json({ error: "Box không tồn tại" }, { status: 404 });
   if (box.quantityLeft < quantity) return NextResponse.json({ error: `Chỉ còn ${box.quantityLeft} box` }, { status: 409 });
@@ -25,7 +28,7 @@ export async function POST(request: Request) {
   if (boxDate !== todayVN || box.pickupEnd < nowHHMM)
     return NextResponse.json({ error: "Đã hết giờ nhận hàng cho box này" }, { status: 409 });
 
-  const dbUser = await prisma.user.findUnique({ where: { id: user.id }, select: { id: true } });
+  const dbUser = await prisma.user.findUnique({ where: { id: user.id }, select: { id: true, name: true } });
   if (!dbUser) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
   const order = await prisma.$transaction(async (tx) => {
@@ -39,6 +42,22 @@ export async function POST(request: Request) {
       },
     });
     await tx.box.update({ where: { id: boxId }, data: { quantityLeft: { decrement: quantity } } });
+    const conversation = await tx.conversation.upsert({
+      where: { userId_storeId: { userId: user.id, storeId: box.storeId } },
+      update: {},
+      create: { userId: user.id, storeId: box.storeId },
+      select: { id: true },
+    });
+    await tx.notification.create({
+      data: {
+        userId: box.store.ownerId,
+        type: "NEW_ORDER",
+        orderId: o.id,
+        conversationId: conversation.id,
+        title: "Đơn hàng mới",
+        body: `${dbUser.name} vừa đặt "${box.name}"`,
+      },
+    });
     return o;
   });
 

@@ -1,12 +1,19 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
+
+// Portals that render their own layout (sidebar-based) instead of the
+// fixed 73px SiteHeader — the bar should hug the very top there.
+const NO_FIXED_HEADER_PREFIXES = ["/partner", "/admin"];
 
 export default function ProgressBar() {
   const pathname = usePathname();
-  const prevLayout = useRef(pathname);
-  const prevEffect = useRef(pathname);
+  const searchParams = useSearchParams();
+  const currentKey = `${pathname}?${searchParams.toString()}`;
+
+  const prevLayout = useRef(currentKey);
+  const prevEffect = useRef(currentKey);
   const [show, setShow] = useState(false);
   const [width, setWidth] = useState(0);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
@@ -18,19 +25,19 @@ export default function ProgressBar() {
 
   // Before browser paints: instant snap to top + reset scroll-reveal state
   useLayoutEffect(() => {
-    if (prevLayout.current === pathname) return;
-    prevLayout.current = pathname;
+    if (prevLayout.current === currentKey) return;
+    prevLayout.current = currentKey;
     // 'instant' overrides css scroll-behavior: smooth
     window.scrollTo({ top: 0, behavior: "instant" });
     document.querySelectorAll("[data-reveal]").forEach((el) =>
       el.classList.remove("revealed")
     );
-  }, [pathname]);
+  }, [currentKey]);
 
   // After paint: complete progress bar animation
   useEffect(() => {
-    if (prevEffect.current === pathname) return;
-    prevEffect.current = pathname;
+    if (prevEffect.current === currentKey) return;
+    prevEffect.current = currentKey;
 
     clearAll();
     setWidth(100);
@@ -40,17 +47,20 @@ export default function ProgressBar() {
         timers.current.push(setTimeout(() => setWidth(0), 400));
       }, 250)
     );
-  }, [pathname]);
+  }, [currentKey]);
 
-  // Detect internal link clicks → start bar
+  // Detect internal link clicks → start bar. Compares the full path+query
+  // (not just pathname) so query-only navigations — e.g. switching tabs via
+  // /partner?tab=... links, where the pathname never changes — still show it.
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       const a = (e.target as HTMLElement).closest("a");
       if (!a) return;
       const href = a.getAttribute("href") ?? "";
       if (!href || /^(https?:|mailto:|tel:|#)/.test(href)) return;
-      const hrefPath = href.split("#")[0].split("?")[0];
-      if (!hrefPath || hrefPath === window.location.pathname) return;
+      const hrefKey = href.split("#")[0];
+      const current = window.location.pathname + window.location.search;
+      if (!hrefKey || hrefKey === current) return;
 
       clearAll();
       setShow(true);
@@ -69,13 +79,14 @@ export default function ProgressBar() {
   }, []);
 
   const isAuthPage = ["/login", "/register", "/forgot-password", "/update-password"].includes(pathname);
+  const noFixedHeader = isAuthPage || NO_FIXED_HEADER_PREFIXES.some((p) => pathname.startsWith(p));
 
   return (
     <div
       aria-hidden
       style={{
         position: "fixed",
-        top: isAuthPage ? 0 : 73,
+        top: noFixedHeader ? 0 : 73,
         left: 0,
         height: 2,
         zIndex: 9999,

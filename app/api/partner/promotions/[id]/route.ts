@@ -13,7 +13,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   const { id } = await params;
   const promotion = await prisma.promotion.findUnique({
     where: { id },
-    select: { id: true, kind: true, store: { select: { ownerId: true } } },
+    select: { id: true, kind: true, totalCodes: true, store: { select: { ownerId: true } } },
   });
   if (!promotion) return NextResponse.json({ error: "Không tìm thấy chương trình" }, { status: 404 });
   if (promotion.store.ownerId !== user.id) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -29,6 +29,9 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   const { title, description, image, dealType, discountValue, validFrom, validUntil, totalCodes } = body;
 
   if (!title || !String(title).trim()) return NextResponse.json({ error: "Vui lòng nhập tên chương trình" }, { status: 400 });
+  if (promotion.kind === "STORE_ANNOUNCEMENT" && (!image || !String(image).trim())) {
+    return NextResponse.json({ error: "Vui lòng chọn ảnh minh họa" }, { status: 400 });
+  }
   if (!validFrom || !validUntil) return NextResponse.json({ error: "Vui lòng nhập thời gian hiệu lực" }, { status: 400 });
   if (new Date(validUntil) <= new Date(validFrom)) {
     return NextResponse.json({ error: "Ngày kết thúc phải sau ngày bắt đầu" }, { status: 400 });
@@ -43,6 +46,18 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     }
   }
 
+  const oldTotalCodes = promotion.totalCodes;
+  const resolvedTotalCodes: number | null = promotion.kind === "PLATFORM_VOUCHER" && totalCodes ? Number(totalCodes) : null;
+
+  if (promotion.kind === "PLATFORM_VOUCHER") {
+    if (oldTotalCodes == null && resolvedTotalCodes != null) {
+      return NextResponse.json({ error: "Chương trình đang không giới hạn số mã — không thể đặt giới hạn thấp hơn" }, { status: 400 });
+    }
+    if (oldTotalCodes != null && resolvedTotalCodes != null && resolvedTotalCodes < oldTotalCodes) {
+      return NextResponse.json({ error: `Không thể giảm số lượng mã (hiện tại: ${oldTotalCodes}), chỉ được tăng` }, { status: 400 });
+    }
+  }
+
   await prisma.promotion.update({
     where: { id },
     data: {
@@ -53,7 +68,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       discountValue: resolvedDiscountValue,
       validFrom:     new Date(validFrom),
       validUntil:    new Date(validUntil),
-      totalCodes:    promotion.kind === "PLATFORM_VOUCHER" && totalCodes ? Number(totalCodes) : null,
+      totalCodes:    resolvedTotalCodes,
     },
   });
 

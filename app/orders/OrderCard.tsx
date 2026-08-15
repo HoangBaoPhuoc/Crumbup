@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { formatVNDate } from "@/lib/utils";
+import { openChat } from "@/components/chat/chatBus";
 import type { OrderWithRelations } from "./page";
 
 const STATUS_LABEL: Record<string, string> = {
@@ -145,6 +146,16 @@ export default function OrderCard({ order }: { order: OrderWithRelations }) {
                   Đánh giá
                 </Link>
               )}
+              <button
+                onClick={() => openChat({ storeId: store.id })}
+                style={{
+                  padding: "8px 16px", borderRadius: 10,
+                  border: "1px solid var(--border)", color: "var(--text-muted)",
+                  fontSize: 12, fontWeight: 600, background: "white", cursor: "pointer",
+                }}
+              >
+                Nhắn tin
+              </button>
               <button
                 onClick={() => setShowStore(true)}
                 style={{

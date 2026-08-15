@@ -1,6 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import Pagination from "./Pagination";
+import { openChat } from "@/components/chat/chatBus";
+import { TIME_FILTER_OPTIONS, timeFilterStart, type TimeFilter } from "@/lib/utils";
 
 type HistoryOrder = {
   id: string;
@@ -9,9 +12,21 @@ type HistoryOrder = {
   pickupCode: string;
   createdAt: Date | string;
   pickedUpAt: Date | string | null;
-  user: { name: string };
+  user: { id: string; name: string };
   items: { quantity: number; box: { name: string } }[];
 };
+
+type StatusFilter = "all" | "PICKED_UP" | "CANCELLED" | "CONFIRMED" | "PENDING";
+
+const STATUS_FILTER_OPTIONS: { value: StatusFilter; label: string }[] = [
+  { value: "all",        label: "Tất cả trạng thái" },
+  { value: "PICKED_UP",  label: "Đã nhận hàng" },
+  { value: "CONFIRMED",  label: "Hết hạn (đã xác nhận)" },
+  { value: "PENDING",    label: "Hết hạn (chưa xác nhận)" },
+  { value: "CANCELLED",  label: "Đã hủy" },
+];
+
+const PAGE_SIZE = 15;
 
 const th: React.CSSProperties = {
   padding: "10px 20px", textAlign: "left", fontSize: 11,
@@ -73,26 +88,51 @@ function StatusNote({ order }: { order: HistoryOrder }) {
 
 export default function OrderHistoryTab({ orders }: { orders: HistoryOrder[] }) {
   const [q, setQ] = useState("");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [timeFilter, setTimeFilter] = useState<TimeFilter>("all");
+  const [page, setPage] = useState(1);
+  const now = useMemo(() => new Date(), []);
 
-  const filtered = orders.filter((o) => {
+  const filtered = useMemo(() => {
     const s = q.toLowerCase();
-    return (
-      o.user.name.toLowerCase().includes(s) ||
-      o.pickupCode.toLowerCase().includes(s) ||
-      (o.items[0]?.box.name ?? "").toLowerCase().includes(s) ||
-      o.status.toLowerCase().includes(s)
-    );
-  });
+    const timeStart = timeFilter === "all" ? null : timeFilterStart(timeFilter, now);
+    return orders.filter((o) => {
+      const matchesQ = !s ||
+        o.user.name.toLowerCase().includes(s) ||
+        o.pickupCode.toLowerCase().includes(s) ||
+        (o.items[0]?.box.name ?? "").toLowerCase().includes(s);
+      const matchesStatus = statusFilter === "all" || o.status === statusFilter;
+      const matchesTime = !timeStart || new Date(o.createdAt) >= timeStart;
+      return matchesQ && matchesStatus && matchesTime;
+    });
+  }, [orders, q, statusFilter, timeFilter, now]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const pageItems = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
+  function updateFilter(setter: () => void) {
+    setter();
+    setPage(1);
+  }
 
   return (
     <section style={{ background: "white", borderRadius: 16, border: "1px solid var(--border)", overflow: "hidden" }}>
       <div style={{ padding: "14px 22px", borderBottom: "1px solid var(--cream)", display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
         <h2 style={{ fontSize: 17, fontWeight: 700, color: "var(--text)", marginRight: "auto" }}>Tất cả đơn</h2>
         <input
-          value={q} onChange={(e) => setQ(e.target.value)}
+          value={q} onChange={(e) => updateFilter(() => setQ(e.target.value))}
           placeholder="Tìm theo tên, mã đơn, box..."
-          style={{ padding: "6px 12px", fontSize: 15, borderRadius: 8, border: "1px solid var(--border)", outline: "none", background: "var(--ivory)", width: 240 }}
+          style={{ padding: "6px 12px", fontSize: 15, borderRadius: 8, border: "1px solid var(--border)", outline: "none", background: "var(--ivory)", width: 220 }}
         />
+        <select value={statusFilter} onChange={(e) => updateFilter(() => setStatusFilter(e.target.value as StatusFilter))}
+          style={{ padding: "6px 10px", fontSize: 12, borderRadius: 8, border: "1px solid var(--border)", outline: "none", background: "var(--ivory)", cursor: "pointer" }}>
+          {STATUS_FILTER_OPTIONS.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+        </select>
+        <select value={timeFilter} onChange={(e) => updateFilter(() => setTimeFilter(e.target.value as TimeFilter))}
+          style={{ padding: "6px 10px", fontSize: 12, borderRadius: 8, border: "1px solid var(--border)", outline: "none", background: "var(--ivory)", cursor: "pointer" }}>
+          {TIME_FILTER_OPTIONS.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+        </select>
         <span style={{ fontSize: 12, color: "var(--text-muted)", whiteSpace: "nowrap" }}>
           {filtered.length}/{orders.length} đơn
         </span>
@@ -104,20 +144,20 @@ export default function OrderHistoryTab({ orders }: { orders: HistoryOrder[] }) 
         </div>
       ) : filtered.length === 0 ? (
         <div style={{ padding: "32px 24px", textAlign: "center", color: "var(--text-muted)", fontSize: 15 }}>
-          Không tìm thấy đơn nào khớp với &ldquo;{q}&rdquo;
+          Không tìm thấy đơn nào khớp với bộ lọc
         </div>
       ) : (
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
-            <tr style={{ background: "var(--ivory)" }}>
-              {["Mã đơn", "Khách hàng", "Box", "Tổng tiền", "Đặt lúc", "Trạng thái"].map((h) => (
+            <tr style={{ background: "var(--cream)", borderBottom: "1px solid var(--border)" }}>
+              {["Mã đơn", "Khách hàng", "Box", "Tổng tiền", "Đặt lúc", "Trạng thái", ""].map((h) => (
                 <th key={h} style={th}>{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {filtered.map((o) => (
-              <tr key={o.id} style={{ borderTop: "1px solid var(--cream)" }}>
+            {pageItems.map((o, idx) => (
+              <tr key={o.id} style={{ borderTop: "1px solid var(--border)", background: idx % 2 === 1 ? "var(--cream)" : "white" }}>
                 <td style={td}>
                   <div style={{ fontWeight: 700, color: "var(--primary)", fontSize: 12 }}>
                     #{o.pickupCode.slice(0, 8).toUpperCase()}
@@ -137,12 +177,19 @@ export default function OrderHistoryTab({ orders }: { orders: HistoryOrder[] }) 
                 <td style={td}>
                   <StatusNote order={o} />
                 </td>
+                <td style={td}>
+                  <button onClick={() => openChat({ customerId: o.user.id })}
+                    style={{ padding: "5px 12px", borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: "pointer", border: "1px solid var(--border)", background: "white", color: "var(--text-muted)", whiteSpace: "nowrap" }}>
+                    Nhắn tin
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       )}
+
+      <Pagination page={currentPage} totalPages={totalPages} onChange={setPage} />
     </section>
   );
 }
-

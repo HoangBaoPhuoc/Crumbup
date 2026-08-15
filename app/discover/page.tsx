@@ -4,12 +4,13 @@ import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import { prisma } from "@/lib/prisma";
 import { createClient } from "@/lib/supabase/server";
-import { formatPrice, discountPercent, getVietnamToday, formatVNDate, formatVNDateShort, dealBadge, promotionKindLabel } from "@/lib/utils";
-import ClaimVoucherButton from "./ClaimVoucherButton";
+import { formatPrice, discountPercent, getVietnamToday, formatVNDate, formatVNDateShort } from "@/lib/utils";
 import MapView from "@/components/MapView";
 import type { StorePin } from "@/components/MapView";
 import ProductPlaceholderIcon from "@/components/ProductPlaceholderIcon";
-import PromotionPlaceholderIcon from "@/components/PromotionPlaceholderIcon";
+import AnnouncementCard, { type PromotionWithStore } from "@/components/AnnouncementCard";
+import VoucherCard from "@/components/VoucherCard";
+import PromoStrip from "@/components/PromoStrip";
 import LocationPill from "@/components/LocationPill";
 import PickupCountdown from "./PickupCountdown";
 import FilterSidebar from "./FilterSidebar";
@@ -18,6 +19,7 @@ import ProductTypeTabs from "./ProductTypeTabs";
 import ClearSearchButton from "./ClearSearchButton";
 import { DiscoverNavProvider } from "./DiscoverNavContext";
 import DiscoverLoadingOverlay from "./DiscoverLoadingOverlay";
+import BoxPagination from "./BoxPagination";
 
 async function getStorePins(): Promise<StorePin[]> {
   const { from, to } = getVietnamToday();
@@ -50,8 +52,9 @@ const PRICE_RANGES: Record<string, { gte?: number; lt?: number; lte?: number }> 
 
 // How many days of past (expired) boxes to still show, dimmed and unclickable, below today's boxes.
 const PAST_DAYS_SHOWN = 100;
+const BOX_PAGE_SIZE = 20;
 
-async function getBoxes(sort: string, prices: string[], pickups: string[], categories: string[], q: string) {
+function buildBoxWhere(prices: string[], pickups: string[], categories: string[], q: string) {
   const { from, to } = getVietnamToday();
   const windowStart = new Date(from.getTime() - PAST_DAYS_SHOWN * 24 * 60 * 60 * 1000);
 
@@ -63,41 +66,55 @@ async function getBoxes(sort: string, prices: string[], pickups: string[], categ
   const nowHHMM = vnTimeHHMM(0);
   const twoHoursHHMM = hasSoon ? vnTimeHHMM(120) : "";
 
-  return prisma.box.findMany({
-    where: {
-      active: true,
-      date: { gte: windowStart, lt: to },
-      ...(categories.length > 0 && { categoryId: { in: categories } }),
-      AND: [
-        // Today's boxes must still have stock; past days show regardless (they're expired either way).
-        { OR: [{ date: { gte: from }, quantityLeft: { gt: 0 } }, { date: { lt: from } }] },
-        ...(q.trim().length >= 1 ? [{
-          OR: [
-            { name: { contains: q.trim(), mode: "insensitive" as const } },
-            { store: { name: { contains: q.trim(), mode: "insensitive" as const } } },
-          ],
-        }] : []),
-        ...(priceOR.length > 0 ? [{ OR: priceOR }] : []),
-        ...(hasSoon ? [{ pickupEnd: { gte: nowHHMM }, pickupStart: { lte: twoHoursHHMM } }] : []),
-      ],
-    },
-    include: { store: true, category: true },
-    orderBy: [
-      { date: "desc" },
-      sort === "price_asc" ? { priceSale: "asc" } :
-        sort === "price_desc" ? { priceSale: "desc" } :
-          { quantityLeft: "asc" },
+  return {
+    active: true,
+    date: { gte: windowStart, lt: to },
+    ...(categories.length > 0 && { categoryId: { in: categories } }),
+    AND: [
+      // Today's boxes must still have stock; past days show regardless (they're expired either way).
+      { OR: [{ date: { gte: from }, quantityLeft: { gt: 0 } }, { date: { lt: from } }] },
+      ...(q.trim().length >= 1 ? [{
+        OR: [
+          { name: { contains: q.trim(), mode: "insensitive" as const } },
+          { store: { name: { contains: q.trim(), mode: "insensitive" as const } } },
+        ],
+      }] : []),
+      ...(priceOR.length > 0 ? [{ OR: priceOR }] : []),
+      ...(hasSoon ? [{ pickupEnd: { gte: nowHHMM }, pickupStart: { lte: twoHoursHHMM } }] : []),
     ],
-  });
+  };
 }
 
-async function getPromotions(q: string, take?: number) {
+async function getBoxes(sort: string, prices: string[], pickups: string[], categories: string[], q: string, page: number) {
+  const where = buildBoxWhere(prices, pickups, categories, q);
+
+  const [boxes, totalCount] = await Promise.all([
+    prisma.box.findMany({
+      where,
+      include: { store: true, category: true },
+      orderBy: [
+        { date: "desc" },
+        sort === "price_asc" ? { priceSale: "asc" } :
+          sort === "price_desc" ? { priceSale: "desc" } :
+            { quantityLeft: "asc" },
+      ],
+      skip: (page - 1) * BOX_PAGE_SIZE,
+      take: BOX_PAGE_SIZE,
+    }),
+    prisma.box.count({ where }),
+  ]);
+
+  return { boxes, totalCount, totalPages: Math.max(1, Math.ceil(totalCount / BOX_PAGE_SIZE)) };
+}
+
+async function getPromotions(q: string, take?: number, kind?: "PLATFORM_VOUCHER" | "STORE_ANNOUNCEMENT") {
   const now = new Date();
   return prisma.promotion.findMany({
     where: {
       active: true,
       validFrom: { lte: now },
       validUntil: { gte: now },
+      ...(kind ? { kind } : {}),
       ...(q.trim().length >= 1 ? {
         OR: [
           { title: { contains: q.trim(), mode: "insensitive" as const } },
@@ -165,8 +182,8 @@ function BoxSkeleton() {
   );
 }
 
-async function BoxList({ sort, prices, pickups, categories, q }: { sort: string; prices: string[]; pickups: string[]; categories: string[]; q: string }) {
-  const boxes = await getBoxes(sort, prices, pickups, categories, q);
+async function BoxList({ sort, prices, pickups, categories, q, page }: { sort: string; prices: string[]; pickups: string[]; categories: string[]; q: string; page: number }) {
+  const { boxes, totalPages } = await getBoxes(sort, prices, pickups, categories, q, page);
   const nowHHMM = vnTimeHHMM(0);
   const { from: todayStart } = getVietnamToday();
 
@@ -280,151 +297,115 @@ async function BoxList({ sort, prices, pickups, categories, q }: { sort: string;
           </Link>
         );
       })}
+
+      {totalPages > 1 && (
+        <Suspense fallback={null}>
+          <BoxPagination page={page} totalPages={totalPages} />
+        </Suspense>
+      )}
     </>
   );
 }
 
-async function PromotionList({ q, isLoggedIn }: { q: string; isLoggedIn: boolean }) {
-  const promotions = await getPromotions(q);
+// Blue for announcements (informational, nothing to claim) vs primary/red for
+// vouchers (actionable, matches the claim button and discount-value color
+// already used on VoucherCard) — a quick color cue for which kind is which,
+// instead of both pills sharing the same neutral dark tone.
+// --blue-strong (#5e8fc5) reads too washed-out on --blue (#d2e8ff) — a
+// mid-tone blue on a light-blue bg doesn't have enough contrast to read as
+// text. Use a much darker navy here instead (shared --blue-strong var stays
+// untouched since it's also used for status badges elsewhere).
+const announcementPillStyle: React.CSSProperties = {
+  padding: "3px 10px", borderRadius: 999, fontSize: 11, fontWeight: 700,
+  background: "var(--blue)", color: "#1c4a7a", whiteSpace: "nowrap",
+};
+const voucherPillStyle: React.CSSProperties = {
+  padding: "3px 10px", borderRadius: 999, fontSize: 11, fontWeight: 700,
+  background: "var(--primary-soft)", color: "var(--primary-dark)", whiteSpace: "nowrap",
+};
 
-  if (promotions.length === 0) {
+// One kind per tab now — platform vouchers (claimable, ticket-notched, no
+// photo) and store announcements (informational, photo-led) used to share a
+// single "Chương trình khuyến mãi" tab/list, but looked similar enough at a
+// glance that mixing them together made people mistake one for the other.
+async function PromotionKindList({ q, isLoggedIn, kind }: { q: string; isLoggedIn: boolean; kind: "PLATFORM_VOUCHER" | "STORE_ANNOUNCEMENT" }) {
+  const isVoucher = kind === "PLATFORM_VOUCHER";
+  const promos = await getPromotions(q, undefined, kind);
+
+  if (promos.length === 0) {
     return (
       <div style={{ textAlign: "center", padding: "64px 0", color: "var(--text-muted)" }}>
-        <p style={{ fontSize: 18, fontWeight: 600 }}>Chưa có chương trình khuyến mãi nào</p>
+        <p style={{ fontSize: 18, fontWeight: 600 }}>
+          {isVoucher ? "Chưa có mã giảm giá nào" : "Chưa có chương trình khuyến mãi nào"}
+        </p>
         <p style={{ fontSize: 15, marginTop: 6 }}>Quay lại sau nhé!</p>
       </div>
     );
   }
 
   return (
-    <>
-      {promotions.map((promo) => (
-        <div key={promo.id} className="box-row-hover" style={{
-          display: "grid", gridTemplateColumns: "128px 1fr auto", gap: 24, alignItems: "center",
-          padding: "22px 16px", margin: "0 -16px", borderRadius: 12, borderBottom: "1px solid var(--border)",
-        }}>
-          <div style={{
-            width: 128, height: 96, borderRadius: 8, overflow: "hidden",
-            background: "var(--cream)", display: "grid", placeItems: "center", flexShrink: 0,
-          }}>
-            {promo.image
-              ? <img src={promo.image} alt={promo.title} style={{ width: "100%", height: "100%", objectFit: "contain", padding: 6, boxSizing: "border-box" }} />
-              : <PromotionPlaceholderIcon kind={promo.kind} size={36} style={{ color: "var(--text-muted)", opacity: 0.5 }} />}
-          </div>
-
-          <div style={{ minWidth: 0 }}>
-            <div style={{
-              fontSize: 11, fontWeight: 700, color: "var(--text-muted)",
-              textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 5,
-            }}>
-              {promo.store.name} · {promo.store.address.split(",")[0]}
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 7 }}>
-              <span style={{
-                padding: "2px 9px", borderRadius: 999, fontSize: 10, fontWeight: 700, whiteSpace: "nowrap",
-                background: promo.kind === "PLATFORM_VOUCHER" ? "#ede9fe" : "#e0f2fe",
-                color: promo.kind === "PLATFORM_VOUCHER" ? "#6d28d9" : "#0369a1",
-              }}>
-                {promotionKindLabel(promo.kind)}
-              </span>
-              <h3 style={{ fontSize: 20, margin: 0, color: "var(--text)", fontWeight: 700 }}>
-                {promo.title}
-              </h3>
-            </div>
-            <div style={{ fontSize: 15, color: "var(--text-muted)" }}>
-              {promo.kind === "STORE_ANNOUNCEMENT" ? "Áp dụng tại cửa hàng · " : "Hiệu lực "}
-              {formatVNDate(promo.validFrom)} – {formatVNDate(promo.validUntil)}
-            </div>
-          </div>
-
-          <div style={{ paddingLeft: 24, display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6 }}>
-            {dealBadge(promo.dealType, promo.discountValue) && (
-              <span style={{ fontSize: 15, fontWeight: 800, color: "var(--primary)" }}>
-                {dealBadge(promo.dealType, promo.discountValue)}
-              </span>
-            )}
-            {promo.kind === "PLATFORM_VOUCHER" && (
-              <ClaimVoucherButton promotionId={promo.id} isLoggedIn={isLoggedIn} />
-            )}
-          </div>
-        </div>
-      ))}
-    </>
+    <div>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+        <span style={isVoucher ? voucherPillStyle : announcementPillStyle}>
+          {isVoucher ? "áp dụng trực tiếp tại cửa hàng" : "mới nhất tại cửa hàng"}
+        </span>
+        <span style={{ marginLeft: "auto", fontSize: 12, color: "var(--text-muted)", fontWeight: 600 }}>
+          {promos.length} {isVoucher ? "mã" : "chương trình"}
+        </span>
+      </div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 14 }}>
+        {isVoucher
+          ? promos.map((promo) => <VoucherCard key={promo.id} promo={promo} isLoggedIn={isLoggedIn} />)
+          : promos.map((promo) => <AnnouncementCard key={promo.id} promo={promo} />)}
+      </div>
+    </div>
   );
 }
 
-// Condensed version shown under the "Tất cả" tab — a horizontally scrollable
-// strip of the 5 newest promotions, kept visually distinct (cards, not rows)
-// from the box list below so the two don't get mistaken for one list.
+// Condensed version shown under the "Tất cả" tab — both kinds together
+// (unlike the dedicated per-kind tabs), each a horizontally-scrollable strip
+// with prev/next arrows instead of wrapping, since this widget sits above
+// the box list and
+// shouldn't grow tall.
 async function PromotionCarousel({ q, isLoggedIn }: { q: string; isLoggedIn: boolean }) {
-  const promotions = await getPromotions(q, 5);
-  if (promotions.length === 0) return null;
+  const [vouchers, announcements] = await Promise.all([
+    getPromotions(q, 8, "PLATFORM_VOUCHER"),
+    getPromotions(q, 8, "STORE_ANNOUNCEMENT"),
+  ]);
+
+  if (vouchers.length === 0 && announcements.length === 0) {
+    return (
+      <div style={{ padding: "16px 0", textAlign: "center", color: "var(--text-muted)", fontSize: 14 }}>
+        Hiện chưa có chương trình khuyến mãi hay mã giảm giá nào đang chạy — quay lại sau nhé!
+      </div>
+    );
+  }
 
   return (
-    // Note: setting overflowX without overflowY makes the browser implicitly clip
-    // overflowY too (CSS overflow computed-value rule), and overflow only clips at
-    // the padding edge — not the content edge. So pad every side generously (the
-    // hover shadow + its -2px lift needs room) and cancel the padding with a
-    // matching negative margin so the first/last card still lines up visually
-    // with the heading above instead of looking indented.
-    <div className="promo-carousel" style={{ display: "flex", gap: 14, overflowX: "auto", margin: "0 -20px", padding: "12px 20px 28px" }}>
-      {promotions.map((promo) => (
-        <div key={promo.id} className="box-row-hover" style={{
-          flex: "0 0 240px", scrollSnapAlign: "start",
-          border: "1px solid var(--border)", borderRadius: 14, background: "white",
-        }}>
-          <div style={{
-            position: "relative", height: 110, background: "var(--cream)", display: "grid", placeItems: "center",
-            overflow: "hidden", borderRadius: "13px 13px 0 0",
-          }}>
-            {promo.image
-              ? <img src={promo.image} alt={promo.title} style={{ width: "100%", height: "100%", objectFit: "contain", padding: 6, boxSizing: "border-box" }} />
-              : <PromotionPlaceholderIcon kind={promo.kind} size={32} style={{ color: "var(--text-muted)", opacity: 0.5 }} />}
-            {/* Discount — pinned to the image so it always stands out, never competes for text space */}
-            {dealBadge(promo.dealType, promo.discountValue) && (
-              <span style={{
-                position: "absolute", top: 8, left: 8, whiteSpace: "nowrap",
-                padding: "3px 8px", borderRadius: 6, fontSize: 12, fontWeight: 800,
-                background: "var(--primary)", color: "white",
-              }}>
-                {dealBadge(promo.dealType, promo.discountValue)}
-              </span>
-            )}
-          </div>
-          <div style={{ padding: 14 }}>
-            <div style={{
-              fontSize: 10, fontWeight: 700, color: "var(--text-muted)",
-              textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6,
-              overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-            }}>
-              {promo.store.name}
-            </div>
-            <span style={{
-              display: "inline-block", maxWidth: "100%", padding: "2px 9px", borderRadius: 999, fontSize: 10, fontWeight: 700, marginBottom: 6,
-              overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-              background: promo.kind === "PLATFORM_VOUCHER" ? "#ede9fe" : "#e0f2fe",
-              color: promo.kind === "PLATFORM_VOUCHER" ? "#6d28d9" : "#0369a1",
-            }}>
-              {promotionKindLabel(promo.kind)}
-            </span>
-            <h3 style={{
-              fontSize: 15, margin: "0 0 8px", color: "var(--text)", fontWeight: 700, lineHeight: 1.35,
-              display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
-            }}>
-              {promo.title}
-            </h3>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-              {/* Validity window — the other must-stand-out fact alongside the discount */}
-              <span style={{ fontSize: 11, fontWeight: 600, color: "var(--text-muted)", whiteSpace: "nowrap", flexShrink: 0 }}>
-                {formatVNDateShort(promo.validFrom)} – {formatVNDateShort(promo.validUntil)}
-              </span>
-              {promo.kind === "PLATFORM_VOUCHER" && (
-                <ClaimVoucherButton promotionId={promo.id} isLoggedIn={isLoggedIn} />
-              )}
-            </div>
-          </div>
-        </div>
-      ))}
+    <div>
+      {announcements.length > 0 && (
+        <PromoStrip
+          title="Chương trình khuyến mãi" pillLabel="mới nhất tại cửa hàng"
+          pillBg="var(--blue)" pillColor="#1c4a7a"
+          count={announcements.length} countLabel="chương trình"
+          seeAllHref="/discover?type=ANNOUNCEMENT"
+        >
+          {announcements.map((promo) => <AnnouncementCard key={promo.id} promo={promo} />)}
+        </PromoStrip>
+      )}
+      {vouchers.length > 0 && announcements.length > 0 && (
+        <div style={{ height: 1, background: "var(--border)", margin: "8px 0 12px" }} />
+      )}
+      {vouchers.length > 0 && (
+        <PromoStrip
+          title="Mã giảm giá" pillLabel="áp dụng trực tiếp tại cửa hàng"
+          pillBg="var(--primary-soft)" pillColor="var(--primary-dark)"
+          count={vouchers.length} countLabel="mã"
+          seeAllHref="/discover?type=VOUCHER"
+        >
+          {vouchers.map((promo) => <VoucherCard key={promo.id} promo={promo} isLoggedIn={isLoggedIn} />)}
+        </PromoStrip>
+      )}
     </div>
   );
 }
@@ -432,7 +413,7 @@ async function PromotionCarousel({ q, isLoggedIn }: { q: string; isLoggedIn: boo
 export default async function DiscoverPage({
   searchParams,
 }: {
-  searchParams: Promise<{ sort?: string; price?: string | string[]; pickup?: string | string[]; category?: string | string[]; q?: string; type?: string }>;
+  searchParams: Promise<{ sort?: string; price?: string | string[]; pickup?: string | string[]; category?: string | string[]; q?: string; type?: string; page?: string }>;
 }) {
   const sp = await searchParams;
   const sort = sp.sort ?? "default";
@@ -441,11 +422,13 @@ export default async function DiscoverPage({
   const categories = sp.category ? (Array.isArray(sp.category) ? sp.category : [sp.category]) : [];
   const q = sp.q ?? "";
   const productType = sp.type ?? "";
+  const isPromoTab = productType === "ANNOUNCEMENT" || productType === "VOUCHER";
+  const page = Math.max(1, parseInt(sp.page ?? "1", 10) || 1);
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  const [storePins, totalBoxes, impact, categoryOptions, promotionsCount] = await Promise.all([
+  const [storePins, totalBoxes, impact, categoryOptions] = await Promise.all([
     getStorePins(),
     prisma.box.count({
       where: {
@@ -457,14 +440,11 @@ export default async function DiscoverPage({
     }),
     user ? getUserImpact(user.id) : Promise.resolve(null),
     // Filters (Ngành hàng/Khoảng giá/Giờ nhận) only apply to boxes, not promotions —
-    // skip the query and the sidebar entirely on the promotions tab.
-    productType === "PROMOTION" ? Promise.resolve([]) : prisma.productCategory.findMany({
+    // skip the query and the sidebar entirely on the promotions tabs.
+    isPromoTab ? Promise.resolve([]) : prisma.productCategory.findMany({
       where: { active: true },
       orderBy: { sortOrder: "asc" },
       select: { id: true, key: true, label: true, emoji: true, industry: true },
-    }),
-    prisma.promotion.count({
-      where: { active: true, validFrom: { lte: new Date() }, validUntil: { gte: new Date() } },
     }),
   ]);
 
@@ -474,10 +454,10 @@ export default async function DiscoverPage({
 
       <main className="discover-main">
         <DiscoverNavProvider>
-          <div className="discover-layout" style={{ gap: 48, ...(productType === "PROMOTION" && { gridTemplateColumns: "1fr 260px" }) }}>
+          <div className="discover-layout" style={{ gap: 48, ...(isPromoTab && { gridTemplateColumns: "1fr 260px" }) }}>
             {/* Filters sidebar — only meaningful for boxes (Ngành hàng/Khoảng giá/Giờ nhận
-              don't filter promotions), so skip the query and the sidebar on that tab */}
-            {productType !== "PROMOTION" && (
+              don't filter promotions), so skip the query and the sidebar on those tabs */}
+            {!isPromoTab && (
               <div>
                 <Suspense fallback={<div style={{ width: 200, height: 200 }} />}>
                   <FilterSidebar categoryOptions={categoryOptions} />
@@ -494,29 +474,32 @@ export default async function DiscoverPage({
                 </Suspense>
               </div>
 
-              {/* Promotions — full row list on the dedicated "Chương trình khuyến mãi" tab */}
-              {productType === "PROMOTION" && (
+              {/* Promotions — full row list on the dedicated per-kind tabs */}
+              {isPromoTab && (
                 <>
                   <div style={{
                     display: "flex", alignItems: "baseline", gap: 12,
                     borderBottom: "2px solid var(--text)", paddingBottom: 14, marginBottom: 12,
                   }}>
                     <h2 style={{ fontSize: 30, margin: 0, color: "var(--text)", letterSpacing: "-0.02em" }}>
-                      Ưu đãi & khuyến mãi
+                      {productType === "VOUCHER" ? "Mã giảm giá" : "Chương trình khuyến mãi"}
                     </h2>
                     {q && <span style={{ fontSize: 15, color: "var(--text-muted)" }}>&ldquo;{q}&rdquo;</span>}
                     {q && <ClearSearchButton q={q} />}
                   </div>
                   <div style={{ position: "relative" }}>
                     <Suspense fallback={<BoxSkeleton />}>
-                      <PromotionList q={q} isLoggedIn={!!user} />
+                      <PromotionKindList q={q} isLoggedIn={!!user} kind={productType === "VOUCHER" ? "PLATFORM_VOUCHER" : "STORE_ANNOUNCEMENT"} />
                     </Suspense>
                   </div>
                 </>
               )}
 
-              {/* Promotions — condensed scroll strip alongside the box list on "Tất cả" */}
-              {productType === "" && promotionsCount > 0 && (
+              {/* Promotions — condensed scroll strip alongside the box list on "Tất cả".
+                  Heading always shows here (even with zero active promos right now) —
+                  it's part of the page's structure, not something that should vanish
+                  just because nothing happens to be running today. */}
+              {productType === "" && (
                 <>
                   <div style={{
                     display: "flex", alignItems: "baseline", gap: 12,
@@ -527,9 +510,6 @@ export default async function DiscoverPage({
                     </h2>
                     {q && <span style={{ fontSize: 15, color: "var(--text-muted)" }}>&ldquo;{q}&rdquo;</span>}
                     {q && <ClearSearchButton q={q} />}
-                    <Link href="/discover?type=PROMOTION" style={{ marginLeft: "auto", fontSize: 13, fontWeight: 700, color: "var(--primary)", textDecoration: "none", whiteSpace: "nowrap" }}>
-                      Xem tất cả →
-                    </Link>
                   </div>
                   <div style={{ position: "relative", marginBottom: 8 }}>
                     <Suspense fallback={<BoxSkeleton />}>
@@ -540,7 +520,7 @@ export default async function DiscoverPage({
               )}
 
               {/* List header with hairline */}
-              {productType !== "PROMOTION" && (
+              {!isPromoTab && (
                 <>
                   <div style={{
                     display: "flex", alignItems: "baseline", gap: 12,
@@ -565,7 +545,7 @@ export default async function DiscoverPage({
                   <div style={{ position: "relative" }}>
                     <DiscoverLoadingOverlay />
                     <Suspense fallback={<BoxSkeleton />}>
-                      <BoxList sort={sort} prices={prices} pickups={pickups} categories={categories} q={q} />
+                      <BoxList sort={sort} prices={prices} pickups={pickups} categories={categories} q={q} page={page} />
                     </Suspense>
                   </div>
                 </>

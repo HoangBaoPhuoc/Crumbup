@@ -58,7 +58,7 @@ export async function proxy(request: NextRequest) {
   }
 
   // ── Protect user-only routes ───────────────────────────────────────────
-  const protectedPaths = ["/profile", "/orders", "/partner", "/review"];
+  const protectedPaths = ["/profile", "/orders", "/partner", "/review", "/messages"];
   if (protectedPaths.some((p) => pathname.startsWith(p)) && !user) {
     return NextResponse.redirect(new URL("/login", request.url));
   }

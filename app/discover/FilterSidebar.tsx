@@ -67,6 +67,7 @@ export default function FilterSidebar({ categoryOptions }: { categoryOptions: Ca
     const nextParams = new URLSearchParams(params.toString());
     nextParams.delete(key);
     next.forEach((v) => nextParams.append(key, v));
+    nextParams.delete("page");
     navigate(`${pathname}?${nextParams.toString()}`);
   }
 

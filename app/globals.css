@@ -487,13 +487,21 @@ h4 {
    scale here, the row spans the whole column so scale(1.03) would overflow
    past the container edge. Lift + contained shadow only. */
 .box-row-hover {
-  transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
 }
 
+/* Same recipe as VoucherCard's hover (frame + shadow + lift) so box rows and
+   the promo cards all read as one consistent system. border-color needs
+   !important — these rows/cards set their border inline (an ordinary
+   stylesheet :hover can never win against an inline style), and this is the
+   one property in that inline style still worth overriding on hover. Cards
+   with a full border get every side highlighted; box rows only ever had a
+   border-bottom, so only that side has a color to change — harmless either way. */
 .box-row-hover:hover {
   background: white;
-  box-shadow: 0 12px 32px -12px rgba(34, 28, 22, 0.16);
+  box-shadow: 0 10px 24px -10px rgba(34, 28, 22, 0.18);
   transform: translateY(-2px);
+  border-color: var(--primary) !important;
 }
 
 .store-address-link {
@@ -613,7 +621,7 @@ h4 {
 
 /* ============ GLASS HEADER ============ */
 .site-header {
-  background: rgba(255, 255, 255, 0.65) !important;
+  background: rgba(255, 255, 255, 0.95) !important;
   backdrop-filter: blur(24px) saturate(1.5);
   -webkit-backdrop-filter: blur(24px) saturate(1.5);
   position: fixed;
@@ -1336,4 +1344,53 @@ h4 {
     padding-bottom: 16px;
     border-bottom: 1px solid var(--border);
   }
+}
+
+/* ============ PARTNER DASHBOARD SIDEBAR ============ */
+.partner-nav-link {
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.partner-nav-link:hover {
+  background: var(--cream);
+}
+
+.partner-nav-bar {
+  background: var(--border);
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.partner-nav-bar:hover {
+  background: var(--border-strong);
+  transform: scaleY(1.5);
+}
+
+.partner-toggle-btn {
+  background: var(--ivory);
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.partner-toggle-btn:hover {
+  background: var(--primary-soft);
+  border-color: var(--primary);
+  color: var(--primary-dark);
+}
+
+.partner-logout-btn {
+  background: white;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.partner-logout-btn:hover:not(:disabled) {
+  background: var(--cream);
+  border-color: var(--border-strong);
+}
+
+.partner-pager-btn {
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.partner-pager-btn:hover:not(:disabled) {
+  background: var(--cream);
+  border-color: var(--border-strong);
 }
